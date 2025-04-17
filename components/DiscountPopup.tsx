@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-
+import { RxCross2 } from "react-icons/rx";
+import Image from 'next/image';
+import discountImage from '../public/discount.png'; // Adjust the path as necessary
 const DiscountPopup = ({ children }: { children: string }) => {
   const [open, setOpen] = useState(true);
   const [animate, setAnimate] = useState(false);
-
+   
   useEffect(() => {
     if (open) {
       // Trigger the animation when the popup opens
@@ -16,25 +18,21 @@ const DiscountPopup = ({ children }: { children: string }) => {
   if (!open) return null;
 
   return (
-    <div className='inset-0 fixed flex items-center justify-center bg-black bg-opacity-50'>
-      <div
-        className={`min-w-md bg-red-500 p-6 rounded-lg shadow-lg relative transform transition-transform duration-500 ${
-          animate ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
-        }`}
-      >
-        {/* Close Button */}
-        <button
-          onClick={() => setOpen(false)}
-          className='absolute top-2 right-2 text-white text-2xl'
-          aria-label="Close Popup"
-        >
-          &times;
-        </button>
+    <div className='inset-0 top-0  z-50 flex w-screen h-screen items-center justify-center fixed  px-6 md:px-12 lg:px-24   bg-black/60  '>
+             
+       
+          <div className=' relative ' > 
+          <RxCross2 onClick={() => setOpen(false)} className='text-2xl cursor-pointer     bg-white  text-black  ' size={24}  />
+            <Image src={discountImage} alt="Discount Image" loading='lazy' width={400} height={100} className='' />
+            
+          </div>
+          <div> </div>
+        
+        
 
-        {/* Popup content */}
-        {children}
-      </div>
-    </div>
+       </div>
+     
+    
   );
 };
 

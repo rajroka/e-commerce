@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono  , Inter } from "next/font/google";
 import "./globals.css";
+import Top from "@/components/Top";
+import Nav from "@/components/Nav";
+import { Provider } from "react-redux";
+import store, { persistor } from "@/redux/store";
+import ReduxProvider from "@/redux/Provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +37,13 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${inter.variable} ${inter.variable} antialiased`}
+
       >
+        <ReduxProvider>
+        <Top  />
+        <Nav/>
         {children}
+        </ReduxProvider>
       </body>
     </html>
   );

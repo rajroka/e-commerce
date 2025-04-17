@@ -1,52 +1,105 @@
-"use client";
-import { FaUserMd } from "react-icons/fa";
-import { IoMdCart, IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
-import { MdSearch } from "react-icons/md";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { useState } from "react";
-import Logintoggle from "./LoginModal";
+'use client';
+
+import { useState } from 'react';
+import { FaUserMd } from 'react-icons/fa';
+import { IoMdCart, IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
+import { MdSearch } from 'react-icons/md';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import Logintoggle from './LoginModal';
+import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
+
 const Nav = () => {
-
-    const [isLogin, setIsLogin] = useState(false);
-       
-    return (
-      <div className="w-full px-6 md:px-12 lg:px-24 bg-white text-black ">
-        <div className="flex items-center justify-between h-20 ">
-          {/* Logo + Search */}
-          <div className="flex flex-col-reverse w-full md:flex-row md:items-center gap-2 md:gap-8">
-            <span className="font-bold text-2xl md:text-3xl lg:text-4xl">TechShed</span>
-            <div className="relative flex items-center">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="border border-black h-10 px-4 rounded-3xl pr-10"
-              />
-              <MdSearch className="absolute right-3 text-purple-400" size={20} />
-            </div>
-          </div>
   
-          {/* Right Icons */}
-          <div className="flex items-center gap-4 md:gap-8">
-            <button onClick={()=>setIsLogin(true)} className="px-4 sm:text-base py-2 border rounded-3xl flex items-center gap-2 hover:bg-black hover:text-white transition  duration-200 whitespace-nowrap">
-              <FaUserMd /> Sign In
-            </button>
-            <span className=" gap-2 hidden md:flex items-center">
-              <IoMdHeart size={24} className=" "  />
-              <IoMdHeartEmpty size={24} />
-            </span>
-            <span className="flex items-center gap-1">
-              0 <IoMdCart size={24} className="flex md:hidden" />
-              <IoMdCart size={24} className=" hidden md:flex" />
-            </span>
-            <div className="flex md:hidden items-center justify-center w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 transition duration-200">
 
-            <button ><GiHamburgerMenu size={24 } /></button>
-            </div>
+  const dispatch = useDispatch();
+
+
+
+  const cartCount = useSelector((state: { cart: { items: any[] } }) => state.cart.items.length);
+  const [isLogin, setIsLogin] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  return (
+    <header className="w-full sticky top-0 bg-white shadow-md z-50">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex items-center justify-between flex-wrap gap-4">
+        {/* Left: Logo and Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+          <span className="text-2xl font-bold text-purple-600 tracking-wide">TechShed</span>
+
+          <div className="relative w-full sm:w-72">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="w-full h-10 px-4 pr-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            />
+            <MdSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500" size={20} />
           </div>
         </div>
-        <Logintoggle isLogin={isLogin} setIsLogin={setIsLogin} />
-      </div>
-    );
-  };
 
-  export default Nav;
+        {/* Right: Icons and Menu */}
+        <div className="flex items-center gap-3 sm:gap-5">
+          <button
+            onClick={() => setIsLogin(true)}
+            
+            className="flex items-center gap-2 text-sm sm:text-base px-4 py-2 border border-gray-300 rounded-full hover:bg-purple-600 hover:text-white transition duration-200"
+          >
+            <FaUserMd /> Sign In
+          </button>
+
+          <div className="hidden md:flex items-center gap-2">
+            <IoMdHeart className="text-gray-600 hover:text-red-500 transition" size={22} />
+            <IoMdHeartEmpty className="text-gray-600 hover:text-red-500 transition" size={22} />
+          </div>
+
+          <div className="flex items-center gap-1 text-gray-700 relative">
+            <span className="text-sm font-semibold"> {cartCount}</span>
+            <IoMdCart size={24} className="hover:text-purple-600 transition" />
+          </div>
+
+          <button
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            
+            className="md:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+          >
+            <GiHamburgerMenu size={22} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {showMobileMenu && (
+        <div className="md:hidden bg-white shadow-inner border-t">
+          <nav className="flex flex-col px-6 py-4 space-y-3">
+            <Link href="/" className="text-gray-700 hover:text-purple-600 font-medium">
+              🏠 Home
+            </Link>
+            <Link href="/products" className="text-gray-700 hover:text-purple-600 font-medium">
+              🛍️ Products
+            </Link>
+            <Link href="/wishlist" className="text-gray-700 hover:text-purple-600 font-medium">
+              ❤️ Wishlist
+            </Link>
+            <Link href="/cart" className="text-gray-700 hover:text-purple-600 font-medium">
+               🛒 Cart 
+            </Link>
+            <button
+              onClick={() => {
+                setIsLogin(true);
+                setShowMobileMenu(false);
+              }}
+              className="text-gray-700 hover:text-purple-600 font-medium text-left"
+            >
+              🔐 Sign In
+            </button>
+          </nav>
+        </div>
+      )}
+
+      {/* Login Modal */}
+      <Logintoggle isLogin={isLogin} setIsLogin={setIsLogin} />
+    </header>
+  );
+};
+
+export default Nav;

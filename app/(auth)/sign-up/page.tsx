@@ -1,5 +1,6 @@
 
 "use client";
+import { login } from '@/app/api/Auth';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm,  } from 'react-hook-form';
@@ -12,17 +13,23 @@ type SignInFormInputs = {
     password: string;
 };
 
-const SignIn = () => {
+const SignIn = async  () => {
     const { register, handleSubmit, formState: { errors } } = useForm({
          
       
     });
 const router = useRouter()
-    const onSubmit = (data : any ) => {
 
-        // console.log(data);
+
+    const onSubmit = async ({username  , password}:{ username :any , password : any}  ) => {
+            
+         const response =  await  login(username  , password)
+         console.log(response)
+        console.log('Form Data:', { username, password })
+
          router.push('/sign-up/dashboard')
-        // Handle form submission logic here (e.g., API call)
+
+        
     };
 
     return (
@@ -33,12 +40,12 @@ const router = useRouter()
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Email</label>
                         <input
-                            type="email"
+                            type="text"
                             
-                            {...register('email' , { required : " Email is required"}  )}
+                            {...register('username' , { required : " username is required"}  )}
                             className={`mt-1 block w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-500`}
                         />
-                         <p className="text-red-500 text-sm">{errors.email?.message as string}</p>
+                         <p className="text-red-500 text-sm">{errors.username?.message as string}</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Password</label>
