@@ -24,7 +24,7 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
       const response = await login(username, password);
       toast.success('Login successful!', { autoClose: 2000, position: 'top-right' });
       setIsLogin(false);
-      router.push('/sign-up/dashboard');
+      router.push('/dashboard');
       // console.log(response.token)
       
       localStorage.setItem("token" , response.token);

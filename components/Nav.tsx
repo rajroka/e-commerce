@@ -1,24 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaUserMd } from 'react-icons/fa';
 import { IoMdCart, IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import { MdSearch } from 'react-icons/md';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import Logintoggle from './LoginModal';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useSearchParams, useRouter } from 'next/navigation';
+import axios from 'axios';
+import Search from './Search';
 
 const Nav = () => {
-  
+  const [products, setProducts] = useState<{ title: string }[]>([]);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search')?.toLowerCase() || '';
+  const [searchText, setSearchText] = useState('');
+  const router = useRouter();
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  const dispatch = useDispatch();
+  const toggleSearch = () => {
+    setSearchOpen(!searchOpen);
+  };
 
+  const filteredProducts = products.filter(product =>
+    product.title.toLowerCase().includes(searchQuery)
+  );
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await axios.get('https://fakestoreapi.com/products');
+      setProducts(res.data);
+    };
+    fetchProducts();
+  }, []);
 
   const cartCount = useSelector((state: { cart: { items: any[] } }) => state.cart.items.length);
   const [isLogin, setIsLogin] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      router.push(`/products?search=${searchText}`);
+    }
+  };
 
   return (
     <header className="w-full sticky top-0 bg-white shadow-md z-50">
@@ -28,12 +54,20 @@ const Nav = () => {
           <span className="text-2xl font-bold text-purple-600 tracking-wide">TechShed</span>
 
           <div className="relative w-full sm:w-72">
-            <input
+            {/* <input
               type="text"
               placeholder="Search products..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={handleSearch}
               className="w-full h-10 px-4 pr-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            /> */}
+            <Search isOpen={searchOpen} onClose={toggleSearch} />
+            <MdSearch
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500 cursor-pointer"
+              size={20}
+              onClick={() => router.push(`/products?search=${searchText}`)}
             />
-            <MdSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500" size={20} />
           </div>
         </div>
 
@@ -41,7 +75,6 @@ const Nav = () => {
         <div className="flex items-center gap-3 sm:gap-5">
           <button
             onClick={() => setIsLogin(true)}
-            
             className="flex items-center gap-2 text-sm sm:text-base px-4 py-2 border border-gray-300 rounded-full hover:bg-purple-600 hover:text-white transition duration-200"
           >
             <FaUserMd /> Sign In
@@ -53,13 +86,13 @@ const Nav = () => {
           </div>
 
           <div className="flex items-center gap-1 text-gray-700 relative">
-            <span className="text-sm font-semibold"> {cartCount}</span>
+            <span className="text-sm font-semibold">{cartCount}</span>
             <IoMdCart size={24} className="hover:text-purple-600 transition" />
           </div>
 
           <button
+          title='button '
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            
             className="md:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
           >
             <GiHamburgerMenu size={22} />
@@ -81,7 +114,7 @@ const Nav = () => {
               ❤️ Wishlist
             </Link>
             <Link href="/cart" className="text-gray-700 hover:text-purple-600 font-medium">
-               🛒 Cart 
+              🛒 Cart
             </Link>
             <button
               onClick={() => {
