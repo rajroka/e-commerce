@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { FaUserMd } from 'react-icons/fa';
 import { IoMdCart, IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
@@ -16,7 +15,7 @@ const Nav = () => {
   const [products, setProducts] = useState<{ title: string }[]>([]);
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search')?.toLowerCase() || '';
-  const [searchText, setSearchText] = useState('');
+  const [searchText , setSearchtext] = useState('');
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -28,13 +27,7 @@ const Nav = () => {
     product.title.toLowerCase().includes(searchQuery)
   );
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const res = await axios.get('https://fakestoreapi.com/products');
-      setProducts(res.data);
-    };
-    fetchProducts();
-  }, []);
+ 
 
   const cartCount = useSelector((state: { cart: { items: any[] } }) => state.cart.items.length);
   const [isLogin, setIsLogin] = useState(false);
@@ -51,18 +44,18 @@ const Nav = () => {
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex items-center justify-between flex-wrap gap-4">
         {/* Left: Logo and Search */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
-          <span className="text-2xl font-bold text-purple-600 tracking-wide">TechShed</span>
+            <Link href="/"><span className="text-2xl font-bold text-purple-600 tracking-wide">TechShed</span></Link>
 
           <div className="relative w-full sm:w-72">
-            {/* <input
+            <input
               type="text"
               placeholder="Search products..."
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={(e) => setSearchtext(e.target.value)}
               onKeyDown={handleSearch}
               className="w-full h-10 px-4 pr-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
-            /> */}
-            <Search isOpen={searchOpen} onClose={toggleSearch} />
+            />
+            
             <MdSearch
               className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500 cursor-pointer"
               size={20}
@@ -85,10 +78,10 @@ const Nav = () => {
             <IoMdHeartEmpty className="text-gray-600 hover:text-red-500 transition" size={22} />
           </div>
 
-          <div className="flex items-center gap-1 text-gray-700 relative">
+          <Link href="/cart" className="flex items-center gap-1 text-gray-700 relative">
             <span className="text-sm font-semibold">{cartCount}</span>
             <IoMdCart size={24} className="hover:text-purple-600 transition" />
-          </div>
+          </Link>
 
           <button
           title='button '

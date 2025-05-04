@@ -40,6 +40,7 @@ export default function RootLayout({
 
       >
         <ReduxProvider>
+        
         <Top  />
         <Nav/>
         {children}

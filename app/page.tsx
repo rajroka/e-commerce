@@ -1,6 +1,6 @@
 import Companies from "@/components/Companies";
 import DiscountPopup from "@/components/DiscountPopup";
-import Nav from "@/components/Nav";
+
 import ProductNav from "@/components/ProductNav";
 import Top from "@/components/Top";
 import store from "@/redux/store";
@@ -24,7 +24,7 @@ export default function Home() {
       <DiscountPopup>Special Offer!</DiscountPopup>
       <Modal  />
       <Hero />
-      <Car />
+      
       <Newslater />
       <Customerservice />
       {/* <Footer /> */}

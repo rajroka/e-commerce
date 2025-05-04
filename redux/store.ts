@@ -13,6 +13,8 @@ const persistedReducer = persistReducer(persistConfig, cartReducer);
 
 // ✅ Add serializableCheck ignore config
 const store = configureStore({
+   
+
   reducer: {
     cart: persistedReducer,
   },
