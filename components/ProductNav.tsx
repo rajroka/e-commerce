@@ -1,29 +1,31 @@
+'use client';
+
 import Link from 'next/link';
-import React from 'react';
+import { usePathname } from 'next/navigation';
 
-const ProductNav = () => {
-  const linkStyle =
-    'w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-600 hover:text-white transition-colors whitespace-nowrap';
+const categories = [
+  { name: 'All', value: '' },
+  { name: 'Electronics', value: 'electronics' },
+  { name: 'Jewelery', value: 'jewelery' },
+  { name: "Men's Clothing", value: "men's clothing" },
+  { name: "Women's Clothing", value: "women's clothing" },
+];
 
-  const categories = [
-    { name: 'Shop All', value: '' },
-    { name: 'Computers', value: 'Computers' },
-    { name: 'Tablets', value: 'Tablets' },
-    { name: 'Drones & cameras', value: 'Drones & cameras' },
-    { name: 'Audio', value: 'Audio' },
-    { name: 'Mobile', value: 'Mobile' },
-    { name: 'T.V & Home Cinema', value: 'T.V & Home Cinema' },
-    { name: 'Wearable Tech', value: 'Wearable Tech' },
-    { name: 'Sale', value: 'Sale' },
-  ];
+const CategoryNav = () => {
+  const pathname = usePathname();
+  const selected = decodeURIComponent(pathname.split('/categories/')[1] || '');
 
   return (
-    <div className="flex items-center justify-start gap-4 h-16 sticky top-18 z-0 bg-gray-200 text-black overflow-x-auto px-6 md:px-12 lg:px-24 scrollbar-hide">
+    <div className="flex items-center gap-4 overflow-x-auto bg-gray-200 px-6 h-16 sticky top-0 z-10">
       {categories.map((cat) => (
         <Link
-          key={cat.name}
-          href={`/products${cat.value ? `?category=${encodeURIComponent(cat.value)}` : ''}`}
-          className={linkStyle}
+          key={cat.value}
+          href={cat.value ? `/categories/${encodeURIComponent(cat.value)}` : '/categories'}
+          className={`px-4 py-2 rounded-md whitespace-nowrap transition ${
+            selected === cat.value || (!selected && cat.value === '')
+              ? 'bg-gray-600 text-white'
+              : 'hover:bg-gray-300'
+          }`}
         >
           {cat.name}
         </Link>
@@ -32,4 +34,4 @@ const ProductNav = () => {
   );
 };
 
-export default ProductNav;
+export default CategoryNav;

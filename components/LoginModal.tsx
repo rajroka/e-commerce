@@ -43,7 +43,7 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
   return (
     <>
       {isLogin && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center px-4">
+        <div className="fixed inset-0 z-50 bg-black/80  backdrop-blur-sm flex justify-center items-center px-4">
           <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg relative">
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login to TechShed</h2>
 

@@ -11,7 +11,9 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.4",
+    "dotenv": "^16.5.0",
     "framer-motion": "^12.6.0",
+    "mongoose": "^8.14.1",
     "next": "15.2.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -25,6 +27,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/dotenv": "^6.1.1",
+    "@types/mongoose": "^5.11.96",
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.3",
