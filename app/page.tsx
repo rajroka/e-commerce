@@ -12,7 +12,7 @@ import Hero from "@/components/Hero";
 import C from "@/components/Car";
 import Car from "@/components/Car";
 import Newslater from "@/components/Newslater";
-
+import Attendance from "@/components/Attendance";
 
 export default function Home() {
   return (
@@ -27,8 +27,11 @@ export default function Home() {
       
       <Newslater />
       <Customerservice />
-      {/* <Footer /> */}
       <Companies />
+      <Attendance />
+            <Footer />
+
+
       {/* </Provider> */}
     </>
 

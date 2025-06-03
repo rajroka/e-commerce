@@ -97,7 +97,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
 
             <button
               onClick={handleAddToCart}
-              oncli
+              
               className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-transform transform hover:scale-105 duration-200"
             >
               Add to Cart
