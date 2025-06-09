@@ -60,7 +60,7 @@ const Nav = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-4">
-          <Link href="/docs" className="hover:text-purple-400 font-medium">Docs</Link>
+        
           <Link href="/wishlist" className="hover:text-red-400 transition">
             <IoMdHeart size={24} />
           </Link>
@@ -69,8 +69,8 @@ const Nav = () => {
             <IoMdCart size={24} />
           </Link>
            <Link href="/products" className="relative flex items-center hover:text-purple-400">
-            <span className="  text-xs bg-purple-600 rounded-full px-1">products </span>
-            <IoMdCart size={24} />
+            products 
+            
           </Link>
           <button
             onClick={() => setIsSignup(true)}

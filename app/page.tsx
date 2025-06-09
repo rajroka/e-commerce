@@ -9,10 +9,11 @@ import Modal from "@/components/Modal";
 import Customerservice from "@/components/Customerservice";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
-import C from "@/components/Car";
-import Car from "@/components/Car";
+
 import Newslater from "@/components/Newslater";
 import Attendance from "@/components/Attendance";
+import Products from "@/components/product/Products";
+
 
 export default function Home() {
   return (
@@ -24,7 +25,7 @@ export default function Home() {
       <DiscountPopup>Special Offer!</DiscountPopup>
       <Modal  />
       <Hero />
-      
+       <Products/>
       <Newslater />
       <Customerservice />
       <Companies />
