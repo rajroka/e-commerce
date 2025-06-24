@@ -38,10 +38,16 @@ export const POST = async (request: Request) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email , 
+        isAdmin: user.isAdmin || false 
+       },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
+
+
+
+  
 
     return NextResponse.json(
       {
@@ -51,6 +57,7 @@ export const POST = async (request: Request) => {
           id: user._id,
           username: user.username,
           email: user.email,
+          isAdmin: user.isAdmin || false,
         },
       },
       { status: 200 }

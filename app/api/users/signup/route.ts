@@ -5,9 +5,8 @@ import User from "@/lib/modals/user";
 
 export const POST = async (request: Request) => {
   try {
-    const { username, email, password, role } = await request.json();
+    const { username, email, password } = await request.json();
 
-    // Basic validation
     if (!username || !email || !password) {
       return NextResponse.json(
         { message: "Username, email, and password are required" },
@@ -15,13 +14,8 @@ export const POST = async (request: Request) => {
       );
     }
 
-    // Validate role
-    const allowedRoles = ["user", "admin"];
-    const userRole = allowedRoles.includes(role) ? role : "user";
-
     await connect();
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
@@ -30,15 +24,13 @@ export const POST = async (request: Request) => {
       );
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // 👤 No role assigned
     const newUser = new User({
       username: username.trim(),
       email: email.trim().toLowerCase(),
       password: hashedPassword,
-      role: userRole,
     });
 
     await newUser.save();
@@ -50,7 +42,6 @@ export const POST = async (request: Request) => {
           id: newUser._id,
           username: newUser.username,
           email: newUser.email,
-          role: newUser.role,
         },
       },
       { status: 201 }

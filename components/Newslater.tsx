@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { CheckCircle } from 'lucide-react';
 
 type FormData = {
   email: string;
@@ -20,10 +21,9 @@ const Newsletter = () => {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      // Simulated API call
       await new Promise((res) => setTimeout(res, 1500));
       console.log('Subscribed:', data);
-      reset(); // Reset the form after success
+      reset();
     } catch (err) {
       console.error('Subscription error:', err);
     } finally {
@@ -32,24 +32,32 @@ const Newsletter = () => {
   };
 
   return (
-    <div className="flex items-center justify-center px-4 py-10 bg-white">
-      <div className="rounded-2xl shadow-xl p-6 sm:p-10 bg-gray-100 w-full max-w-xl text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">Subscribe to our Newsletter</h1>
-        <p className="text-gray-600 mb-6 text-sm sm:text-base">
-          Get the latest updates, offers, and arrivals straight to your inbox.
+    <section className="w-full bg-[#f7f7f7] py-16 px-4 text-center">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          Stay in the Loop
+        </h2>
+        <p className="text-gray-600 text-base sm:text-lg mb-8">
+          Subscribe to our newsletter for exclusive updates, deals, and content.
         </p>
 
         {isSubmitSuccessful && !loading ? (
-          <p className="text-green-600 font-semibold text-center">Thank you for subscribing! 🎉</p>
+          <div className="flex flex-col items-center justify-center text-green-600 space-y-2">
+            <CheckCircle className="w-8 h-8" />
+            <p className="font-medium text-base">Thank you for subscribing! 🎉</p>
+          </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
-            {/* Email Field */}
-            <div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            {/* Email Input */}
+            <div className="w-full sm:w-auto">
               <input
                 type="email"
-                placeholder="Your Email*"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                  errors.email ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-black'
+                placeholder="Your email address"
+                className={`w-full sm:w-80 px-4 py-3 border rounded-full text-sm focus:outline-none focus:ring-2 ${
+                  errors.email ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-gray-900'
                 }`}
                 {...register('email', {
                   required: 'Email is required',
@@ -59,35 +67,39 @@ const Newsletter = () => {
                   },
                 })}
               />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1 text-left">{errors.email.message}</p>
+              )}
             </div>
-
-            {/* Agreement Checkbox */}
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                id="agree"
-                className="mt-1 mr-2"
-                {...register('agree', { required: 'You must agree to subscribe' })}
-              />
-              <label htmlFor="agree" className="text-sm text-gray-700">
-                Yes, subscribe me to your newsletter.*
-              </label>
-            </div>
-            {errors.agree && <p className="text-red-500 text-sm mt-1">{errors.agree.message}</p>}
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-900 transition disabled:opacity-60"
               disabled={loading}
+              className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition duration-200 disabled:opacity-60"
             >
               {loading ? 'Subscribing...' : 'Subscribe'}
             </button>
           </form>
         )}
+
+        {/* Checkbox Agreement */}
+        {!isSubmitSuccessful && (
+          <div className="mt-4 text-sm flex justify-center items-start gap-2">
+            <input
+              type="checkbox"
+              id="agree"
+              className="mt-1 cursor-pointer"
+              {...register('agree', { required: 'You must agree to subscribe' })}
+            />
+            <label htmlFor="agree" className="text-gray-700 cursor-pointer">
+              I agree to receive emails and updates.
+            </label>
+          </div>
+        )}
+        {errors.agree && <p className="text-red-500 text-sm mt-1">{errors.agree.message}</p>}
       </div>
-    </div>
+    </section>
   );
 };
 

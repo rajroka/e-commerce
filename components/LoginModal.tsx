@@ -1,37 +1,61 @@
 "use client";
-import { useRouter } from 'next/navigation';
-import React from 'react';
-import { useForm } from 'react-hook-form';
+
 import { login } from '@/app/api/Auth';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode';
 
 interface LogintoggleProps {
   isLogin: boolean;
   setIsLogin: (value: boolean) => void;
 }
 
+
 type FormData = {
-  username: string;
+  email: string;
   password: string;
 };
 
 const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async ({ username, password }: FormData) => {
+  const onSubmit = async ({ email, password }: FormData) => {
     try {
-      const response = await login(username, password);
+        const response =  await login(email, password);
+        const token = response.token;
+         
+         console.log('Login successful:', token);
+        
       toast.success('Login successful!', { autoClose: 2000, position: 'top-right' });
-      setIsLogin(false);
-      router.push('/dashboard');
-      // console.log(response.token)
+      localStorage.setItem("token", response.token);
+      interface MyJwtPayload {
+        isAdmin?: boolean;
+        [key: string]: any;
+      }
+      const decode = jwtDecode<MyJwtPayload>(token);
       
-      localStorage.setItem("token" , response.token);
+      if (decode.isAdmin) {
+        localStorage.setItem("isAdmin", "true");
+              router.push('/dashboard'); 
 
-      //  localStorage.setItem("user" , JSON.stringify(response.data.user));
+      }
+      else {
+        localStorage.setItem("isAdmin", "false");
+              router.push('/products'); 
 
+      }
+
+    
       reset();
+      setIsLogin(false);
+
+    
+       
     } catch (error) {
       toast.error('Login failed. Please check your credentials.', {
         autoClose: 2000,
@@ -43,47 +67,64 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
   return (
     <>
       {isLogin && (
-        <div className="fixed inset-0 z-50 bg-black/80  backdrop-blur-sm flex justify-center items-center px-4">
-          <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg relative">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login to TechShed</h2>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-center px-4">
+          <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl relative">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Login to TechShed</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Username */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                  Username
+                <label htmlFor="email " className="block text-sm font-medium text-gray-700">
+                  email 
                 </label>
                 <input
-                  id="username"
+                  id="email"
                   type="text"
-                  {...register('username', { required: 'Username is required' })}
-                  className={`w-full px-4 py-2 mt-1 rounded-md border ${
-                    errors.username ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500`}
-                  placeholder="Enter your username"
+                  {...register('email', { required: 'Email is required' })}
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border text-black ${
+                    errors.email ? 'border-red-500' : 'border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-gray-900`}
+                  placeholder="Enter your email"
                 />
-                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
+                
+                  <p className="text-red-600 text-sm mt-1">{errors.email?.message }</p>
+                
               </div>
 
+              {/* Password */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  {...register('password', { required: 'Password is required' })}
-                  className={`w-full px-4 py-2 mt-1 rounded-md border ${
-                    errors.password ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500`}
-                  placeholder="Enter your password"
-                />
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    {...register('password', { required: 'Password is required' })}
+                    className={`w-full px-4 py-2 mt-1 rounded-lg border text-black ${
+                      errors.password ? 'border-red-500' : 'border-gray-300'
+                    } focus:outline-none focus:ring-2 focus:ring-gray-900 pr-10`}
+                    placeholder="Enter your password"
+                  />
+                  
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
+                )}
               </div>
 
+              {/* Buttons */}
               <div className="flex justify-between items-center gap-4">
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition duration-200"
+                  className="flex-1 py-2 bg-gray-900 text-white font-semibold rounded-md hover:bg-gray-800 transition duration-200"
                 >
                   Login
                 </button>

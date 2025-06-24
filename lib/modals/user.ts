@@ -7,6 +7,7 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+
     username: {
       type: String,
       required: true,
@@ -16,16 +17,18 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user", // default role is user
+    
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
   {
     timestamps: true,
   }
+
 );
+
 
 const User = models.User || model("User", userSchema);
 

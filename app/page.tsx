@@ -28,8 +28,8 @@ export default function Home() {
        <Products/>
       <Newslater />
       <Customerservice />
-      <Companies />
-      <Attendance />
+      {/* <Companies /> */}
+    
             <Footer />
 
 
