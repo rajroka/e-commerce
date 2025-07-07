@@ -48,7 +48,7 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
       }
       else {
         localStorage.setItem("isAdmin", "false");
-              router.push('/products'); 
+              // router.push('/products'); 
 
       }
 
