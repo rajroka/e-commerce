@@ -1,3 +1,4 @@
+"use client";
 import Companies from "@/components/Companies";
 import DiscountPopup from "@/components/DiscountPopup";
 
@@ -13,15 +14,17 @@ import Hero from "@/components/Hero";
 import Newslater from "@/components/Newslater";
 import Attendance from "@/components/Attendance";
 import Products from "@/components/product/Products";
+import NextNProgress from 'nextjs-progressbar';
 
 
 export default function Home() {
   return (
     <>
     {/* <Provider store={store}> */}
-    
+     <NextNProgress />
+     {/* <Component {...pageProps} />; */}
       
-      <ProductNav />
+      {/* <ProductNav /> */}
       <DiscountPopup>Special Offer!</DiscountPopup>
       <Modal  />
       <Hero />

@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode';
-
+import { useDispatch } from 'react-redux';
+import { loginn  } from '@/redux/slice/authSlice';
 interface LogintoggleProps {
   isLogin: boolean;
   setIsLogin: (value: boolean) => void;
@@ -23,7 +24,7 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
+ const dispatch = useDispatch();
   const onSubmit = async ({ email, password }: FormData) => {
     try {
         const response =  await login(email, password);
@@ -33,6 +34,7 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
         
       toast.success('Login successful!', { autoClose: 2000, position: 'top-right' });
       localStorage.setItem("token", response.token);
+       dispatch( loginn({email, token}) );
       interface MyJwtPayload {
         isAdmin?: boolean;
         [key: string]: any;
@@ -53,8 +55,8 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
     
       reset();
       setIsLogin(false);
-
-    
+      
+            
        
     } catch (error) {
       toast.error('Login failed. Please check your credentials.', {

@@ -19,7 +19,7 @@ const SearchPage: React.FC = () => {
   // Fetch all products
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await fetch('https://fakestoreapi.com/products');
+      const res = await fetch('api/products');
       const data = await res.json();
       setProducts(data);
       setFiltered(data);

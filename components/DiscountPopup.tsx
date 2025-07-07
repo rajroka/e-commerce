@@ -1,38 +1,57 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { RxCross2 } from "react-icons/rx";
 import Image from 'next/image';
-import discountImage from '../public/discount.png'; // Adjust the path as necessary
-const DiscountPopup = ({ children }: { children: string }) => {
-  const [open, setOpen] = useState(true);
-  const [animate, setAnimate] = useState(false);
-   
-  useEffect(() => {
-    if (open) {
-      // Trigger the animation when the popup opens
-      setAnimate(true);
-    }
-  }, [open]);
+import hurry from '../public/hurry.png'; // Adjust if needed
 
-  // Don't render if open is not true
+const DiscountPopup = ({ children }: { children?: React.ReactNode }) => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const hasShownPopup = localStorage.getItem('discountPopupShown');
+
+    if (!hasShownPopup) {
+      // Show popup and mark as shown
+      setOpen(true);
+      localStorage.setItem('discountPopupShown', 'true');
+    }
+  }, []);
+
+  const closePopup = () => {
+    setOpen(false);
+  };
+
   if (!open) return null;
 
   return (
-    <div className='inset-0 top-0  z-50 flex w-screen h-screen items-center justify-center fixed  px-6 md:px-12 lg:px-24   bg-black/60  '>
-             
-       
-          <div className=' relative ' > 
-          <RxCross2 onClick={() => setOpen(false)} className='text-2xl cursor-pointer     bg-white  text-black  ' size={24}  />
-            <Image src={discountImage} alt="Discount Image" loading='lazy' width={400} height={100} className='' />
-            
-          </div>
-          <div> </div>
-        
-        
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-6 md:px-12 lg:px-24">
+      <div className="relative bg-white rounded-xl shadow-lg p-4 max-w-lg w-full">
+        {/* Close button */}
+        <button
+          onClick={closePopup}
+          className="absolute top-2 right-2 text-gray-700 hover:text-black transition"
+        >
+          <RxCross2 className="text-2xl" />
+        </button>
 
-       </div>
-     
-    
+        {/* Discount Image */}
+        <div className="flex justify-center items-center">
+          <Image
+            src={hurry}
+            alt="Discount Banner"
+            width={400}
+            height={200}
+            className="rounded-xl"
+          />
+        </div>
+
+        {/* Optional Custom Content */}
+        {children && (
+          <div className="mt-4 text-center text-sm text-gray-700">{children}</div>
+        )}
+      </div>
+    </div>
   );
 };
 

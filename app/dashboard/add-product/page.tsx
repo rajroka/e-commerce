@@ -1,185 +1,252 @@
 'use client';
 
-import { postProduct } from '@/app/api/Allblog';
-import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import { FiUpload } from 'react-icons/fi';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { postProduct } from '@/app/api/products'; // your API helper
+import { CldUploadWidget, CldImage } from 'next-cloudinary';
 
-interface FormData {
-  title: string;
-  price: number;
+type ProductFormData = {
+  name: string;
   description: string;
-  category: string;
+  price: number;
   image: string;
-}
+  category: string;
+  stock: number;
+  rating: number;
+  reviews: number;
+};
 
-const Page = () => {
+export default function AddProductPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
+    setValue,
     reset,
-  } = useForm<FormData>();
-  const router = useRouter();
+  } = useForm<ProductFormData>();
 
-  const onSubmit = async ({ title, price, description, category, image }: FormData) => {
+  const [imageId, setImageId] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      const response = await postProduct(title, price, description, category, image);
+      const res = await postProduct(data);
+      alert('Product added successfully!');
       reset();
-      toast.success('Product created successfully!', {
-        autoClose: 2000,
-        position: 'top-right',
-        hideProgressBar: false,
-        onClose: () => router.push('/dashboard'),
-      });
+      setImageId('');
+      setImageUrl('');
     } catch (error) {
-      toast.error('Failed to create product. Please try again.');
+      console.error('Failed to post product:', error);
+      alert('Failed to add product.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl space-y-6 p-8 sm:p-10 rounded-xl shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 backdrop-blur-sm"
-      >
-        <div className="text-center">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-green-500 to-teal-400 bg-clip-text text-transparent">
-            Create New Product
-          </h2>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
-            Fill in the details below to add a new product to your inventory
-          </p>
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-3xl font-semibold mb-6 text-center text-gray-900">Add New Product</h1>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+        {/* Product Name */}
+        <div>
+          <label htmlFor="name" className="block mb-1 font-medium text-gray-700">
+            Product Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="name"
+            {...register('name', { required: 'Product name is required' })}
+            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.name ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter product name"
+          />
+          {errors.name && (
+            <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+          )}
         </div>
 
-        <div className="space-y-5">
-          {[
-            { label: 'Product Title', name: 'title', type: 'text', placeholder: 'Enter product name' },
-            { 
-              label: 'Price ($)', 
-              name: 'price', 
-              type: 'number', 
-              step: '0.01',
-              placeholder: '0.00',
-              min: '0'
-            },
-            { 
-              label: 'Description', 
-              name: 'description', 
-              type: 'textarea', 
-              placeholder: 'Detailed product description...' 
-            },
-            { 
-              label: 'Category', 
-              name: 'category', 
-              type: 'text', 
-              placeholder: 'e.g. Electronics, Clothing' 
-            },
-            { 
-              label: 'Image URL', 
-              name: 'image', 
-              type: 'url', 
-              placeholder: 'https://example.com/image.jpg' 
-            },
-          ].map((field) => (
-            <div key={field.name} className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {field.label}
-                <span className="text-red-500">*</span>
-              </label>
-              
-              {field.type === 'textarea' ? (
-                <textarea
-                  {...register(field.name as keyof FormData, { 
-                    required: `${field.label} is required`,
-                    minLength: { value: 10, message: 'Description must be at least 10 characters' }
-                  })}
-                  rows={4}
-                  placeholder={field.placeholder}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    errors[field.name as keyof FormData] 
-                      ? 'border-red-500 focus:ring-red-500' 
-                      : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
-                  } focus:outline-none focus:ring-2 transition duration-200 bg-white dark:bg-gray-700`}
-                />
-              ) : (
-                <input
-                  type={field.type}
-                  step={field.step || undefined}
-                  min={field.min || undefined}
-                  {...register(field.name as keyof FormData, { 
-                    required: `${field.label} is required`,
-                    ...(field.name === 'price' && { 
-                      min: { value: 0.01, message: 'Price must be greater than 0' }
-                    })
-                  })}
-                  placeholder={field.placeholder}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    errors[field.name as keyof FormData] 
-                      ? 'border-red-500 focus:ring-red-500' 
-                      : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
-                  } focus:outline-none focus:ring-2 transition duration-200 bg-white dark:bg-gray-700`}
-                />
-              )}
-              
-              {errors[field.name as keyof FormData] && (
-                <p className="text-red-500 text-sm mt-1">
-                  {(errors[field.name as keyof FormData] as any)?.message}
-                </p>
-              )}
-            </div>
-          ))}
+        {/* Image Preview */}
+        {imageId && (
+          <div className="mb-4 flex justify-center">
+            <CldImage
+              src={imageId}
+              alt="Uploaded product image"
+              width={480}
+              height={300}
+              className="rounded-md object-contain"
+            />
+          </div>
+        )}
+
+        {/* Image Upload Button */}
+        <CldUploadWidget
+          uploadPreset="unsigned"
+          onSuccess={({ event, info }) => {
+            if (event === 'success') {
+              setImageId(info?.public_id || '');
+              setImageUrl(info?.url || '');
+              setValue('image', info?.url || '');
+            }
+          }}
+        >
+          {({ open }) => (
+            <button
+              type="button"
+              onClick={() => open()}
+              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition"
+            >
+              <FiUpload className="text-lg" />
+              Upload Image
+            </button>
+          )}
+        </CldUploadWidget>
+        <input type="hidden" {...register('image', { required: 'Image is required' })} />
+        {errors.image && (
+          <p className="text-red-600 text-sm mt-1">{errors.image.message}</p>
+        )}
+
+        {/* Description */}
+        <div>
+          <label htmlFor="description" className="block mb-1 font-medium text-gray-700">
+            Description <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="description"
+            {...register('description', { required: 'Description is required' })}
+            className={`w-full rounded-md border px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.description ? 'border-red-500' : 'border-gray-300'
+            }`}
+            rows={4}
+            placeholder="Enter product description"
+          />
+          {errors.description && (
+            <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>
+          )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`flex-1 py-3 px-6 rounded-lg font-medium text-white transition-all duration-200 ${
-              isSubmitting
-                ? 'bg-green-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 shadow-md hover:shadow-lg'
-            } flex items-center justify-center`}
-          >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </>
-            ) : (
-              'Create Product'
-            )}
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="flex-1 py-3 px-6 rounded-lg font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border border-gray-300 dark:border-gray-600"
-          >
-            Cancel
-          </button>
+        {/* Price */}
+        <div>
+          <label htmlFor="price" className="block mb-1 font-medium text-gray-700">
+            Price ($) <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="price"
+            type="number"
+            step="0.01"
+            {...register('price', {
+              required: 'Price is required',
+              valueAsNumber: true,
+              min: { value: 0, message: 'Price cannot be negative' },
+            })}
+            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.price ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter price"
+          />
+          {errors.price && (
+            <p className="text-red-600 text-sm mt-1">{errors.price.message}</p>
+          )}
         </div>
+
+        {/* Category */}
+        <div>
+          <label htmlFor="category" className="block mb-1 font-medium text-gray-700">
+            Category <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="category"
+            {...register('category', { required: 'Category is required' })}
+            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.category ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter category"
+          />
+          {errors.category && (
+            <p className="text-red-600 text-sm mt-1">{errors.category.message}</p>
+          )}
+        </div>
+
+        {/* Stock */}
+        <div>
+          <label htmlFor="stock" className="block mb-1 font-medium text-gray-700">
+            Stock Quantity <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="stock"
+            type="number"
+            {...register('stock', {
+              required: 'Stock quantity is required',
+              valueAsNumber: true,
+              min: { value: 0, message: 'Stock cannot be negative' },
+            })}
+            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.stock ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter stock quantity"
+          />
+          {errors.stock && (
+            <p className="text-red-600 text-sm mt-1">{errors.stock.message}</p>
+          )}
+        </div>
+
+        {/* Rating */}
+        <div>
+          <label htmlFor="rating" className="block mb-1 font-medium text-gray-700">
+            Rating (0 to 5) <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="rating"
+            type="number"
+            step="0.1"
+            min="0"
+            max="5"
+            {...register('rating', {
+              required: 'Rating is required',
+              valueAsNumber: true,
+              min: { value: 0, message: 'Rating cannot be less than 0' },
+              max: { value: 5, message: 'Rating cannot be more than 5' },
+            })}
+            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.rating ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter rating"
+          />
+          {errors.rating && (
+            <p className="text-red-600 text-sm mt-1">{errors.rating.message}</p>
+          )}
+        </div>
+
+        {/* Reviews */}
+        <div>
+          <label htmlFor="reviews" className="block mb-1 font-medium text-gray-700">
+            Number of Reviews <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="reviews"
+            type="number"
+            {...register('reviews', {
+              required: 'Reviews count is required',
+              valueAsNumber: true,
+              min: { value: 0, message: 'Reviews cannot be negative' },
+            })}
+            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              errors.reviews ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter number of reviews"
+          />
+          {errors.reviews && (
+            <p className="text-red-600 text-sm mt-1">{errors.reviews.message}</p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 transition"
+        >
+          Add Product
+        </button>
       </form>
-
-      <ToastContainer 
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
     </div>
   );
-};
-
-export default Page;
+}

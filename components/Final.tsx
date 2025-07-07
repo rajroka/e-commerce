@@ -1,5 +1,12 @@
-import React from 'react'
-import Link from "next/link";
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { FiShoppingCart } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '@/redux/slice/cartSlice';
+import { useRouter } from 'next/navigation';
+import { ToastContainer , toast } from 'react-toastify';
 
 interface Product {
   id: string;
@@ -7,39 +14,111 @@ interface Product {
   title: string;
   price: number;
   description: string;
+  rating?: {
+    rate: number;
+    count: number;
+  };
+  category?: string;
+  name?: string;
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
-  return (
-     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sortedProducts.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/products/${product.id}`}
-                  className="bg-white dark:bg-zinc-800 rounded-xl shadow hover:shadow-lg transition duration-200 flex flex-col"
-                >
-                  <div className="w-full h-52 flex items-center justify-center p-4">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="object-contain h-full max-h-48"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
-                      {product.title}
-                    </h2>
-                    <p className="text-green-600 dark:text-green-400 font-bold text-xl mt-1">
-                      ${product.price}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-2 line-clamp-2">
-                      {product.description}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-  )
-}
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const isLoggedIn = useSelector((state: any) => state.auth?.isLoggedIn);
 
-export default FinalProduct
+  const handleAddToCart = (product: Product) => {
+    if (!isLoggedIn) {
+      toast.error('Please login to add items to your cart', {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+      router.push('/login');
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        id: product.id,
+        name: product.title || product.name,
+        image: product.image,
+        price: product.price,
+        quantity: 1,
+      })
+    );
+
+    toast.success(`Added "${product.title || product.name}" to cart`, {
+      autoClose: 2000,
+      position: 'top-right',
+    });
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      {sortedProducts.map((product) => (
+        <div
+          key={product.id}
+          className="group bg-white border border-gray-200 rounded-3xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
+        >
+          <div className="relative">
+            {product.category && (
+              <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
+                {product.category}
+              </span>
+            )}
+            <Link href={`/products/${product.id}`}>
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
+              />
+            </Link>
+          </div>
+
+          <div className="px-2 py-2 flex flex-col flex-grow">
+            <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+              {product.title || product.name}
+            </h2>
+
+            <div className="flex items-center justify-between mt-auto">
+              <div className="flex items-center space-x-3">
+                <p className="text-sm font-bold text-emerald-600">
+                  ${(product.price * 0.8).toFixed(2)}
+                </p>
+                <p className="text-sm font-semibold text-gray-500 line-through">
+                  ${product.price.toFixed(2)}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1 text-yellow-500 text-sm">
+                {'★'.repeat(Math.round(product.rating?.rate || 4))}
+                <span className="ml-1 text-gray-400 text-xs">
+                  ({product.rating?.count || 120})
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-2 mb-1.5">
+              <button
+                className="w-1/2 bg-indigo-600 text-sm hover:bg-indigo-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 font-medium shadow"
+                onClick={() => handleAddToCart(product)}
+              >
+                <FiShoppingCart className="text-sm" /> Add to Cart
+              </button>
+
+              <Link
+                href={`/products/${product.id}`}
+                className="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium border border-gray-300 shadow"
+              >
+                Shop Now
+              </Link>
+            </div>
+          </div>
+        </div>
+      ))}
+      <ToastContainer />
+    </div>
+  );
+};
+
+export default FinalProduct;

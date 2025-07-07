@@ -3,59 +3,127 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import { FiShoppingCart } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '@/redux/slice/cartSlice'; // Adjust path
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function HomePage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  // Assume your auth slice has isLoggedIn boolean
+  const isLoggedIn = useSelector((state: any) => state.auth?.isLoggedIn);
 
   useEffect(() => {
-    axios
-      .get('https://fakestoreapi.com/products')
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('/api/products');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    fetchData();
   }, []);
 
-  // Limit to 8 products (2 rows if 4 columns)
   const displayedProducts = products.slice(0, 8);
 
+  const handleAddToCart = (product: any) => {
+    if (!isLoggedIn) {
+      toast.error('Please login to add items to your cart', {
+        duration: 2000,
+        position: 'top-right',
+      });
+      router.push('/login');
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        id: product._id || product.id,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+        quantity: 1,
+      })
+    );
+
+    toast.success(`Added "${product.name}" to cart`, {
+      duration: 2000,
+      position: 'top-right',
+    });
+  };
+
   return (
-    <main className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-extrabold text-gray-900">All Products</h1>
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white px-6 py-10">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
+        <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">  Trending products  </h1>
         <Link
           href="/products"
-          className="px-5 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition"
+          className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-500 transition duration-200 shadow-md"
         >
           View All Products
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {displayedProducts.map((product: any) => (
-          <Link
-            key={product.id}
-            href={`/products/${product.id}`}
-            className="relative rounded-2xl p-5 shadow hover:shadow-lg transition duration-200 bg-white border border-gray-200 hover:border-gray-300"
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+        {displayedProducts.map((product) => (
+          <div
+            key={product._id || product.id}
+            className="group bg-white border border-gray-200 rounded-3xl shadow-md hover:shadow-lg  transition-all duration-300 overflow-hidden flex flex-col"
           >
-            {/* Sale badge */}
-            <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-              On Sale Now
+            <div className="relative">
+              <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
+                {product.category}
+              </span>
+              <Link href={`/products/${product._id || product.id}`}>
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
+                />
+              </Link>
             </div>
 
-            {/* Product Image */}
-            <img
-              src={product.image}
-              alt={product.title}
-              className="w-full h-48 object-contain mb-4"
-            />
+            <div className=" px-2 py-2  flex flex-col flex-grow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">{product.name}</h2>
+              {/* <p className="text-sm text-gray-500 mb-3 line-clamp-2">{product.description}</p> */}
 
-            {/* Product Title */}
-            <h2 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
-              {product.title}
-            </h2>
+              <div className="flex items-center justify-between mt-auto mb-4">
 
-            {/* Product Price */}
-            <p className="text-lg font-bold text-green-600">${product.price}</p>
-          </Link>
+             <div className="flex items-center space-x-3">
+                <p className="text-base  font-bold text-emerald-600">${(product.price * 0.8).toFixed(2)}</p>
+  <p className="text-sm font-semibold text-gray-500 line-through">${product.price.toFixed(2)}</p>
+
+</div>
+
+
+                <div className="flex items-center gap-1 text-yellow-500 text-sm">
+                  {'★'.repeat(Math.round(product.rating?.rate || 4))}
+                  <span className="ml-1 text-gray-400 text-xs">({product.rating?.count || 120})</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-2">
+                <button
+                  className="w-1/2 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium shadow"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  <FiShoppingCart className="text-base" /> Add to Cart
+                </button>
+
+                <Link
+                  href={`/products/${product._id || product.id}`}
+                  className="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium border border-gray-300 shadow"
+                >
+                  Shop Now
+                </Link>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </main>

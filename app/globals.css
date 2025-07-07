@@ -11,3 +11,10 @@
   font-style: normal;
   
 }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb; /* Tailwind's gray-100 */
+  color: #111827; /* Tailwind's gray-900 */
+}
+

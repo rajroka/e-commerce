@@ -1,33 +1,10 @@
+import { fetchproducts } from '@/lib/fetchproducts';
+import ProductList  from "@/components/Productlist"
 
-
-import React, {  } from 'react';
-import { allProducts } from '../api/Allblog';
-import Productlist from '@/components/Productlist';
 const Page = async () => {
+  const products = await fetchproducts();
 
-
-
-
-        
-  
-         const products  = await allProducts();
-          
-        
-           
-
-  
-
-       
-  
- 
-  return (
-    <>
-      {/* <Sidebar /> */}
-      <Productlist products={products} />
-      
-      
-    </>
-  );
+  return <ProductList products={products} />;
 };
 
 export default Page;

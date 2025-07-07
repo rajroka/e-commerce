@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
 type FormData = {
   username: string;
@@ -25,8 +26,9 @@ const FirstSignupmodal = ({
     formState: { errors },
     reset,
   } = useForm<FormData>();
-
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
@@ -49,7 +51,7 @@ const FirstSignupmodal = ({
 
       reset();
       setIsSignup(false);
-      router.push('/');
+      // router.push('/');
     } catch (error: any) {
       console.error('Signup error:', error);
       toast.error('Signup failed. Please try again.', {
@@ -84,7 +86,7 @@ const FirstSignupmodal = ({
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-900">Create Your Account</h2>
-
+          <p  className='text-base font-medium text-center text-gray-900 line-clamp-1' >  Please use unique email and username !!  </p>
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Username */}
@@ -120,23 +122,33 @@ const FirstSignupmodal = ({
             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
           </div>
 
-          {/* Password */}
-          <div className="space-y-1">
+          {/* Password with toggle */}
+          <div className="space-y-1 relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              {...register('password', {
-                required: 'Password is required',
-                minLength: {
-                  value: 6,
-                  message: 'Password must be at least 6 characters',
-                },
-              })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                {...register('password', {
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters',
+                  },
+                })}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-20 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-md bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-300 transition"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
             {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
           </div>
 
@@ -152,16 +164,6 @@ const FirstSignupmodal = ({
               }`}
             >
               {isLoading ? 'Signing Up...' : 'Sign Up'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                reset();
-                setIsSignup(false);
-              }}
-              className="w-full text-sm text-gray-700 hover:underline hover:text-gray-900"
-            >
-              Already have an account? Log In
             </button>
           </div>
         </form>
