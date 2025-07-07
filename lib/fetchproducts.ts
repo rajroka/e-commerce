@@ -32,7 +32,8 @@ export const fetchProductById = async (id: string) => {
     price: product.price,
     category: product.category,
     createdAt: product.createdAt?.toISOString(), // ✅ convert Date
-    updatedAt: product.updatedAt?.toISOString(), // ✅ convert Date
+      updatedAt: product.updatedAt?.toISOString(), // ✅ convert Date
+    };
   };
 
   
