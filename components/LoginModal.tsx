@@ -20,6 +20,8 @@ type FormData = {
   password: string;
 };
 
+
+
 const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
   const router = useRouter();
