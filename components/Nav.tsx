@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback , useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,8 +9,8 @@ import Logintoggle from './LoginModal';
 import FirstSignupmodal from './FirstSignupmodal';
 import { logout } from '@/redux/slice/authSlice';
 import { useModalStore } from '@/store/modalStore';
-
-// Define RootState type for Redux
+import { clearCart } from '@/redux/slice/cartSlice';
+import { FaCartShopping } from "react-icons/fa6";
 interface RootState {
   auth: { isLoggedIn: boolean };
   cart: { items: any[] };
@@ -21,10 +21,21 @@ const Nav = () => {
 
   const { openLogin, openSignup } = useModalStore();
 
-  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+
+const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+const dispatch = useDispatch();
+
+useEffect(() => {
+  if (!isLoggedIn) {
+    dispatch(clearCart());
+    localStorage.removeItem('cart');
+  }
+}, [isLoggedIn]);
+
+  
   const cartCount = useSelector((state: RootState) => state.cart.items.length);
 
-  const dispatch = useDispatch();
+
   const router = useRouter();
 
   const handleLogout = useCallback(() => {
@@ -47,7 +58,7 @@ const Nav = () => {
         <nav className="hidden md:flex items-center gap-4">
           <Link href="/cart" className="relative flex items-center hover:text-purple-400">
             <span className="absolute -top-2 -right-2 text-xs bg-purple-600 rounded-full px-1">{cartCount}</span>
-            🛒
+            <FaCartShopping size={20} />
           </Link>
 
           <Link href="/products" className="relative flex items-center hover:text-purple-400">
@@ -57,7 +68,7 @@ const Nav = () => {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-sm bg-red-500 text-white hover:bg-red-600 transition font-medium"
+              className="px-4 py-2 text-sm bg-red-500 rounded  text-white hover:bg-red-600 transition font-medium"
             >
               Logout
             </button>
@@ -65,13 +76,13 @@ const Nav = () => {
             <>
               <button
                 onClick={openSignup}
-                className="px-4 py-2 text-sm bg-green-600 text-white hover:bg-green-700 transition font-medium"
+                className="px-4 py-2 text-sm bg-green-600 rounded  text-white hover:bg-green-700 transition font-medium"
               >
                 Sign Up
               </button>
               <button
                 onClick={openLogin}
-                className="px-4 py-2 text-sm bg-purple-700 text-white hover:bg-purple-800 transition font-medium"
+                className="px-4 py-2 text-sm bg-purple-700 rounded  text-white hover:bg-purple-800 transition font-medium"
               >
                 Login
               </button>
@@ -92,22 +103,28 @@ const Nav = () => {
 
       {/* Mobile Menu */}
       {showMobileMenu && (
-        <div className="fixed inset-0 z-50 bg-white text-black shadow-inner border-t" id="mobile-menu">
+        <div className="fixed inset-0 z-50  bg-black/60 backdrop-blur-sm   text-black shadow-inner border-t" id="mobile-menu">
+          <div className='bg-white  w-[80%]  h-screen '>
+            <div className="flex justify-end px-6 pt-4">
+            <button
+              onClick={() => setShowMobileMenu(false)}
+              aria-label="Close mobile menu"
+              className="text-3xl font-bold text-gray-700 rounded hover:text-gray-900 transition"
+            >
+              &times;
+            </button>
+          </div>
+
           <nav className="flex flex-col px-6 py-4 gap-3">
             <Link href="/" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
-              🏠 Home
+              Home
             </Link>
             <Link href="/products" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
-              🛍️ Products
+              Products
             </Link>
-            <Link href="/wishlist" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
-              ❤️ Wishlist
-            </Link>
-            <Link href="/docs" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
-              📚 Docs
-            </Link>
-            <Link href="/cart" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
-              🛒 Cart
+           
+            <Link href="/cart" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 flex gap-2  font-medium">
+                <FaCartShopping size={20}/> <span> Cart</span>
             </Link>
 
             {isLoggedIn ? (
@@ -116,7 +133,7 @@ const Nav = () => {
                   handleLogout();
                   setShowMobileMenu(false);
                 }}
-                className="w-full text-left bg-red-500 text-white px-4 py-2 font-medium hover:bg-red-600 transition"
+                className="w-full text-left bg-red-500 text-white rounded  px-4 py-2 font-medium hover:bg-red-600 transition"
               >
                 Logout
               </button>
@@ -127,7 +144,7 @@ const Nav = () => {
                     openLogin();
                     setShowMobileMenu(false);
                   }}
-                  className="w-full text-left bg-purple-700 text-white px-4 py-2 font-medium hover:bg-purple-800 transition"
+                  className="w-full text-left bg-purple-700 rounded  text-white px-4 py-2 font-medium hover:bg-purple-800 transition"
                 >
                   Login
                 </button>
@@ -136,13 +153,14 @@ const Nav = () => {
                     openSignup();
                     setShowMobileMenu(false);
                   }}
-                  className="w-full text-left bg-green-600 text-white px-4 py-2 font-medium hover:bg-green-700 transition"
+                  className="w-full text-left rounded  bg-green-600 text-white px-4 py-2 font-medium hover:bg-green-700 transition"
                 >
                   Sign Up
                 </button>
               </>
             )}
           </nav>
+          </div>
         </div>
       )}
 

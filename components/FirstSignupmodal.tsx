@@ -73,7 +73,7 @@ const FirstSignupmodal = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
-      <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 space-y-6">
+      <div className="relative bg-white w-full max-w-md rounded shadow-2xl p-8 space-y-6">
         {/* Close Button */}
         <button
           onClick={closeSignup}
@@ -99,7 +99,7 @@ const FirstSignupmodal = () => {
             <input
               id="username"
               {...register('username', { required: 'Username is required' })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+              className="w-full border border-gray-300 rounded px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
             />
             {errors.username && <p className="text-sm text-red-600">{errors.username.message}</p>}
           </div>
@@ -119,7 +119,7 @@ const FirstSignupmodal = () => {
                   message: 'Invalid email address',
                 },
               })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+              className="w-full border border-gray-300 rounded px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
             />
             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
           </div>
@@ -140,12 +140,12 @@ const FirstSignupmodal = () => {
                     message: 'Password must be at least 6 characters',
                   },
                 })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-20 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+                className="w-full border border-gray-300 rounded px-4 py-2 pr-20 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-md bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-300 transition"
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-300 transition"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? 'Hide' : 'Show'}
@@ -159,7 +159,7 @@ const FirstSignupmodal = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-2 rounded-lg transition-all duration-200 ${
+              className={`w-full py-2 rounded transition-all duration-200 ${
                 isLoading
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800'

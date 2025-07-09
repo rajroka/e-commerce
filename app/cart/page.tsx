@@ -8,6 +8,7 @@ import {
   addToCart,
   removeFromCart,
   decreaseQuantity,
+  clearCart,
 } from '@/redux/slice/cartSlice';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,7 +29,7 @@ const CartPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cartItems: items }),
     });
-
+    
     const data = await res.json();
     if (data.url) {
       window.location.href = data.url;

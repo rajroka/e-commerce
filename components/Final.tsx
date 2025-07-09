@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { FiShoppingCart } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/redux/slice/cartSlice';
-import { useRouter } from 'next/navigation';
 import { ToastContainer , toast } from 'react-toastify';
 import { RootState } from '@/redux/store';
 import Logintoggle from './LoginModal';
@@ -29,7 +28,7 @@ interface Product {
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
+  
   
   const { openLogin } = useModalStore();
 
@@ -41,7 +40,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
         autoClose: 2000,
         position: 'top-right',
       });
-      // router.push('/login');
+      
       openLogin();
 
       return;
@@ -68,11 +67,11 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
       {sortedProducts.map((product) => (
         <div
           key={product.id}
-          className="group bg-white border border-gray-200 rounded-3xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
+          className="group bg-white border border-gray-200 rounded shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
         >
           <div className="relative">
             {product.category && (
-              <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
+              <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded font-semibold shadow-md uppercase tracking-wider">
                 {product.category}
               </span>
             )}
@@ -110,7 +109,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
             <div className="flex gap-2 mt-2 mb-1.5">
               <button
-                className="w-1/2 bg-gray-700 hover:bg-gray-900 text-sm  text-white py-2 rounded-lg flex items-center justify-center gap-2 font-medium shadow"
+                className="w-1/2 bg-gray-700 hover:bg-gray-900 text-sm  text-white py-2 rounded flex items-center justify-center gap-2 font-medium shadow"
                 onClick={() => handleAddToCart(product)}
               >
                 <FiShoppingCart className="text-sm" /> Add to Cart
@@ -118,7 +117,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
               <Link
                 href={`/products/${product.id}`}
-                className="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium border border-gray-300 shadow"
+                className="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded flex items-center justify-center gap-2 text-sm font-medium border border-gray-300 shadow"
               >
                 Shop Now
               </Link>

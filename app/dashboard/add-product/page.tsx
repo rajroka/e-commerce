@@ -98,7 +98,7 @@ export default function AddProductPage() {
             <button
               type="button"
               onClick={() => open()}
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition"
+              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded hover:bg-indigo-700 transition"
             >
               <FiUpload className="text-lg" />
               Upload Image
@@ -118,7 +118,7 @@ export default function AddProductPage() {
           <textarea
             id="description"
             {...register('description', { required: 'Description is required' })}
-            className={`w-full rounded-md border px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full rounded border px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               errors.description ? 'border-red-500' : 'border-gray-300'
             }`}
             rows={4}
@@ -143,7 +143,7 @@ export default function AddProductPage() {
               valueAsNumber: true,
               min: { value: 0, message: 'Price cannot be negative' },
             })}
-            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               errors.price ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter price"
@@ -161,7 +161,7 @@ export default function AddProductPage() {
           <input
             id="category"
             {...register('category', { required: 'Category is required' })}
-            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               errors.category ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter category"
@@ -184,7 +184,7 @@ export default function AddProductPage() {
               valueAsNumber: true,
               min: { value: 0, message: 'Stock cannot be negative' },
             })}
-            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               errors.stock ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter stock quantity"
@@ -211,7 +211,7 @@ export default function AddProductPage() {
               min: { value: 0, message: 'Rating cannot be less than 0' },
               max: { value: 5, message: 'Rating cannot be more than 5' },
             })}
-            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               errors.rating ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter rating"
@@ -234,7 +234,7 @@ export default function AddProductPage() {
               valueAsNumber: true,
               min: { value: 0, message: 'Reviews cannot be negative' },
             })}
-            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               errors.reviews ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter number of reviews"

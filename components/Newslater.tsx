@@ -22,7 +22,7 @@ const Newsletter = () => {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await new Promise((res) => setTimeout(res, 1500)); // simulate api call
+      await new Promise((res) => setTimeout(res, 1500)); // simulate API call
       console.log('Subscribed:', data);
       reset();
     } catch (err) {
@@ -35,8 +35,8 @@ const Newsletter = () => {
   return (
     <section className="w-full bg-[#f7f7f7] py-16 px-4 text-center">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-xl sm:text-4xl font-bold text-gray-900 mb-6">
-          Join our newsletter to receive exclusive updates, special offers, and curated content—delivered straight to your inbox.
+        <h2 className="text-lg sm:text-4xl font-bold text-gray-900 mb-6">
+          Join our newsletter for exclusive updates, special offers, and curated content—delivered straight to your inbox.
         </h2>
 
         {isSubmitSuccessful && !loading ? (
@@ -62,10 +62,10 @@ const Newsletter = () => {
                 placeholder="Your email address"
                 aria-invalid={errors.email ? 'true' : 'false'}
                 aria-describedby="email-error"
-                className={`w-full px-4 py-3 border rounded-full text-sm focus:outline-none focus:ring-2 transition ${
+                className={`w-full px-4 py-3 border rounded text-sm focus:outline-none focus:ring-2 transition ${
                   errors.email
                     ? 'border-red-500 focus:ring-red-400'
-                    : 'border-gray-300 focus:ring-gray-900 dark:focus:ring-gray-100'
+                    : 'border-gray-300 focus:ring-gray-900'
                 }`}
                 {...register('email', {
                   required: 'Email is required',
@@ -90,7 +90,7 @@ const Newsletter = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition duration-200 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black flex items-center justify-center gap-2 min-w-[130px]"
+              className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition duration-200 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black flex items-center justify-center gap-2 min-w-[130px]"
             >
               {loading ? (
                 <svg

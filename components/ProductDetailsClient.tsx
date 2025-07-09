@@ -5,7 +5,6 @@ import React from 'react';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/redux/slice/cartSlice';
-import { useRouter } from 'next/navigation';
 import { FiStar } from 'react-icons/fi';
 import { useModalStore } from '@/store/modalStore';
 
@@ -29,7 +28,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
   const dispatch = useDispatch();
   const discountedPrice = (product.price * 0.9).toFixed(2);
   const isLoggedIn = useSelector((state: any) => state.auth.isLoggedIn);
-  const router = useRouter();
+
 
   const handleAddToCart = () => {
     if (!isLoggedIn) {
@@ -67,7 +66,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
+      <div className="w-full max-w-6xl bg-white rounded shadow-xl overflow-hidden flex flex-col lg:flex-row">
         {/* Image Section */}
         <div className="w-full lg:w-1/2 bg-gray-100 p-8 flex items-center justify-center">
           <div className="relative w-full h-72 sm:h-96 md:h-[28rem]">
@@ -90,7 +89,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
             </p>
 
             <div className="flex items-center gap-4 flex-wrap text-xl font-semibold mt-4">
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-md">
+              <span className="bg-green-100 text-green-700 px-3 py-1 rounded">
                 ${discountedPrice}
               </span>
               <span className="line-through text-red-600 text-base">
@@ -112,7 +111,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
             <button
               onClick={handleAddToCart}
               aria-label={`Add ${product.title} to cart`}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold rounded-lg shadow hover:scale-[1.01] transition-all duration-300"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold rounded shadow hover:scale-[1.01] transition-all duration-300"
             >
               Add to Cart
             </button>

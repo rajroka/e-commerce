@@ -15,8 +15,9 @@ const Customerservice = () => {
       className="w-full py-12 px-6 md:px-16 bg-white transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-gray-900">
-
-        <article className="flex items-center gap-4">
+        
+        {/* Curb-side Pickup Feature */}
+        <article className="flex items-start gap-4 p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
           <FaStoreAlt size={28} className="text-emerald-600" aria-hidden="true" />
           <div>
             <h3 className="font-semibold text-xl">Curb-side Pickup</h3>
@@ -24,7 +25,8 @@ const Customerservice = () => {
           </div>
         </article>
 
-        <article className="flex items-center gap-4">
+        {/* Free Shipping Feature */}
+        <article className="flex items-start gap-4 p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
           <FaTruck size={28} className="text-emerald-600" aria-hidden="true" />
           <div>
             <h3 className="font-semibold text-xl">Free Shipping</h3>
@@ -32,7 +34,8 @@ const Customerservice = () => {
           </div>
         </article>
 
-        <article className="flex items-center gap-4">
+        {/* Low Prices Feature */}
+        <article className="flex items-start gap-4 p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
           <FaDollarSign size={28} className="text-emerald-600" aria-hidden="true" />
           <div>
             <h3 className="font-semibold text-xl">Low Prices</h3>
@@ -40,7 +43,8 @@ const Customerservice = () => {
           </div>
         </article>
 
-        <article className="flex items-center gap-4">
+        {/* 24/7 Support Feature */}
+        <article className="flex items-start gap-4 p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
           <FaClock size={28} className="text-emerald-600" aria-hidden="true" />
           <div>
             <h3 className="font-semibold text-xl">24/7 Support</h3>

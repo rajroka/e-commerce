@@ -49,7 +49,7 @@ const AllProductsPage = () => {
         {products.map((product) => (
           <div
             key={product._id}
-            className="p-2 rounded-2xl bg-white hover:shadow-md transition-shadow duration-300 overflow-hidden relative group"
+            className="p-2 rounded bg-white hover:shadow-md transition-shadow duration-300 overflow-hidden relative group"
           >
             <div className="relative overflow-hidden rounded-2xl">
               <img
@@ -58,7 +58,7 @@ const AllProductsPage = () => {
                 className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
-              <span className="absolute top-3 left-3 px-2 py-1 bg-black bg-opacity-70 text-gray-100 text-xs rounded-2xl">
+              <span className="absolute top-3 left-3 px-2 py-1 bg-black bg-opacity-70 text-gray-100 text-xs rounded">
                 {product.category}
               </span>
             </div>
@@ -72,13 +72,13 @@ const AllProductsPage = () => {
             <div className="px-4 pb-4 flex justify-between items-center">
               <Link
                 href={`/dashboard/edit-product/${product._id}`}
-                className="bg-blue-600 text-sm text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-sm text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
               >
                 Edit
               </Link>
               <button
                 onClick={() => deleteProduct(product._id)}
-                className="bg-red-500 text-sm text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                className="bg-red-500 text-sm text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
               >
                 Delete
               </button>

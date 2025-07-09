@@ -33,7 +33,7 @@ const DashboardPage = () => {
         <h1 className="text-2xl font-bold mb-6">Welcome to the Admin Panel</h1>
 
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-          <Link href="/dashboard/add-product" className="bg-blue-600 text-white px-4 py-6 rounded-lg shadow text-center font-medium hover:bg-blue-700 transition">
+          <Link href="/dashboard/add-product" className="bg-blue-600 text-white px-4 py-6 rounded shadow text-center font-medium hover:bg-blue-700 transition">
             Add Product
           </Link>
         

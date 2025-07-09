@@ -17,18 +17,18 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
           <ul className="space-y-2 text-sm text-gray-400">
-            <li><a href="/products" className="hover:text-white">Products</a></li>
-            <li><a href="/about" className="hover:text-white">About Us</a></li>
-            <li><a href="/contact" className="hover:text-white">Contact</a></li>
-            <li><a href="/faq" className="hover:text-white">FAQs</a></li>
+            <li><a href="/products" className="hover:text-white transition duration-200">Products</a></li>
+            <li><a href="/about" className="hover:text-white transition duration-200">About Us</a></li>
+            <li><a href="/contact" className="hover:text-white transition duration-200">Contact</a></li>
+            <li><a href="/faq" className="hover:text-white transition duration-200">FAQs</a></li>
           </ul>
         </div>
 
         {/* Contact Info */}
         <div>
           <h3 className="text-lg font-semibold mb-3">Contact</h3>
-          <p className="text-sm text-gray-400">Email: support@ggshop.com</p>
-          <p className="text-sm text-gray-400">Phone: +977 9800000000</p>
+          <p className="text-sm text-gray-400">Email: <a href="mailto:support@ggshop.com" className="hover:text-white transition duration-200">support@ggshop.com</a></p>
+          <p className="text-sm text-gray-400">Phone: <a href="tel:+9779800000000" className="hover:text-white transition duration-200">+977 9800000000</a></p>
           <p className="text-sm text-gray-400">Address: Lakeside, Pokhara, Nepal</p>
         </div>
 
@@ -36,10 +36,10 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Follow Us</h3>
           <div className="flex space-x-4 text-xl text-gray-400">
-            <a href="#" className="hover:text-white"><FaFacebookF /></a>
-            <a href="#" className="hover:text-white"><FaTwitter /></a>
-            <a href="#" className="hover:text-white"><FaInstagram /></a>
-            <a href="#" className="hover:text-white"><FaYoutube /></a>
+            <a href="#" className="hover:text-white transition duration-200" aria-label="Facebook"><FaFacebookF /></a>
+            <a href="#" className="hover:text-white transition duration-200" aria-label="Twitter"><FaTwitter /></a>
+            <a href="#" className="hover:text-white transition duration-200" aria-label="Instagram"><FaInstagram /></a>
+            <a href="#" className="hover:text-white transition duration-200" aria-label="YouTube"><FaYoutube /></a>
           </div>
         </div>
       </div>

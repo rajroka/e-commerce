@@ -98,7 +98,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
       <select
         value={filters.category}
         onChange={(e) => handleFilterChange('category', e.target.value)}
-        className="w-full border border-gray-300 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+        className="w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         aria-label="Filter by category"
       >
         {categories.map(cat => (
@@ -117,7 +117,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
         id="sort"
         value={filters.sort}
         onChange={e => handleFilterChange('sort', e.target.value as SortOption)}
-        className="border border-gray-300 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-1 focus:ring-gray-500 focus:border-gray-500 outline-none transition"
+        className="border border-gray-300 rounded bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-1 focus:ring-gray-500 focus:border-gray-500 outline-none transition"
         aria-label="Sort products"
       >
         <option value="default">Default</option>
@@ -164,7 +164,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
   const renderMobileFilterButton = () => (
     <button
       onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-      className="md:hidden px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 flex items-center transition"
+      className="md:hidden px-4 py-2 border border-gray-300 rounded shadow-sm text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 flex items-center transition"
       aria-expanded={mobileFiltersOpen}
       aria-controls="mobile-filters"
     >
@@ -184,7 +184,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
         placeholder="Search products..."
         value={filters.searchQuery}
         onChange={e => handleFilterChange('searchQuery', e.target.value)}
-        className="pl-10 pr-9 py-2 w-full border border-gray-300 rounded-md bg-white dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+        className="pl-10 pr-9 py-2 w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         aria-label="Search products"
       />
       {filters.searchQuery && (
@@ -206,7 +206,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
           <aside
             id="mobile-filters"
-            className={`md:w-72 bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 sticky top-5 z-10
+            className={`md:w-72 bg-white dark:bg-zinc-800 rounded shadow-lg p-6 sticky top-5 z-10
               ${mobileFiltersOpen ? 'block' : 'hidden'} md:block
               transition-all duration-300 ease-in-out
             `}
@@ -264,7 +264,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
                     </p>
                     <button
                       onClick={clearAllFilters}
-                      className="px-5 py-3 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-500 transition"
+                      className="px-5 py-3 text-white text-sm font-medium rounded hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-500 transition"
                     >
                       Clear all filters
                     </button>

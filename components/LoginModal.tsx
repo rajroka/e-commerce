@@ -59,7 +59,7 @@ const Logintoggle = () => {
     <>
       {isLoginOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-center px-4">
-          <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl relative">
+          <div className="bg-white w-full max-w-md p-8 rounded shadow-xl relative">
             <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Login to TechShed</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -69,7 +69,7 @@ const Logintoggle = () => {
                   id="email"
                   type="text"
                   {...register('email', { required: 'Email is required' })}
-                  className={`w-full px-4 py-2 mt-1 rounded-lg border text-black ${
+                  className={`w-full px-4 py-2 mt-1 rounded border text-black ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   } focus:outline-none focus:ring-2 focus:ring-gray-900`}
                   placeholder="Enter your email"
@@ -84,7 +84,7 @@ const Logintoggle = () => {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     {...register('password', { required: 'Password is required' })}
-                    className={`w-full px-4 py-2 mt-1 rounded-lg border text-black ${
+                    className={`w-full px-4 py-2 mt-1 rounded border text-black ${
                       errors.password ? 'border-red-500' : 'border-gray-300'
                     } focus:outline-none focus:ring-2 focus:ring-gray-900 pr-10`}
                     placeholder="Enter your password"
@@ -103,7 +103,7 @@ const Logintoggle = () => {
               <div className="flex justify-between items-center gap-4">
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-gray-900 text-white font-semibold rounded-md hover:bg-gray-800 transition duration-200"
+                  className="flex-1 py-2 bg-gray-900 text-white font-semibold rounded hover:bg-gray-800 transition duration-200"
                 >
                   Login
                 </button>

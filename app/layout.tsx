@@ -1,9 +1,12 @@
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Top from "@/components/Top";
 import Nav from "@/components/Nav";
 import ReduxProvider from "@/redux/Provider";
+
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +34,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+ 
+
+
+
+
   return (
     <html lang="en" className={`${inter.variable} ${inter.variable} ${inter.variable}`}>
       {/* Added all font variables on html for global use */}

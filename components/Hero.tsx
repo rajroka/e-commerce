@@ -3,38 +3,64 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const Hero = () => {
+const SplitHero = () => {
   return (
-    <div
-      className="h-screen relative bg-gradient-to-r from-[#fdfbfb] to-[#ebedee] py-20 px-6 md:px-20 flex flex-col-reverse md:flex-row items-center justify-between gap-10"
-     
-    >
-    <div className="absolute inset-0 bg-gradient-to-r from-[#fdfbfb] to-[#ebedee] ">
-    <Image
-     src="/hero2.png"
-     alt="Logo"
-     fill
-
-     priority
-
-    style={{
-        objectFit: 'cover',
-
-      }} />
-
-      
-    </div>
-
-      {/* Left Content */}
-      <div className="max-w-xl text-center md:text-left mt-52 z-50  top-40">
-        <Link href="/products">
-          <button className="   px-6 py-3 text-lg rounded-full bg-black text-white shadow-md">
-            Shop Now
-          </button>
-        </Link>
+    <section className="relative w-full min-h-[90vh] md:min-h-[auto] flex flex-col md:flex-row">
+      {/* Left Content Section */}
+      <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+        <div className="max-w-lg mx-auto space-y-6">
+          <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
+            New Collection
+          </span>
+          
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
+            Summer Essentials <br className="hidden sm:block" /> 2024
+          </h1>
+          
+          <p className="text-lg text-gray-600">
+            Discover our curated selection of premium quality apparel designed for comfort and style
+          </p>
+          
+          <div className="flex flex-wrap gap-4 pt-2">
+            <Link href="/products">
+              <button className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition-colors">
+                Shop Now
+              </button>
+            </Link>
+            <Link href="/products">
+              <button className="px-6 py-3 border border-gray-300 rounded hover:bg-gray-50 transition-colors">
+                View Collection
+              </button>
+            </Link>
+          </div>
+          
+          <div className="pt-6 flex items-center gap-4">
+           
+            <span className="text-sm text-gray-500">
+              Trusted by many customers . 
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Right Image Section */}
+      <div className="w-full md:w-1/2 relative h-[50vh] md:h-auto">
+        <Image
+          src="/66.png"
+          alt="Stylish models wearing summer collection"
+          fill
+          priority
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+        {/* Promo Badge on Image */}
+        <div className="absolute bottom-8 left-8 bg-white px-4 py-2 rounded-lg shadow-lg">
+          <span className="block text-sm font-medium">Up to</span>
+          <span className="block text-2xl font-bold">40% OFF</span>
+        </div>
+      </div>
+    </section>
   );
 };
 
-export default Hero;
+export default SplitHero;
