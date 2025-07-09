@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useModalStore } from '@/store/modalStore';
 
 type FormData = {
   username: string;
@@ -13,20 +13,19 @@ type FormData = {
   password: string;
 };
 
-const FirstSignupmodal = ({
-  isSignup,
-  setIsSignup,
-}: {
-  isSignup: boolean;
-  setIsSignup: (val: boolean) => void;
-}) => {
+const FirstSignupmodal = () => {
+  const {
+    isSignupOpen,
+    closeSignup
+  } = useModalStore();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm<FormData>();
-  const dispatch = useDispatch();
+  
   const [isLoading, setIsLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const router = useRouter();
@@ -50,8 +49,8 @@ const FirstSignupmodal = ({
       });
 
       reset();
-      setIsSignup(false);
-      // router.push('/');
+      closeSignup();
+
     } catch (error: any) {
       console.error('Signup error:', error);
       toast.error('Signup failed. Please try again.', {
@@ -70,14 +69,14 @@ const FirstSignupmodal = ({
     }
   };
 
-  if (!isSignup) return null;
+  if (!isSignupOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
       <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 space-y-6">
         {/* Close Button */}
         <button
-          onClick={() => setIsSignup(false)}
+          onClick={closeSignup}
           className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl font-bold"
           aria-label="Close"
         >
@@ -86,7 +85,10 @@ const FirstSignupmodal = ({
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-900">Create Your Account</h2>
-          <p  className='text-base font-medium text-center text-gray-900 line-clamp-1' >  Please use unique email and username !!  </p>
+        <p className='text-base font-medium text-center text-gray-900 line-clamp-1'>
+          Please use unique email and username!!
+        </p>
+
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Username */}
@@ -152,7 +154,7 @@ const FirstSignupmodal = ({
             {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
           </div>
 
-          {/* Buttons */}
+          {/* Submit */}
           <div className="space-y-2">
             <button
               type="submit"

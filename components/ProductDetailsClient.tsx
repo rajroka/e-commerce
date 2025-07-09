@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/redux/slice/cartSlice';
 import { useRouter } from 'next/navigation';
 import { FiStar } from 'react-icons/fi';
+import { useModalStore } from '@/store/modalStore';
 
 interface ProductProps {
   product: {
@@ -24,6 +25,7 @@ interface ProductProps {
 }
 
 const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ product }) => {
+  const { openLogin } = useModalStore();
   const dispatch = useDispatch();
   const discountedPrice = (product.price * 0.9).toFixed(2);
   const isLoggedIn = useSelector((state: any) => state.auth.isLoggedIn);
@@ -31,7 +33,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
 
   const handleAddToCart = () => {
     if (!isLoggedIn) {
-      router.push('/login');
+      openLogin();
       return;
     }
 
@@ -47,7 +49,6 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
           padding: '10px 15px',
           borderRadius: '6px',
         },
-       
       });
     } catch (error) {
       toast.error('Failed to add product to cart', {
@@ -60,23 +61,21 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
           padding: '10px 15px',
           borderRadius: '6px',
         },
-     
       });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-200  flex items-center justify-center px-4 py-10 transition-colors duration-300">
-      <div className="w-full max-w-5xl bg-white text-black rounded-3xl shadow-lg overflow-hidden flex flex-col lg:flex-row transition-all duration-300">
-
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
         {/* Image Section */}
-        <div className="w-full lg:w-1/2 bg-gray-100  flex items-center justify-center">
-          <div className="relative w-full h-64 sm:h-80 md:h-96">
+        <div className="w-full lg:w-1/2 bg-gray-100 p-8 flex items-center justify-center">
+          <div className="relative w-full h-72 sm:h-96 md:h-[28rem]">
             <Image
               src={product.image}
               alt={product.title}
               fill
-              className="object-contain bg-white"
+              className="object-contain"
               priority
             />
           </div>
@@ -84,45 +83,42 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
 
         {/* Info Section */}
         <div className="w-full lg:w-1/2 p-8 flex flex-col justify-between gap-8">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold  leading-tight">{product.title}</h1>
-            <p className="text-gray-800  text-base sm:text-base  mt-1  mb-1  line-clamp-6">
-             {product.description || 'No description available'}
+          <div className="space-y-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">{product.title}</h1>
+            <p className="text-gray-700 text-base leading-relaxed line-clamp-6">
+              {product.description || 'No description available.'}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 text-black text-xl font-semibold">
-                <span>${discountedPrice}</span>
-              <span className="line-through text-base  text-red-600">${product.price.toFixed(2)}</span>
-            
-              <span className="text-sm text-gray-600 italic">
-                ({product.category})
+            <div className="flex items-center gap-4 flex-wrap text-xl font-semibold mt-4">
+              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-md">
+                ${discountedPrice}
+              </span>
+              <span className="line-through text-red-600 text-base">
+                ${product.price.toFixed(2)}
+              </span>
+              <span className="text-sm text-gray-500 italic">({product.category})</span>
+            </div>
+
+            <div className="flex items-center gap-2 text-yellow-500 mt-2">
+              <FiStar className="w-5 h-5" />
+              <span className="text-gray-800 font-medium">{product.rating?.rate ?? 'N/A'}</span>
+              <span className="text-gray-500 text-sm">
+                ({product.rating?.count ?? 0} reviews)
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-yellow-500 text-lg">
-              <FiStar className="w-6 h-6" aria-hidden="true" />
-              <span aria-label={`Rating: ${product.rating?.rate ?? 'No rating'}`} className="text-black">
-                {product.rating?.rate ?? 'N/A'}
-              </span>
-              <span className="text-gray-600 text-sm">
-                ({product.rating?.count ?? 5} reviews)
-              </span>
-            </div>
-
+          <div>
             <button
               onClick={handleAddToCart}
               aria-label={`Add ${product.title} to cart`}
-              className="mt-2 w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 rounded-lg transition-transform transform  focus:outline-none focus:ring-4 focus:ring-gray-700"
-              type="button"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold rounded-lg shadow hover:scale-[1.01] transition-all duration-300"
             >
               Add to Cart
             </button>
           </div>
         </div>
       </div>
-
       <Toaster />
     </div>
   );

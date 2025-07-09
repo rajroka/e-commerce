@@ -117,7 +117,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
         id="sort"
         value={filters.sort}
         onChange={e => handleFilterChange('sort', e.target.value as SortOption)}
-        className="border border-gray-300 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+        className="border border-gray-300 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-1 focus:ring-gray-500 focus:border-gray-500 outline-none transition"
         aria-label="Sort products"
       >
         <option value="default">Default</option>
@@ -142,7 +142,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
           max={maxPrice}
           value={filters.priceRange[0]}
           onChange={e => handleMinPriceChange(parseInt(e.target.value))}
-          className="w-full accent-blue-600"
+          className="w-full accent-gray-600"
           aria-label="Minimum price"
         />
         <input
@@ -151,13 +151,13 @@ const ProductList = ({ products }: { products: Product[] }) => {
           max={maxPrice}
           value={filters.priceRange[1]}
           onChange={e => handleMaxPriceChange(parseInt(e.target.value))}
-          className="w-full accent-blue-600"
+          className="w-full accent-gray-600"
           aria-label="Maximum price"
         />
       </div>
-      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+      {/* <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
         Adjust the sliders to set your desired price range.
-      </p>
+      </p> */}
     </div>
   );
 
@@ -216,7 +216,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Filters</h2>
               <button
                 onClick={clearAllFilters}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline focus:outline-none"
+                className="text-sm text-black  dark:text-white  hover:underline focus:outline-none"
                 aria-label="Clear all filters"
               >
                 Clear all
@@ -243,9 +243,9 @@ const ProductList = ({ products }: { products: Product[] }) => {
                 {renderSortSelect()}
               </div>
 
-              <div className="p-6">
+              <div className="p-2 gap-1  ">
                 {filteredProducts.length > 0 ? (
-                  <Final
+                  <Final 
                     sortedProducts={filteredProducts.map(p => ({
                       id: p._id,
                       title: p.title ?? p.name ?? '',
@@ -264,7 +264,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
                     </p>
                     <button
                       onClick={clearAllFilters}
-                      className="px-5 py-3 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+                      className="px-5 py-3 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-500 transition"
                     >
                       Clear all filters
                     </button>

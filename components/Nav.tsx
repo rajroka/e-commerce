@@ -4,26 +4,22 @@ import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaUserPlus, FaSignInAlt } from 'react-icons/fa';
-import { IoMdCart} from 'react-icons/io';
-import { GiHamburgerMenu } from 'react-icons/gi';
 import Image from 'next/image';
 import Logintoggle from './LoginModal';
 import FirstSignupmodal from './FirstSignupmodal';
 import { logout } from '@/redux/slice/authSlice';
-
-
+import { useModalStore } from '@/store/modalStore';
 
 // Define RootState type for Redux
 interface RootState {
   auth: { isLoggedIn: boolean };
-  cart: { items: any[] }; // Replace `any` with actual item type if available
+  cart: { items: any[] };
 }
 
 const Nav = () => {
-  const [isLogin, setIsLogin] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  const { openLogin, openSignup } = useModalStore();
 
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const cartCount = useSelector((state: RootState) => state.cart.items.length);
@@ -49,44 +45,35 @@ const Nav = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-4">
-          {/* <Link href="/wishlist" className="hover:text-red-400 transition">
-            <IoMdHeart size={24} />
-          </Link> */}
-
           <Link href="/cart" className="relative flex items-center hover:text-purple-400">
-            <span className="absolute -top-2 -right-2 text-xs bg-purple-600 rounded-full px-1">
-              {cartCount}
-            </span>
-            <IoMdCart size={24} />
+            <span className="absolute -top-2 -right-2 text-xs bg-purple-600 rounded-full px-1">{cartCount}</span>
+            🛒
           </Link>
-          {/* <Filter /> */}
 
           <Link href="/products" className="relative flex items-center hover:text-purple-400">
             Products
           </Link>
-           
-           
 
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-sm rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+              className="px-4 py-2 text-sm bg-red-500 text-white hover:bg-red-600 transition font-medium"
             >
               Logout
             </button>
           ) : (
             <>
               <button
-                onClick={() => setIsSignup(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm rounded-full bg-gray-100 text-black hover:bg-purple-600 hover:text-white transition"
+                onClick={openSignup}
+                className="px-4 py-2 text-sm bg-green-600 text-white hover:bg-green-700 transition font-medium"
               >
-                <FaUserPlus /> Sign Up
+                Sign Up
               </button>
               <button
-                onClick={() => setIsLogin(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm rounded-full bg-gray-100 text-black hover:bg-purple-600 hover:text-white transition"
+                onClick={openLogin}
+                className="px-4 py-2 text-sm bg-purple-700 text-white hover:bg-purple-800 transition font-medium"
               >
-                <FaSignInAlt /> Login
+                Login
               </button>
             </>
           )}
@@ -99,19 +86,29 @@ const Nav = () => {
           aria-label="Toggle mobile menu"
           aria-expanded={showMobileMenu}
         >
-          <GiHamburgerMenu size={22} />
+          ☰
         </button>
       </div>
 
       {/* Mobile Menu */}
       {showMobileMenu && (
-        <div className="md:hidden bg-white text-black shadow-inner border-t" id="mobile-menu">
+        <div className="fixed inset-0 z-50 bg-white text-black shadow-inner border-t" id="mobile-menu">
           <nav className="flex flex-col px-6 py-4 gap-3">
-            <Link href="/" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">🏠 Home</Link>
-            <Link href="/products" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">🛍️ Products</Link>
-            <Link href="/wishlist" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">❤️ Wishlist</Link>
-            <Link href="/docs" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">📚 Docs</Link>
-            <Link href="/cart" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">🛒 Cart</Link>
+            <Link href="/" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
+              🏠 Home
+            </Link>
+            <Link href="/products" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
+              🛍️ Products
+            </Link>
+            <Link href="/wishlist" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
+              ❤️ Wishlist
+            </Link>
+            <Link href="/docs" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
+              📚 Docs
+            </Link>
+            <Link href="/cart" onClick={() => setShowMobileMenu(false)} className="hover:text-purple-600 font-medium">
+              🛒 Cart
+            </Link>
 
             {isLoggedIn ? (
               <button
@@ -119,30 +116,29 @@ const Nav = () => {
                   handleLogout();
                   setShowMobileMenu(false);
                 }}
-                className="text-left text-red-600 font-medium"
+                className="w-full text-left bg-red-500 text-white px-4 py-2 font-medium hover:bg-red-600 transition"
               >
-                🔓 Logout
+                Logout
               </button>
             ) : (
               <>
                 <button
                   onClick={() => {
-                    setIsLogin(true);
+                    openLogin();
                     setShowMobileMenu(false);
                   }}
-                  className="text-left hover:text-purple-600 font-medium"
+                  className="w-full text-left bg-purple-700 text-white px-4 py-2 font-medium hover:bg-purple-800 transition"
                 >
-                  🔐 Login
+                  Login
                 </button>
                 <button
                   onClick={() => {
-                    
-                    setIsSignup(true);
+                    openSignup();
                     setShowMobileMenu(false);
                   }}
-                  className="text-left hover:text-green-600 font-medium"
+                  className="w-full text-left bg-green-600 text-white px-4 py-2 font-medium hover:bg-green-700 transition"
                 >
-                  📝 Sign Up
+                  Sign Up
                 </button>
               </>
             )}
@@ -151,8 +147,8 @@ const Nav = () => {
       )}
 
       {/* Modals */}
-      <Logintoggle isLogin={isLogin} setIsLogin={setIsLogin} />
-      <FirstSignupmodal isSignup={isSignup} setIsSignup={setIsSignup} />
+      <Logintoggle />
+      <FirstSignupmodal />
     </header>
   );
 };

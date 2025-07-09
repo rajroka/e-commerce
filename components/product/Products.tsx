@@ -8,11 +8,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/redux/slice/cartSlice'; // Adjust path
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { useModalStore } from '@/store/modalStore';
 
 export default function HomePage() {
   const [products, setProducts] = useState<any[]>([]);
   const dispatch = useDispatch();
   const router = useRouter();
+    const { openLogin } = useModalStore();
 
   // Assume your auth slice has isLoggedIn boolean
   const isLoggedIn = useSelector((state: any) => state.auth?.isLoggedIn);
@@ -37,7 +39,7 @@ export default function HomePage() {
         duration: 2000,
         position: 'top-right',
       });
-      router.push('/login');
+      openLogin();
       return;
     }
 
@@ -76,7 +78,7 @@ export default function HomePage() {
             className="group bg-white border border-gray-200 rounded-3xl shadow-md hover:shadow-lg  transition-all duration-300 overflow-hidden flex flex-col"
           >
             <div className="relative">
-              <span className="absolute top-3 left-3 bg-gray-800  text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
+              <span className="absolute top-3 left-3  bg-gray-800  text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
                 {product.category}
               </span>
               <Link href={`/products/${product._id || product.id}`}>

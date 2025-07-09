@@ -8,58 +8,45 @@ import { toast, ToastContainer } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
-import { loginn  } from '@/redux/slice/authSlice';
-interface LogintoggleProps {
-  isLogin: boolean;
-  setIsLogin: (value: boolean) => void;
-}
-
+import { loginn } from '@/redux/slice/authSlice';
+import { useModalStore } from '@/store/modalStore';
 
 type FormData = {
   email: string;
   password: string;
 };
 
-
-
-const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
+const Logintoggle = () => {
+  const { isLoginOpen, closeLogin } = useModalStore();
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
- const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
   const onSubmit = async ({ email, password }: FormData) => {
     try {
-        const response =  await login(email, password);
-        const token = response.token;
-         
-         console.log('Login successful:', token);
-        
+      const response = await login(email, password);
+      const token = response.token;
+
       toast.success('Login successful!', { autoClose: 2000, position: 'top-right' });
-      localStorage.setItem("token", response.token);
-       dispatch( loginn({email, token}) );
+      localStorage.setItem("token", token);
+      dispatch(loginn({ email, token }));
+
       interface MyJwtPayload {
         isAdmin?: boolean;
         [key: string]: any;
       }
+
       const decode = jwtDecode<MyJwtPayload>(token);
-      
       if (decode.isAdmin) {
         localStorage.setItem("isAdmin", "true");
-              router.push('/dashboard'); 
-
-      }
-      else {
+        router.push('/dashboard');
+      } else {
         localStorage.setItem("isAdmin", "false");
-              // router.push('/products'); 
-
       }
 
-    
       reset();
-      setIsLogin(false);
-      
-            
-       
+      closeLogin();
     } catch (error) {
       toast.error('Login failed. Please check your credentials.', {
         autoClose: 2000,
@@ -70,17 +57,14 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
 
   return (
     <>
-      {isLogin && (
+      {isLoginOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-center px-4">
           <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl relative">
             <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Login to TechShed</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              {/* Username */}
               <div>
-                <label htmlFor="email " className="block text-sm font-medium text-gray-700">
-                  email 
-                </label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                 <input
                   id="email"
                   type="text"
@@ -90,16 +74,11 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
                   } focus:outline-none focus:ring-2 focus:ring-gray-900`}
                   placeholder="Enter your email"
                 />
-                
-                  <p className="text-red-600 text-sm mt-1">{errors.email?.message }</p>
-                
+                {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>}
               </div>
 
-              {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                 <div className="relative">
                   <input
                     id="password"
@@ -110,7 +89,6 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
                     } focus:outline-none focus:ring-2 focus:ring-gray-900 pr-10`}
                     placeholder="Enter your password"
                   />
-                  
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -119,12 +97,9 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
                     {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
-                )}
+                {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>}
               </div>
 
-              {/* Buttons */}
               <div className="flex justify-between items-center gap-4">
                 <button
                   type="submit"
@@ -134,7 +109,7 @@ const Logintoggle = ({ isLogin, setIsLogin }: LogintoggleProps) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsLogin(false)}
+                  onClick={closeLogin}
                   className="text-sm text-gray-500 hover:text-red-600 transition"
                 >
                   Cancel

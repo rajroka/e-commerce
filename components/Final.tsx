@@ -7,6 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/redux/slice/cartSlice';
 import { useRouter } from 'next/navigation';
 import { ToastContainer , toast } from 'react-toastify';
+import { RootState } from '@/redux/store';
+import Logintoggle from './LoginModal';
+import FirstSignupmodal from './FirstSignupmodal';
+import { useModalStore } from '@/store/modalStore';
+
 
 interface Product {
   id: string;
@@ -25,15 +30,20 @@ interface Product {
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const isLoggedIn = useSelector((state: any) => state.auth?.isLoggedIn);
+  
+  const { openLogin } = useModalStore();
 
+
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const handleAddToCart = (product: Product) => {
     if (!isLoggedIn) {
       toast.error('Please login to add items to your cart', {
         autoClose: 2000,
         position: 'top-right',
       });
-      router.push('/login');
+      // router.push('/login');
+      openLogin();
+
       return;
     }
 
@@ -100,7 +110,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
             <div className="flex gap-2 mt-2 mb-1.5">
               <button
-                className="w-1/2 bg-indigo-600 text-sm hover:bg-indigo-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 font-medium shadow"
+                className="w-1/2 bg-gray-700 hover:bg-gray-900 text-sm  text-white py-2 rounded-lg flex items-center justify-center gap-2 font-medium shadow"
                 onClick={() => handleAddToCart(product)}
               >
                 <FiShoppingCart className="text-sm" /> Add to Cart
@@ -116,6 +126,8 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
           </div>
         </div>
       ))}
+       <Logintoggle  />
+      <FirstSignupmodal />
       <ToastContainer />
     </div>
   );
