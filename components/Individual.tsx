@@ -1,3 +1,4 @@
+/*eslint-disable*/
 "use client";
 import React from "react";
 import Link from "next/link";
@@ -6,7 +7,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
 
-const Individual = ({ product, category }) => {
+const Individual = ({product, category}:{ product: any, category:string }) => {
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {

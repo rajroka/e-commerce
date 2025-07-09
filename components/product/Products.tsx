@@ -63,7 +63,7 @@ export default function HomePage() {
         <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">  Trending products  </h1>
         <Link
           href="/products"
-          className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-500 transition duration-200 shadow-md"
+          className="px-6 py-2.5   bg-gray-700  hover:bg-gray-900 text-white rounded-xl font-medium  transition duration-200 shadow-md"
         >
           View All Products
         </Link>
@@ -76,7 +76,7 @@ export default function HomePage() {
             className="group bg-white border border-gray-200 rounded-3xl shadow-md hover:shadow-lg  transition-all duration-300 overflow-hidden flex flex-col"
           >
             <div className="relative">
-              <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
+              <span className="absolute top-3 left-3 bg-gray-800  text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md uppercase tracking-wider">
                 {product.category}
               </span>
               <Link href={`/products/${product._id || product.id}`}>
@@ -109,7 +109,7 @@ export default function HomePage() {
 
               <div className="flex gap-2 mt-2">
                 <button
-                  className="w-1/2 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium shadow"
+                  className="w-1/2 bg-indigo-60  bg-gray-700 hover:bg-gray-900 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium shadow"
                   onClick={() => handleAddToCart(product)}
                 >
                   <FiShoppingCart className="text-base" /> Add to Cart

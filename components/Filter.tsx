@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { FiSearch } from "react-icons/fi"; // 🔍 Import search icon
@@ -18,19 +18,17 @@ const Filter = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  
-    
+
 
   const onSubmit = (data: FilterFormData) => {
     console.log("Search submitted:", data.searchTerm);
-     const params = new URLSearchParams(searchParams.toString())
-      params.set("name", data.searchTerm);
-      console.log("Updated search params:", params.toString());
-       router.push("/products" + '?' + params.toString());
-      return params.toString()
-    
-  
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("name", data.searchTerm);
+    console.log("Updated search params:", params.toString());
+    router.push("/products" + '?' + params.toString());
+    return params.toString()
+
+
   };
 
   return (
@@ -47,7 +45,7 @@ const Filter = () => {
 
       <button
         type="submit"
-        
+
         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         <FiSearch size={18} /> {/* 🔍 Search Icon */}
@@ -64,7 +62,4 @@ const Filter = () => {
 };
 
 export default Filter;
-function createQueryString(arg0: string, arg1: string) {
-    throw new Error("Function not implemented.");
-}
 

@@ -2,16 +2,11 @@ import React from 'react';
 import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { fetchProductById } from '@/lib/fetchproducts';
 
+type Params= Promise<{productId: string}>
 
-interface PageProps {
-  params: {
-    productId: string;
-  };
-}
-
-
-const Page = async ({ params} : PageProps  ) => {
+const Page = async (props: {params: Params}) => {
   
+  const params = await props.params;
   const productId = params.productId;
 
   const fetchedProduct = await fetchProductById(productId);

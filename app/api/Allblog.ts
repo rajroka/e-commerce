@@ -24,7 +24,7 @@ async function allProducts() {
 //   }
 // }
 
- async function productById(id) {
+ async function productById(id :  string ) {
    
   const response = axios.get(`https://fakestoreapi.com/products/${id}`)
     return (await response).data

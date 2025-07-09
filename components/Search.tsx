@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-
+import { usePathname } from 'next/navigation';
 interface Product {
   id: number;
   title: string;
@@ -14,8 +13,8 @@ const SearchPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [filtered, setFiltered] = useState<Product[]>([]);
-    const router = useRouter();
-  const {query } = router.query ; 
+    const router = usePathname();
+  const query  = router.split('?')[1] ? router.split('?')[1].split('=')[1] : ''; 
   // Fetch all products
   useEffect(() => {
     const fetchProducts = async () => {

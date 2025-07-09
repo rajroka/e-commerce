@@ -17,6 +17,9 @@ type ProductFormData = {
   reviews: number;
 };
 
+
+
+
 export default function AddProductPage() {
   const {
     register,
@@ -84,9 +87,10 @@ export default function AddProductPage() {
           uploadPreset="unsigned"
           onSuccess={({ event, info }) => {
             if (event === 'success') {
-              setImageId(info?.public_id || '');
-              setImageUrl(info?.url || '');
-              setValue('image', info?.url || '');
+              const uploadInfo = info as  { public_id: string; url: string };
+              setImageId(uploadInfo?.public_id || '');
+              setImageUrl(uploadInfo?.url || '');
+              setValue('image', uploadInfo?.url || '');
             }
           }}
         >

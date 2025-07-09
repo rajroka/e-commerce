@@ -6,7 +6,7 @@ import ProductNav from "@/components/ProductNav";
 import Top from "@/components/Top";
 import store from "@/redux/store";
 import { Provider } from "react-redux";
-import Modal from "@/components/Modal";
+// import Modal from "@/components/Modal";
 import Customerservice from "@/components/Customerservice";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
@@ -26,7 +26,7 @@ export default function Home() {
       
       {/* <ProductNav /> */}
       <DiscountPopup>Special Offer!</DiscountPopup>
-      <Modal  />
+      {/* <Modal  /> */}
       <Hero />
        <Products/>
       <Newslater />

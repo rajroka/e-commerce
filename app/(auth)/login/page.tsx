@@ -26,6 +26,7 @@ const Logintoggle = () => {
 
       console.log('Login successful:', token);
 
+       
       toast.success('Login successful!', { autoClose: 2000, position: 'top-right' });
       localStorage.setItem("token", response.token);
 
@@ -35,6 +36,8 @@ const Logintoggle = () => {
       }
 
       const decode = jwtDecode<MyJwtPayload>(token);
+        
+
 
       if (decode.isAdmin) {
         localStorage.setItem("isAdmin", "true");
