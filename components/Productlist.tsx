@@ -98,7 +98,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
       <select
         value={filters.category}
         onChange={(e) => handleFilterChange('category', e.target.value)}
-        className="w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+        className="w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 text-gray-900 dark:text-white text-sm py-2 px-3 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition"
         aria-label="Filter by category"
       >
         {categories.map(cat => (
@@ -184,7 +184,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
         placeholder="Search products..."
         value={filters.searchQuery}
         onChange={e => handleFilterChange('searchQuery', e.target.value)}
-        className="pl-10 pr-9 py-2 w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+        className="pl-10 pr-9 py-2 w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition"
         aria-label="Search products"
       />
       {filters.searchQuery && (
