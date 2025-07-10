@@ -84,7 +84,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
             </Link>
           </div>
 
-          <div className="px-2 py-2 flex flex-col flex-grow">
+          <div className="px-2 py-2 flex flex-col flex-grow bg-gray-100 ">
             <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
               {product.title || product.name}
             </h2>

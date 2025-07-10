@@ -17,7 +17,7 @@ type FormData = {
 };
 
 const Logintoggle = () => {
-  const { isLoginOpen, closeLogin } = useModalStore();
+  const { isLoginOpen,  openSignup ,  closeLogin } = useModalStore();
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -55,12 +55,16 @@ const Logintoggle = () => {
     }
   };
 
+  const handleSignupClick =()=>{
+   openSignup();
+  }
+
   return (
     <>
       {isLoginOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-center px-4">
           <div className="bg-white w-full max-w-md p-8 rounded shadow-xl relative">
-            <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Login to TechShed</h2>
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Login to Ggshop </h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div>
@@ -116,6 +120,18 @@ const Logintoggle = () => {
                 </button>
               </div>
             </form>
+
+            <p className="mt-6 text-center text-sm text-gray-700">
+  Don't have an account?{' '}
+  <button
+    onClick={handleSignupClick}
+    className="text-blue-600 hover:underline font-semibold"
+    type="button"
+  >
+    Sign up
+  </button>
+</p>
+
           </div>
           <ToastContainer />
         </div>

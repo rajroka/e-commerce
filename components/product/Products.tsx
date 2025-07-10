@@ -9,7 +9,7 @@ import { addToCart } from '@/redux/slice/cartSlice'; // Adjust path
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useModalStore } from '@/store/modalStore';
-
+import Image from 'next/image';
 export default function HomePage() {
   const [products, setProducts] = useState<any[]>([]);
   const dispatch = useDispatch();
@@ -85,12 +85,13 @@ export default function HomePage() {
                 <img
                   src={product.image}
                   alt={product.title}
+                  loading='lazy'
                   className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
                 />
               </Link>
             </div>
 
-            <div className=" px-2 py-2  flex flex-col flex-grow">
+            <div className=" px-2 py-2  flex flex-col flex-grow bg-gray-100">
               <h2 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">{product.name}</h2>
               {/* <p className="text-sm text-gray-500 mb-3 line-clamp-2">{product.description}</p> */}
 

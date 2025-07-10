@@ -68,7 +68,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-6xl bg-white rounded shadow-xl overflow-hidden flex flex-col lg:flex-row">
         {/* Image Section */}
-        <div className="w-full lg:w-1/2 bg-gray-100 p-8 flex items-center justify-center">
+        <div className="w-full lg:w-1/2 border  bg-white p-8 flex items-center justify-center">
           <div className="relative w-full h-72 sm:h-96 md:h-[28rem]">
             <Image
               src={product.image}
@@ -81,7 +81,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
         </div>
 
         {/* Info Section */}
-        <div className="w-full lg:w-1/2 p-8 flex flex-col justify-between gap-8">
+        <div className="w-full lg:w-1/2 bg-gray-100 p-8 flex flex-col justify-between gap-8">
           <div className="space-y-4">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">{product.title}</h1>
             <p className="text-gray-700 text-base leading-relaxed line-clamp-6">

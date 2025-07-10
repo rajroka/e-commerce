@@ -72,7 +72,7 @@ const AllProductsPage = () => {
             <div className="px-4 pb-4 flex justify-between items-center">
               <Link
                 href={`/dashboard/edit-product/${product._id}`}
-                className="bg-blue-600 text-sm text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-sm text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
               >
                 Edit
               </Link>

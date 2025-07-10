@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useModalStore } from '@/store/modalStore';
 
 type FormData = {
@@ -14,10 +15,7 @@ type FormData = {
 };
 
 const FirstSignupmodal = () => {
-  const {
-    isSignupOpen,
-    closeSignup
-  } = useModalStore();
+  const { isSignupOpen, closeSignup } = useModalStore();
 
   const {
     register,
@@ -34,7 +32,6 @@ const FirstSignupmodal = () => {
     try {
       setIsLoading(true);
       const res = await axios.post('/api/users/signup', data);
-      console.log('Signup successful:', res.data);
 
       toast.success('Signup successful!', {
         autoClose: 2000,
@@ -52,7 +49,6 @@ const FirstSignupmodal = () => {
       closeSignup();
 
     } catch (error: any) {
-      console.error('Signup error:', error);
       toast.error('Signup failed. Please try again.', {
         autoClose: 2000,
         position: 'bottom-right',
@@ -85,8 +81,8 @@ const FirstSignupmodal = () => {
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-900">Create Your Account</h2>
-        <p className='text-base font-medium text-center text-gray-900 line-clamp-1'>
-          Please use unique email and username!!
+        <p className='text-base font-medium text-center text-gray-900'>
+          Please use a unique email and username.
         </p>
 
         {/* Form */}
@@ -124,7 +120,7 @@ const FirstSignupmodal = () => {
             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
           </div>
 
-          {/* Password with toggle */}
+          {/* Password with eye icon */}
           <div className="space-y-1 relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
@@ -140,15 +136,15 @@ const FirstSignupmodal = () => {
                     message: 'Password must be at least 6 characters',
                   },
                 })}
-                className="w-full border border-gray-300 rounded px-4 py-2 pr-20 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+                className="w-full border border-gray-300 rounded px-4 py-2 pr-10 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 rounded bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-300 transition"
+                onClick={() => setShowPassword(prev => !prev)}
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? 'Hide' : 'Show'}
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
               </button>
             </div>
             {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
