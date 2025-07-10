@@ -82,10 +82,12 @@ export default function HomePage() {
                 {product.category}
               </span>
               <Link href={`/products/${product._id || product.id}`}>
-                <Image
+                <img
                   src={product.image}
                   alt={product.title}
                   loading='lazy'
+                  // height={60}
+                  // width={60}
                   className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
                 />
               </Link>

@@ -76,13 +76,13 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
               </span>
             )}
             <Link href={`/products/${product.id}`}>
-              <Image
+              <img
                 src={product.image}
                 alt={product.title}
-                loading='lazy'
-                fill
-              
-              priority
+                // loading='lazy'
+                // fill
+          
+              // priority
                 className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
