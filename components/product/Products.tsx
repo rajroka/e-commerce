@@ -82,7 +82,7 @@ export default function HomePage() {
                 {product.category}
               </span>
               <Link href={`/products/${product._id || product.id}`}>
-                <img
+                <Image
                   src={product.image}
                   alt={product.title}
                   loading='lazy'
