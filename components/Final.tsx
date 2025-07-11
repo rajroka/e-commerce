@@ -69,21 +69,21 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
           key={product.id}
           className="group bg-white border border-gray-200 rounded shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
         >
-          <div className="relative">
+          <div className="relative w-full h-60 ">
             {product.category && (
               <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded font-semibold shadow-md uppercase tracking-wider">
                 {product.category}
               </span>
             )}
             <Link href={`/products/${product.id}`}>
-              <img
+              <Image
                 src={product.image}
                 alt={product.title}
-                // loading='lazy'
-                // fill
-          
+                loading='lazy'
+                fill
+           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               // priority
-                className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
+                className=" object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
           </div>

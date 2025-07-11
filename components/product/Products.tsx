@@ -77,21 +77,20 @@ export default function HomePage() {
             key={product._id || product.id}
             className="group bg-white border border-gray-200 rounded shadow-md hover:shadow-lg  transition-all duration-300 overflow-hidden flex flex-col"
           >
-            <div className="relative">
-              <span className="absolute top-3 left-3  bg-gray-800  text-white text-xs px-3 py-1 rounded font-semibold shadow-md uppercase tracking-wider">
-                {product.category}
-              </span>
-              <Link href={`/products/${product._id || product.id}`}>
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  loading='lazy'
-                  // height={60}
-                  // width={60}
-                  className="w-full h-60 object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
-                />
-              </Link>
-            </div>
+           <div className="relative h-60 w-full bg-gray-50 p-5 transition-transform duration-300 group-hover:scale-105">
+  <span className="absolute top-3 left-3 bg-gray-800 text-white text-xs px-3 py-1 rounded font-semibold shadow-md uppercase tracking-wider z-10">
+    {product.category}
+  </span>
+  <Link href={`/products/${product._id || product.id}`}>
+    <Image
+      src={product.image}
+      alt={product.title}
+      fill
+      className="object-contain"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+    />
+  </Link>
+</div>
 
             <div className=" px-2 py-2  flex flex-col flex-grow bg-gray-100">
               <h2 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">{product.name}</h2>
