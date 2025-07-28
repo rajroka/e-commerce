@@ -37,3 +37,16 @@ export const fetchProductById = async (id: string) => {
   };
 
   
+
+  
+
+export const getProductsByCategory = async (category: string) => {
+  try {
+    await connect(); // ensure DB is connected
+    const products = await Product.find({ category });
+    return products;
+  } catch (err) {
+    console.error("Error fetching by category:", err);
+    throw new Error("Could not fetch products by category");
+  }
+};
