@@ -43,7 +43,7 @@ export const fetchProductById = async (id: string) => {
 export const getProductsByCategory = async (category: string) => {
   try {
     await connect(); // ensure DB is connected
-    const products = await Product.find({ category });
+    const products = await Product.find({ category: { $regex: new RegExp(category, 'i') }, });
     return products;
   } catch (err) {
     console.error("Error fetching by category:", err);

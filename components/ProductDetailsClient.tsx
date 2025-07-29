@@ -112,7 +112,7 @@ const ProductDetailsClient: React.FC<{ product: ProductProps['product'] }> = ({ 
         }}
       />
     </div>
-      {/* <RelatedProducts category={product.category} /> */}
+      
       </>
   );
 };

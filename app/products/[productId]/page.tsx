@@ -1,6 +1,7 @@
 import React from 'react';
 import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { fetchProductById } from '@/lib/fetchproducts';
+import RelatedProducts from '@/components/RelatedProducts';
 
 type Params= Promise<{productId: string}>
 
@@ -20,8 +21,11 @@ const Page = async (props: {params: Params}) => {
     image: fetchedProduct.image,
     rating: { rate: 0, count: 0 },
   };
-
-  return <ProductDetailsClient product={product} />;
+  // console.log(product.category)
+  return (<> <ProductDetailsClient product={product} />
+   <RelatedProducts category={product.category} />
+  </>
+  )
 };
 
 export default Page;
