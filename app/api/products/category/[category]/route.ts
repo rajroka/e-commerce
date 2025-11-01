@@ -1,22 +1,20 @@
-// app/api/category/[category]/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
-import  connect  from '@/lib/db'; // your DB connection logic
-import Product from "@/lib/modals/Product"; // your Mongoose model
+import connect from '@/lib/db';
+import Product from '@/lib/modals/Product';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { category: string } }
-) {
+interface RouteContext {
+  params: Promise<{ category: string }>;
+}
+
+export async function GET(req: NextRequest, context: RouteContext) {
   try {
-    const category = decodeURIComponent(params.category);
+    const { category } = await context.params; // ✅ must await in Next.js 15+
 
     if (!category) {
       return NextResponse.json({ error: 'Category is required' }, { status: 400 });
     }
 
-    await connect(); // connect to MongoDB
-
+    await connect();
     const products = await Product.find({ category });
 
     return NextResponse.json(products, { status: 200 });
