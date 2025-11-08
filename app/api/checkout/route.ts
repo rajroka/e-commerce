@@ -38,12 +38,16 @@ export async function POST(req: NextRequest) {
       };
     });
 
+    // Get base URL dynamically from request headers or environment variable
+    const origin =
+      req.headers.get('origin') || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel',
+      success_url: `${origin}/success`,
+      cancel_url: `${origin}/cancel`,
     });
 
     return NextResponse.json({ url: session.url });
