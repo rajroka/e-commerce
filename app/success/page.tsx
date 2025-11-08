@@ -1,4 +1,4 @@
-// app/success/page.tsx
+
 "use client"
 
 export default function SuccessPage() {
