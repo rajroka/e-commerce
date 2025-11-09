@@ -2,59 +2,47 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { FiShoppingCart } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '@/redux/slice/cartSlice';
-import { ToastContainer , toast } from 'react-toastify';
-import { RootState } from '@/redux/store';
-import Logintoggle from './LoginModal';
-import FirstSignupmodal from './FirstSignupmodal';
-import { useModalStore } from '@/store/modalStore';
 import Image from 'next/image';
+import { FiShoppingCart } from 'react-icons/fi';
+import { useSession } from 'next-auth/react';
+import { ToastContainer, toast } from 'react-toastify';
+import { useModalStore } from '@/store/modalStore';
+import { useCartStore } from '@/store/cartStore';
+import FirstSignupmodal from './FirstSignupmodal';
 
 interface Product {
   id: string;
   image: string;
   title: string;
   price: number;
-  description: string;
-  rating?: {
-    rate: number;
-    count: number;
-  };
+  description?: string;
+  rating?: { rate: number; count: number };
   category?: string;
   name?: string;
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
-  const dispatch = useDispatch();
-  
-  
+  const { data: session } = useSession();
   const { openLogin } = useModalStore();
+  const addToCart = useCartStore((state) => state.addToCart);
 
-
-  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const handleAddToCart = (product: Product) => {
-    if (!isLoggedIn) {
+    if (!session) {
       toast.error('Please login to add items to your cart', {
         autoClose: 2000,
         position: 'top-right',
       });
-      
       openLogin();
-
       return;
     }
 
-    dispatch(
-      addToCart({
-        id: product.id,
-        name: product.title || product.name,
-        image: product.image,
-        price: product.price,
-        quantity: 1,
-      })
-    );
+    addToCart({
+      id: product.id,
+      name: product.title || product.name || '',
+      image: product.image,
+      price: product.price,
+      quantity: 1,
+    });
 
     toast.success(`Added "${product.title || product.name}" to cart`, {
       autoClose: 2000,
@@ -69,7 +57,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
           key={product.id}
           className="group bg-white border border-gray-200 rounded shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
         >
-          <div className="relative w-full h-60 ">
+          <div className="relative w-full h-60">
             {product.category && (
               <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded font-semibold shadow-md uppercase tracking-wider">
                 {product.category}
@@ -79,16 +67,15 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
               <Image
                 src={product.image}
                 alt={product.title}
-                loading='lazy'
+                loading="lazy"
                 fill
-           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-              // priority
-                className=" object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                className="object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
           </div>
 
-          <div className="px-2 py-2 flex flex-col flex-grow bg-gray-100 ">
+          <div className="px-2 py-2 flex flex-col flex-grow bg-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
               {product.title || product.name}
             </h2>
@@ -113,8 +100,8 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
             <div className="flex gap-2 mt-2 mb-1.5">
               <button
-                className="w-1/2 bg-gray-700 hover:bg-gray-900 text-sm  text-white py-2 rounded flex items-center justify-center gap-2 font-medium shadow"
                 onClick={() => handleAddToCart(product)}
+                className="w-1/2 bg-gray-700 hover:bg-gray-900 text-sm text-white py-2 rounded flex items-center justify-center gap-2 font-medium shadow"
               >
                 <FiShoppingCart className="text-sm" /> Add to Cart
               </button>
@@ -129,7 +116,8 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
           </div>
         </div>
       ))}
-       <Logintoggle  />
+
+    
       <FirstSignupmodal />
       <ToastContainer />
     </div>

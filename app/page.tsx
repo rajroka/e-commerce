@@ -4,7 +4,6 @@ import DiscountPopup from "@/components/DiscountPopup";
 
 import ProductNav from "@/components/ProductNav";
 import Top from "@/components/Top";
-import store from "@/redux/store";
 import { Provider } from "react-redux";
 // import Modal from "@/components/Modal";
 import Customerservice from "@/components/Customerservice";

@@ -28,8 +28,8 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Contact</h3>
           <p className="text-sm text-gray-400">Email: <a href="mailto:support@ggshop.com" className="hover:text-white transition duration-200">support@ggshop.com</a></p>
-          <p className="text-sm text-gray-400">Phone: <a href="tel:+9779800000000" className="hover:text-white transition duration-200">+977 9800000000</a></p>
-          <p className="text-sm text-gray-400">Address: Lakeside, Pokhara, Nepal</p>
+          <p className="text-sm text-gray-400">Phone: <a href="tel:+9779847632326" className="hover:text-white transition duration-200">+977 9800000000</a></p>
+          <p className="text-sm text-gray-400">Address:  Pokhara, Nepal</p>
         </div>
 
         {/* Social Media */}
@@ -46,7 +46,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="mt-10 border-t border-gray-800 pt-5 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} GGShop. Made with ❤️ in Pokhara, Nepal.
+        © {new Date().getFullYear()} GGShop. Made in Pokhara, Nepal.
       </div>
     </footer>
   );
