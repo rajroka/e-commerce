@@ -60,7 +60,7 @@ const DashboardPage = () => {
                 href="/dashboard/add-product"
                 className="block px-4 py-2 rounded hover:bg-gray-700 transition font-medium"
               >
-                Add Product
+                Add Products
               </Link>
             </li>
           </ul>
