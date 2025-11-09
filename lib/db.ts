@@ -12,7 +12,7 @@ if (!MONGO_URI) {
     throw new Error("MONGODB_URI is not defined in the environment variables.");
 }
 
-const connect = async () => {
+const connectdb = async () => {
     const connectionState = mongoose.connection.readyState;    
     // Check if the database is already connected or not
 
@@ -40,4 +40,4 @@ const connect = async () => {
     }
 };
 
-export default connect;
+export default connectdb;
