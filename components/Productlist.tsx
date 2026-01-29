@@ -70,16 +70,6 @@ const ProductList = ({ products }: { products: Product[] }) => {
       });
   }, [products, filters]);
 
-  const handleMinPriceChange = (value: number) => {
-    const newMin = Math.min(value, filters.priceRange[1]);
-    handleFilterChange('priceRange', [newMin, filters.priceRange[1]]);
-  };
-
-  const handleMaxPriceChange = (value: number) => {
-    const newMax = Math.max(value, filters.priceRange[0]);
-    handleFilterChange('priceRange', [filters.priceRange[0], newMax]);
-  };
-
   const renderCategoryFilter = () => (
     <div className="mb-6">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-200 mb-3">Category</h3>
@@ -100,26 +90,26 @@ const ProductList = ({ products }: { products: Product[] }) => {
   const renderPriceFilter = () => (
     <div className="mb-6">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-200 mb-3">Price Range</h3>
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
         <span>${filters.priceRange[0]}</span>
         <span>${filters.priceRange[1]}</span>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-2">
         <input
           type="range"
           min={minPrice}
           max={maxPrice}
           value={filters.priceRange[0]}
-          onChange={e => handleMinPriceChange(parseInt(e.target.value))}
-          className="w-full accent-gray-600"
+          onChange={e => handleFilterChange('priceRange', [Math.min(+e.target.value, filters.priceRange[1]), filters.priceRange[1]])}
+          className="w-full accent-emerald-600"
         />
         <input
           type="range"
           min={minPrice}
           max={maxPrice}
           value={filters.priceRange[1]}
-          onChange={e => handleMaxPriceChange(parseInt(e.target.value))}
-          className="w-full accent-gray-600"
+          onChange={e => handleFilterChange('priceRange', [filters.priceRange[0], Math.max(+e.target.value, filters.priceRange[0])])}
+          className="w-full accent-emerald-600"
         />
       </div>
     </div>
@@ -152,7 +142,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
         placeholder="Search products..."
         value={filters.searchQuery}
         onChange={e => handleFilterChange('searchQuery', e.target.value)}
-        className="pl-10 pr-9 py-2 w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition"
+        className="pl-10 pr-9 py-2 w-full border border-gray-300 rounded bg-white dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
       />
       {filters.searchQuery && (
         <button
@@ -167,7 +157,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
 
   return (
     <>
-      <NextNProgress color="#3b82f6" options={{ showSpinner: false }} />
+      <NextNProgress color="#10B981" options={{ showSpinner: false }} />
       <div className="bg-gray-50 dark:bg-zinc-900 min-h-screen px-5 sm:px-8 lg:px-12 py-10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
           {/* Sidebar Filters */}
@@ -176,7 +166,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Filters</h2>
               <button
                 onClick={clearAllFilters}
-                className="text-sm text-black dark:text-white hover:underline"
+                className="text-sm text-black dark:text-white border border-gray-300   px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
               >
                 Clear all
               </button>
@@ -186,13 +176,11 @@ const ProductList = ({ products }: { products: Product[] }) => {
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1">
+          <main className="flex-1 flex flex-col gap-6">
             <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
               <div className="border-b border-gray-200 dark:border-zinc-700 p-5 flex flex-col sm:flex-row justify-between gap-4 items-center">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  {renderSearchInput()}
-                </div>
+                <h1 className="text-2xl font-medium text-gray-900 dark:text-white">Products</h1>
+                <div className="flex items-center gap-4 w-full sm:w-auto">{renderSearchInput()}</div>
               </div>
 
               <div className="bg-gray-100 dark:bg-zinc-700 px-5 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-gray-700 dark:text-gray-300">
@@ -219,7 +207,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Try adjusting your filters or search terms.</p>
                     <button
                       onClick={clearAllFilters}
-                      className="px-5 py-3 bg-gray-900 text-white text-sm font-medium rounded hover:bg-gray-800"
+                      className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded transition"
                     >
                       Clear all filters
                     </button>

@@ -35,7 +35,7 @@ const Newsletter = () => {
   return (
     <section className="w-full bg-[#f7f7f7] py-16 px-4 text-center">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-lg sm:text-4xl font-bold text-gray-900 mb-6">
+        <h2 className="text-lg sm:text-3xl font-medium text-gray-900 mb-6">
           Join our newsletter for exclusive updates, special offers, and curated content—delivered straight to your inbox.
         </h2>
 
@@ -90,7 +90,7 @@ const Newsletter = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition duration-200 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black flex items-center justify-center gap-2 min-w-[130px]"
+              className="px-6 py-3 bg-gray-800 text-white rounded hover:bg-gray-900 transition duration-200 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black flex items-center justify-center gap-2 min-w-[130px]"
             >
               {loading ? (
                 <svg

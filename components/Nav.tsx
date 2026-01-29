@@ -23,7 +23,7 @@ export default async function Nav() {
                 className="rounded-full transition-transform duration-300 group-hover:scale-110"
               />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="text-xl font-bold text-white bg-clip-text">
               GG Shop
             </span>
           </Link>
@@ -65,13 +65,13 @@ export default async function Nav() {
               <div className="flex gap-3">
                 <Link
                   href="/api/auth/signin"
-                  className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200 font-medium"
+                  className="px-4 py-2  text-gray-300 border rounded   hover:text-white transition-colors duration-200 font-medium"
                 >
                   Login
                 </Link>
                 <Link
                   href="/api/auth/signin"
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-purple-500/25 font-medium"
+                  className="px-4 py-2  rounded text-black bg-gray-100  hover:bg-gray-300 transition-all duration-200  font-medium"
                 >
                   Sign Up
                 </Link>

@@ -15,6 +15,7 @@ export default function LoginPage() {
     // Simple static login check
     if (email === "admin@gmail.com" && password === "admin123") {
       // Navigate to dashboard
+
       router.push("/dashboard");
     } else {
       setError("Invalid email or password");
