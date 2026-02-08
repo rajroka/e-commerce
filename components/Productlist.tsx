@@ -13,6 +13,7 @@ type Product = {
   category: string;
   image: string;
   description?: string;
+  quantity ? : number
 };
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name';
@@ -199,6 +200,7 @@ const ProductList = ({ products }: { products: Product[] }) => {
                       price: p.price,
                       image: p.image,
                       description: p.description ?? '',
+                        quantity: p.quantity ?? 1
                     }))}
                   />
                 ) : (

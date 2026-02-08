@@ -22,7 +22,6 @@ export default function Home() {
     {/* <Provider store={store}> */}
      <NextNProgress />
      {/* <Component {...pageProps} />; */}
-      
       {/* <ProductNav /> */}
       <DiscountPopup>Special Offer!</DiscountPopup>
       {/* <Modal  /> */}

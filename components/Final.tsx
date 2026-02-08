@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FiShoppingCart } from 'react-icons/fi';
 import { useSession } from 'next-auth/react';
 import { ToastContainer, toast } from 'react-toastify';
 import { useModalStore } from '@/store/modalStore';
-import { useCartStore } from '@/store/cartStore';
+import { useCartStore } from '@/store/cartStore'; 
 import FirstSignupmodal from './FirstSignupmodal';
 
 interface Product {
@@ -19,12 +19,21 @@ interface Product {
   rating?: { rate: number; count: number };
   category?: string;
   name?: string;
+  quantity?: number;
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
-  const { data: session } = useSession();
+  // ✅ Extract 'status' to prevent hydration wipes
+  const { data: session, status } = useSession();
   const { openLogin } = useModalStore();
+
   const addToCart = useCartStore((state) => state.addToCart);
+  const setUserId = useCartStore((state) => state.setUserId);
+
+  // ✅ 2. Sync userId to the store with the Status Guard
+  useEffect(() => {
+    setUserId(session?.user?.email || null, status);
+  }, [session, status, setUserId]);
 
   const handleAddToCart = (product: Product) => {
     if (!session) {
@@ -55,69 +64,68 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
       {sortedProducts.map((product) => (
         <div
           key={product.id}
-          className="group bg-white border border-gray-200 rounded shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
+          className="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden flex flex-col relative"
         >
-          <div className="relative w-full h-60">
-            {product.category && (
-              <span className="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 rounded font-semibold shadow-md uppercase tracking-wider">
-                {product.category}
-              </span>
-            )}
+          {/* Badge */}
+          {product.category && (
+            <span className="absolute top-4 left-4 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest z-20 shadow-lg">
+              {product.category}
+            </span>
+          )}
+
+          {/* Image Container */}
+          <div className="relative w-full h-72 overflow-hidden bg-white">
             <Link href={`/products/${product.id}`}>
               <Image
                 src={product.image}
-                alt={product.title}
+                alt={product.title || "Product"}
                 loading="lazy"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                className="object-contain p-5 bg-gray-50 transition-transform duration-300 group-hover:scale-105"
+                className="object-contain p-8 transition-transform duration-700 group-hover:scale-110"
               />
             </Link>
           </div>
 
-          <div className="px-2 py-2 flex flex-col flex-grow bg-gray-100">
-            <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+          {/* Content */}
+          <div className="p-6 flex flex-col flex-grow bg-white border-t border-gray-50">
+            <h2 className="text-md font-bold text-gray-900 line-clamp-2 min-h-[3rem] mb-2 group-hover:text-indigo-600 transition-colors">
               {product.title || product.name}
             </h2>
 
-            <div className="flex items-center justify-between mt-auto">
-              <div className="flex items-center space-x-3">
-                <p className="text-sm font-bold text-emerald-600">
-                  ${(product.price * 0.8).toFixed(2)}
-                </p>
-                <p className="text-sm font-semibold text-gray-500 line-through">
-                  ${product.price.toFixed(2)}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1 text-yellow-500 text-sm">
-                {'★'.repeat(Math.round(product.rating?.rate || 4))}
-                <span className="ml-1 text-gray-400 text-xs">
-                  ({product.rating?.count || 120})
-                </span>
-              </div>
+            {/* Price Row */}
+            <div className="flex items-center gap-3 mb-6">
+              <p className="text-xl font-black text-indigo-600">
+                ${(product.price * 0.8).toFixed(2)}
+              </p>
+              <p className="text-sm font-medium text-gray-400 line-through">
+                ${product.price.toFixed(2)}
+              </p>
+              <span className="ml-auto text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded">
+                -20%
+              </span>
             </div>
 
-            <div className="flex gap-2 mt-2 mb-1.5">
+            {/* Actions */}
+            <div className="flex gap-3 mt-auto">
               <button
                 onClick={() => handleAddToCart(product)}
-                className="w-1/2 bg-gray-700 hover:bg-gray-900 text-sm text-white py-2 rounded flex items-center justify-center gap-2 font-medium shadow"
+                className="flex-1 bg-gray-900 hover:bg-indigo-600 text-white text-xs py-3 rounded-xl flex items-center justify-center gap-2 font-bold transition-all duration-300 transform active:scale-95 shadow-md"
               >
-                <FiShoppingCart className="text-sm" /> Add to Cart
+                <FiShoppingCart size={16} /> Add to Cart
               </button>
 
               <Link
                 href={`/products/${product.id}`}
-                className="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded flex items-center justify-center gap-2 text-sm font-medium border border-gray-300 shadow"
+                className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-900 py-3 rounded-xl flex items-center justify-center text-xs font-bold border border-gray-200 transition-all duration-300"
               >
-                Shop Now
+                View Details
               </Link>
             </div>
           </div>
         </div>
       ))}
 
-    
       <FirstSignupmodal />
       <ToastContainer />
     </div>

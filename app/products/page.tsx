@@ -1,8 +1,9 @@
-import { fetchproducts } from '@/lib/fetchproducts';
+// import { fetchproducts } from '@/lib/fetchproducts';
+import { fetchProducts } from "@/lib/fetchproducts";
 import ProductList  from "@/components/Productlist"
 
 const Page = async () => {
-  const products = await fetchproducts();
+  const products = await fetchProducts();
 
   return <ProductList products={products} />;
 };

@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import connect from '@/lib/db';
 import Product from '@/lib/modals/Product';
 
-export async function GET(request: NextRequest, context: any) {
+export async function GET(request: NextRequest, params: any) {
   await connect();
-  const { id } = context.params;
+  const { id } =  await params;
 
   const product = await Product.findById(id);
   if (!product) {

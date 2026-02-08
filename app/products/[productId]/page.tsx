@@ -1,16 +1,26 @@
-import React from 'react';
 import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { fetchProductById } from '@/lib/fetchproducts';
 import RelatedProducts from '@/components/RelatedProducts';
 
-type Params= Promise<{productId: string}>
+type FetchedProduct = {
+  _id: string;
+  name: string;
+  price: number;
+  description?: string;
+  category: string;
+  image: string;
+};
 
-const Page = async (props: {params: Params}) => {
-  
-  const params = await props.params;
-  const productId = params.productId;
+const Page = async ({ params }: { params:  Promise<{productId : string}> }) => {
 
-  const fetchedProduct = await fetchProductById(productId);
+  const { productId } = await  params;
+
+  let fetchedProduct: FetchedProduct | null = null;
+  try {
+    fetchedProduct = await fetchProductById(productId);
+  } catch (err) {
+    return <p className="text-center py-20">Product not found or failed to load.</p>;
+  }
 
   const product = {
     id: fetchedProduct._id,
@@ -19,13 +29,14 @@ const Page = async (props: {params: Params}) => {
     description: fetchedProduct.description || 'No description available',
     category: fetchedProduct.category,
     image: fetchedProduct.image,
-    rating: { rate: 0, count: 0 },
   };
-  // console.log(product.category)
-  return (<> <ProductDetailsClient product={product} />
-   <RelatedProducts category={product.category} />
-  </>
-  )
+
+  return (
+    <>
+      <ProductDetailsClient product={product} />
+      <RelatedProducts category={product.category} />
+    </>
+  );
 };
 
 export default Page;
