@@ -1,52 +1,69 @@
+'use client';
+
 import React from 'react';
-import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
+import Link from 'next/link';
+import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white px-6 py-12 md:px-16 lg:px-24">
-      <div className="grid gap-10 md:grid-cols-4">
-        {/* Brand/About Section */}
-        <div>
-          <h2 className="text-2xl font-bold mb-3">GGShop</h2>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            Your go-to destination in Pokhara for the latest in fashion, tech, and lifestyle. Quality products, unbeatable prices.
+    <footer className="bg-gray-900 text-white px-6 py-16 md:px-16 lg:px-24">
+      <div className="max-w-7xl mx-auto grid gap-12 grid-cols-2 md:grid-cols-4">
+        
+        {/* Brand Section */}
+        <div className="col-span-2 md:col-span-1">
+          <h2 className="text-xl font-black uppercase tracking-tighter mb-4 text-white">GG COSMETICS</h2>
+          <p className="text-sm text-gray-400 uppercase tracking-widest leading-relaxed max-w-[200px]">
+            Clean formulas. High performance. Consciously crafted in Pokhara.
           </p>
         </div>
 
-        {/* Quick Links */}
+        {/* Shop Links */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li><a href="/products" className="hover:text-white transition duration-200">Products</a></li>
-            <li><a href="/about" className="hover:text-white transition duration-200">About Us</a></li>
-            <li><a href="/contact" className="hover:text-white transition duration-200">Contact</a></li>
-            <li><a href="/faq" className="hover:text-white transition duration-200">FAQs</a></li>
+          <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-white">Shop</h3>
+          <ul className="space-y-4 text-sm uppercase tracking-widest text-gray-400">
+            <li><Link href="/products" className="hover:text-white transition duration-200">New Arrivals</Link></li>
+            <li><Link href="/products?category=lips" className="hover:text-white transition duration-200">Lips</Link></li>
+            <li><Link href="/products?category=face" className="hover:text-white transition duration-200">Face</Link></li>
+            <li><Link href="/products?category=skin" className="hover:text-white transition duration-200">Skincare</Link></li>
           </ul>
         </div>
 
-        {/* Contact Info */}
+        {/* Support Links */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Contact</h3>
-          <p className="text-sm text-gray-400">Email: <a href="mailto:support@ggshop.com" className="hover:text-white transition duration-200">support@ggshop.com</a></p>
-          <p className="text-sm text-gray-400">Phone: <a href="tel:+9779847632326" className="hover:text-white transition duration-200">+977 9800000000</a></p>
-          <p className="text-sm text-gray-400">Address:  Pokhara, Nepal</p>
+          <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-white">Support</h3>
+          <ul className="space-y-4 text-sm uppercase tracking-widest text-gray-400">
+            <li><Link href="/contact" className="hover:text-white transition duration-200">Contact Us</Link></li>
+            <li><Link href="/shipping" className="hover:text-white transition duration-200">Shipping & Returns</Link></li>
+            <li><Link href="/ingredients" className="hover:text-white transition duration-200">Ingredients</Link></li>
+            <li><Link href="/faq" className="hover:text-white transition duration-200">Order Tracking</Link></li>
+          </ul>
         </div>
 
-        {/* Social Media */}
+        {/* Social & Contact */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Follow Us</h3>
-          <div className="flex space-x-4 text-xl text-gray-400">
-            <a href="#" className="hover:text-white transition duration-200" aria-label="Facebook"><FaFacebookF /></a>
-            <a href="#" className="hover:text-white transition duration-200" aria-label="Twitter"><FaTwitter /></a>
+          <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-white">Follow Us</h3>
+          <div className="flex space-x-6 text-xl text-gray-400 mb-8">
             <a href="#" className="hover:text-white transition duration-200" aria-label="Instagram"><FaInstagram /></a>
+            <a href="#" className="hover:text-white transition duration-200" aria-label="TikTok"><FaTiktok /></a>
+            <a href="#" className="hover:text-white transition duration-200" aria-label="Facebook"><FaFacebookF /></a>
             <a href="#" className="hover:text-white transition duration-200" aria-label="YouTube"><FaYoutube /></a>
           </div>
+          <p className="text-[11px] text-gray-500 uppercase tracking-widest leading-loose">
+            support@ggcosmetics.com <br />
+            Lakeside, Pokhara, Nepal
+          </p>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="mt-10 border-t border-gray-800 pt-5 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} GGShop. Made in Pokhara, Nepal.
+      <div className="mt-20 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">
+          © {new Date().getFullYear()} GG COSMETICS. ALL RIGHTS RESERVED.
+        </div>
+        <div className="flex gap-6 text-[10px] text-gray-500 uppercase tracking-[0.2em]">
+          <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-white">Terms of Service</Link>
+        </div>
       </div>
     </footer>
   );

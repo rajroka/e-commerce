@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
+import { useSession } from '@/lib/auth-client';
 
 type Product = {
   _id: string;
@@ -20,7 +22,17 @@ type Product = {
 const DashboardPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+ 
+   const router = useRouter();
+  const { data: session, isPending } = useSession();
 
+  useEffect(() => {
+    if (!isPending && !session?.user) {
+      router.push("/sign-in");
+    }
+  }, [isPending, session, router]);
+
+  
   useEffect(() => {
     async function fetchProducts() {
       setLoading(true);
@@ -76,7 +88,7 @@ const DashboardPage = () => {
         ) : products.length === 0 ? (
           <p className="text-center text-gray-500">No products found.</p>
         ) : (
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid gap-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {products.map((product) => (
               <div
                 key={product._id}

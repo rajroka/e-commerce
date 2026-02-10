@@ -5,18 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
-import { useSession } from 'next-auth/react';
 import { useCartStore } from '@/store/cartStore'; 
 import { FiMinus, FiPlus, FiTrash2, FiArrowLeft, FiShoppingBag } from 'react-icons/fi';
+import { useSession } from '@/lib/auth-client';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const CartPage = () => {
-  // ✅ Extract 'status' to power the persistence guard
-  const { data: session, status } = useSession();
+
+  const { data: session} = useSession();
   const [mounted, setMounted] = useState(false);
 
-  // ✅ 1. Uniformly access store actions and state
   const { 
     items, 
     addToCart, 
@@ -27,12 +26,12 @@ const CartPage = () => {
     getTotalPrice 
   } = useCartStore();
 
-  // ✅ 2. Sync userId with the 'status' guard
+
   useEffect(() => {
     setMounted(true);
     // Passing status tells the store: "If we are 'loading', don't wipe the cart!"
     setUserId(session?.user?.email || null, status);
-  }, [session, status, setUserId]);
+  }, [session , setUserId]);
 
   const handleCheckout = async () => {
     if (!session) {
@@ -61,7 +60,7 @@ const CartPage = () => {
   // Display empty state if no items
   if (items.length === 0)
     return (
-      <main className="min-h-[70vh] flex flex-col items-center justify-center px-4">
+      <main className="min-h-[70vh] flex flex-col items-center justify-center px-4 md:px-10 lg:px-20  ">
         <div className="bg-white p-12 rounded-3xl shadow-sm border border-gray-100 text-center max-w-md animate-in fade-in zoom-in duration-500">
           <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
             <FiShoppingBag className="text-4xl text-gray-300" />
@@ -147,9 +146,9 @@ const CartPage = () => {
         </div>
 
         {/* Order Summary Section */}
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 text-sm sm:text-base">
           <div className="bg-gray-900 p-10 rounded-3xl text-white shadow-2xl shadow-indigo-100 sticky top-28">
-            <h2 className="text-2xl font-black mb-8">Summary</h2>
+            <h2 className="text-lg sm:text-xl font-black mb-8">Summary</h2>
             
             <div className="space-y-6 mb-10">
               <div className="flex justify-between text-gray-400 font-medium">
@@ -163,7 +162,7 @@ const CartPage = () => {
               <div className="h-px bg-gray-800 w-full" />
               <div className="flex justify-between items-end">
                 <span className="text-gray-400 font-medium">Total Amount</span>
-                <span className="text-3xl font-black text-white">
+                <span className="text-sm sm:text-base font-black text-white">
                   ${getTotalPrice().toFixed(2)}
                 </span>
               </div>
@@ -176,11 +175,7 @@ const CartPage = () => {
               Checkout Now
             </button>
             
-            <div className="mt-8 flex items-center justify-center gap-4 opacity-50">
-              <div className="h-8 w-12 bg-white/10 rounded flex items-center justify-center text-[8px] font-bold">VISA</div>
-              <div className="h-8 w-12 bg-white/10 rounded flex items-center justify-center text-[8px] font-bold">STRIPE</div>
-              <div className="h-8 w-12 bg-white/10 rounded flex items-center justify-center text-[8px] font-bold">APPLE</div>
-            </div>
+          
           </div>
         </div>
       </div>

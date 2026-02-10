@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckCircle } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 type FormData = {
   email: string;
@@ -33,118 +33,88 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="w-full bg-[#f7f7f7] py-16 px-4 text-center">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-lg sm:text-3xl font-medium text-gray-900 mb-6">
-          Join our newsletter for exclusive updates, special offers, and curated content—delivered straight to your inbox.
+    <section className="w-full bg-white  py-20 px-4 border-t border-gray-100">
+      <div className="max-w-3xl mx-auto text-center">
+        {/* Title - Tracking tighter for luxury feel */}
+        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-4 uppercase tracking-tighter">
+          GG SHOP List
         </h2>
+        <p className="text-sm text-gray-500 uppercase tracking-widest mb-10">
+          Exclusive updates and curated content.
+        </p>
 
         {isSubmitSuccessful && !loading ? (
-          <div className="flex flex-col items-center justify-center text-green-600 space-y-3">
-            <CheckCircle className="w-10 h-10" aria-hidden="true" />
-            <p className="font-semibold text-lg">Thank you for subscribing! 🎉</p>
+          <div className="flex flex-col items-center justify-center text-gray-900 py-4 animate-in fade-in duration-500">
+            <Check className="w-8 h-8 mb-2" strokeWidth={3} />
+            <p className="text-sm font-bold uppercase tracking-widest">You're on the list.</p>
           </div>
         ) : (
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto"
-            noValidate
-            aria-live="polite"
-          >
-            {/* Email Input */}
-            <div className="w-full sm:flex-1">
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Your email address"
-                aria-invalid={errors.email ? 'true' : 'false'}
-                aria-describedby="email-error"
-                className={`w-full px-4 py-3 border rounded text-sm focus:outline-none focus:ring-2 transition ${
-                  errors.email
-                    ? 'border-red-500 focus:ring-red-400'
-                    : 'border-gray-300 focus:ring-gray-900'
-                }`}
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'Invalid email address',
-                  },
-                })}
-              />
-              {errors.email && (
-                <p
-                  id="email-error"
-                  role="alert"
-                  className="text-red-600 text-sm mt-1 text-left"
-                >
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-3 bg-gray-800 text-white rounded hover:bg-gray-900 transition duration-200 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black flex items-center justify-center gap-2 min-w-[130px]"
+          <div className="max-w-md mx-auto">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-6"
+              noValidate
             >
-              {loading ? (
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  aria-label="Loading"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  ></path>
-                </svg>
-              ) : (
-                'Subscribe'
-              )}
-            </button>
-          </form>
-        )}
+              {/* Underlined Email Input */}
+              <div className="relative group">
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="EMAIL ADDRESS"
+                  className={`w-full bg-transparent rounded  px-2 py-3 text-sm uppercase tracking-widest placeholder-gray-400 outline-none transition-colors duration-300 ${
+                    errors.email ? 'border-red-500' : 'border-gray-300 focus:border-black'
+                  }`}
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Invalid email address',
+                    },
+                  })}
+                />
+                {errors.email && (
+                  <p role="alert" className="text-[10px] text-red-600 uppercase rounded  font-bold mt-2 text-left tracking-wider">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
 
-        {/* Checkbox Agreement */}
-        {!isSubmitSuccessful && (
-          <div className="mt-6 max-w-xl mx-auto flex items-center gap-2 justify-center text-gray-700 text-sm">
-            <input
-              type="checkbox"
-              id="agree"
-              aria-invalid={errors.agree ? 'true' : 'false'}
-              aria-describedby="agree-error"
-              className="cursor-pointer rounded border-gray-300 text-black focus:ring-2 focus:ring-offset-1 focus:ring-black"
-              {...register('agree', { required: 'You must agree to subscribe' })}
-            />
-            <label htmlFor="agree" className="cursor-pointer select-none">
-              I agree to receive emails and updates.
-            </label>
+              {/* Square Button - Gray-800 to Black */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gray-800 rounded  text-white py-4 text-sm font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-black active:scale-[0.98] disabled:bg-gray-400 flex items-center justify-center"
+              >
+                {loading ? (
+                  <span className="animate-pulse">Subscribing...</span>
+                ) : (
+                  'Join the list'
+                )}
+              </button>
+            </form>
+
+            {/* Checkbox Agreement - Square & Minimal */}
+            {!isSubmitSuccessful && (
+              <div className="mt-6 flex flex-col items-center gap-2">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="agree"
+                    className="w-4 h-4 rounded-none border-gray-300 text-black focus:ring-0 accent-black cursor-pointer"
+                    {...register('agree', { required: 'Agreement required' })}
+                  />
+                  <label htmlFor="agree" className="text-[11px] text-gray-500 uppercase tracking-widest cursor-pointer select-none">
+                    I agree to the privacy policy
+                  </label>
+                </div>
+                {errors.agree && (
+                  <p className="text-[10px] text-red-600 uppercase font-bold tracking-wider">
+                    Required
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-        )}
-        {errors.agree && (
-          <p
-            id="agree-error"
-            role="alert"
-            className="text-red-600 text-sm mt-1 max-w-xl mx-auto text-center"
-          >
-            {errors.agree.message}
-          </p>
         )}
       </div>
     </section>

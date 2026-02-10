@@ -3,12 +3,12 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiShoppingCart } from 'react-icons/fi';
-import { useSession } from 'next-auth/react';
-import { ToastContainer, toast } from 'react-toastify';
 import { useModalStore } from '@/store/modalStore';
 import { useCartStore } from '@/store/cartStore'; 
 import FirstSignupmodal from './FirstSignupmodal';
+import { useSession } from '@/lib/auth-client';
+import { FaStar } from 'react-icons/fa';
+import { toast } from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -23,24 +23,18 @@ interface Product {
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
-  // ✅ Extract 'status' to prevent hydration wipes
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { openLogin } = useModalStore();
-
   const addToCart = useCartStore((state) => state.addToCart);
   const setUserId = useCartStore((state) => state.setUserId);
 
-  // ✅ 2. Sync userId to the store with the Status Guard
   useEffect(() => {
-    setUserId(session?.user?.email || null, status);
-  }, [session, status, setUserId]);
+    setUserId(session?.user?.email || null , status);
+  }, [session, setUserId]);
 
   const handleAddToCart = (product: Product) => {
     if (!session) {
-      toast.error('Please login to add items to your cart', {
-        autoClose: 2000,
-        position: 'top-right',
-      });
+      toast.error('Please login to add items', { position: 'top-right' });
       openLogin();
       return;
     }
@@ -53,81 +47,71 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
       quantity: 1,
     });
 
-    toast.success(`Added "${product.title || product.name}" to cart`, {
-      autoClose: 2000,
-      position: 'top-right',
-    });
+    toast.success(`Added to cart`, { position: 'top-right' });
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10">
       {sortedProducts.map((product) => (
         <div
           key={product.id}
-          className="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden flex flex-col relative"
+          className="group flex rounded  flex-col relative bg-transparent"
         >
-          {/* Badge */}
-          {product.category && (
-            <span className="absolute top-4 left-4 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest z-20 shadow-lg">
-              {product.category}
+          {/* Badge - Removed rounded corners */}
+          <div className="absolute top-0 right-0 z-10">
+            <span className="bg-white text-[10px] uppercase tracking-[0.15em] px-3 py-1 font-bold text-gray-900 border-l border-b border-gray-100">
+              {product.category || 'New'}
             </span>
-          )}
+          </div>
 
-          {/* Image Container */}
-          <div className="relative w-full h-72 overflow-hidden bg-white">
+          {/* Image Container - Removed rounded corners */}
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#EFEFEF]">
             <Link href={`/products/${product.id}`}>
               <Image
                 src={product.image}
                 alt={product.title || "Product"}
                 loading="lazy"
                 fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                className="object-contain p-8 transition-transform duration-700 group-hover:scale-110"
+                sizes="(max-width: 768px) 50vw, 33vw"
+                className="object-contain p-6 mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
               />
             </Link>
           </div>
 
           {/* Content */}
-          <div className="p-6 flex flex-col flex-grow bg-white border-t border-gray-50">
-            <h2 className="text-md font-bold text-gray-900 line-clamp-2 min-h-[3rem] mb-2 group-hover:text-indigo-600 transition-colors">
-              {product.title || product.name}
-            </h2>
+          <div className="pt-4 flex flex-col flex-grow">
+          
+            
 
-            {/* Price Row */}
-            <div className="flex items-center gap-3 mb-6">
-              <p className="text-xl font-black text-indigo-600">
-                ${(product.price * 0.8).toFixed(2)}
-              </p>
-              <p className="text-sm font-medium text-gray-400 line-through">
+            {/* Title & Price Header - Text set to 12px (text-sm) */}
+            <div className="flex justify-between items-start gap-2 mb-1">
+              <h2 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight line-clamp-1">
+                {product.title || product.name}
+              </h2>
+              <span className="text-[14px] font-bold text-gray-900">
                 ${product.price.toFixed(2)}
-              </p>
-              <span className="ml-auto text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded">
-                -20%
               </span>
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-3 mt-auto">
+            {/* Sub-description - Text set to 12px */}
+            <p className="text-[12px] text-gray-500 mb-4 italic line-clamp-1">
+              {product.description }
+            </p>
+
+            {/* Actions - Removed rounded-xl, using square corners */}
+            <div className="mt-auto">
               <button
                 onClick={() => handleAddToCart(product)}
-                className="flex-1 bg-gray-900 hover:bg-indigo-600 text-white text-xs py-3 rounded-xl flex items-center justify-center gap-2 font-bold transition-all duration-300 transform active:scale-95 shadow-md"
+                className="w-full bg-gray-800 hover:bg-black rounded text-white text-[12px] py-3 uppercase tracking-[0.2em] font-bold transition-all duration-300 active:scale-[0.98]"
               >
-                <FiShoppingCart size={16} /> Add to Cart
+                Add to cart - ${product.price.toFixed(2)}
               </button>
-
-              <Link
-                href={`/products/${product.id}`}
-                className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-900 py-3 rounded-xl flex items-center justify-center text-xs font-bold border border-gray-200 transition-all duration-300"
-              >
-                View Details
-              </Link>
             </div>
           </div>
         </div>
       ))}
 
       <FirstSignupmodal />
-      <ToastContainer />
     </div>
   );
 };

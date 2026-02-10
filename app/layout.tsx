@@ -5,6 +5,9 @@ import Top from "@/components/Top";
 import Nav from "@/components/Nav";
 import AuthProvider from "@/components/AuthProvider";
 import Providers from "@/components/Providers";
+import { header } from "framer-motion/client";
+import { headers } from "next/headers";
+import Toastcontainer from "@/components/Toast";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,13 +30,18 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+ 
+
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${inter.variable}`}>
       <body className="antialiased">
         <Providers>
+        <Toastcontainer />
+
         <Top />
         <Nav />
         <AuthProvider>{children}</AuthProvider>
+        
         </Providers>
       </body>
     </html>
