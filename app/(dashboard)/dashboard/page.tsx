@@ -53,7 +53,7 @@ const DashboardPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar Navigation */}
-      <div className="w-64 bg-[#101828] text-white shadow-md">
+      {/* <div className="w-64 bg-[#101828] text-white shadow-md">
         <div className="p-6 border-b border-gray-700">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
         </div>
@@ -77,7 +77,7 @@ const DashboardPage = () => {
             </li>
           </ul>
         </nav>
-      </div>
+      </div> */}
 
       {/* Main Content Area */}
       <div className="flex-1 p-10">

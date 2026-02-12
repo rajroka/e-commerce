@@ -39,7 +39,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toastcontainer />
 
         <Top />
-        <Nav />
         <AuthProvider>{children}</AuthProvider>
         
         </Providers>
