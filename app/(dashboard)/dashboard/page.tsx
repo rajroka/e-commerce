@@ -19,6 +19,8 @@ type Product = {
   reviews: number;
 };
 
+
+
 const DashboardPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,11 +28,21 @@ const DashboardPage = () => {
    const router = useRouter();
   const { data: session, isPending } = useSession();
 
-  useEffect(() => {
-    if (!isPending && !session?.user) {
+ useEffect(() => {
+  if (!isPending) {
+    if (!session) {
       router.push("/sign-in");
+      return;
     }
-  }, [isPending, session, router]);
+
+    if ((session?.user as any)?.role !== "admin") {
+      router.push("/not-authorized");
+      return;
+    }
+  }
+}, [isPending, session, router]);
+
+  
 
   
   useEffect(() => {

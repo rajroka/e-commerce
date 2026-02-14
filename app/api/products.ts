@@ -21,20 +21,6 @@ export async function postProduct(data: {  name: string; description: string; pr
 
 }
 
-
-
-
-// export async function getAllProductsApi() {
-//   try {
-//     const response = await axios.get("/api/products");
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Failed to fetch products:", error.message);
-//     throw new Error("Unable to fetch products");
-
-//   }
-// }
-
 export async function getByID(id:string){
   try {
 

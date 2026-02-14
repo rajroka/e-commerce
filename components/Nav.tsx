@@ -28,7 +28,8 @@ useEffect(() => {
   const userEmail = session?.user?.email;
   const userName = session?.user?.name;
   const userImage = session?.user?.image;
-
+  const admin = (session?.user as any)?.role
+console.log(admin)
   return (
     <header className="sticky top-0 z-50 w-full px-4 md:px-6 lg:px-10  bg-gray-900/95 backdrop-blur-md border-b border-gray-700 text-white shadow-lg">
       <div className=" mx-auto px-4 sm:px-6 lg:px-8">

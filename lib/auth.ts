@@ -2,12 +2,16 @@ import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import clientPromise from "./mongodb";
-
+import { organization } from "better-auth/plugins"
 const client = await clientPromise;
 const db = client.db();
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
+
+  trustedOrigins: ["http://localhost:3001"],
+
+  plugins: [nextCookies() ,   organization() ],
 
   socialProviders: {
     google: {
@@ -15,11 +19,18 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
+
   emailAndPassword: {
     enabled: true,
   },
-   trustedOrigins: ['http://localhost:3001'],
-  //...your config
-  plugins: [nextCookies()],
-});
 
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "user",
+      },
+    },
+  },
+});
