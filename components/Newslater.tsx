@@ -61,7 +61,7 @@ const Newsletter = () => {
                   id="email"
                   type="email"
                   placeholder="EMAIL ADDRESS"
-                  className={`w-full bg-transparent rounded  px-2 py-3 text-sm uppercase tracking-widest placeholder-gray-400 outline-none transition-colors duration-300 ${
+                  className={`w-full bg-transparent rounded border px-3 py-3 text-sm uppercase tracking-widest placeholder-gray-400 outline-none transition-colors duration-300 ${
                     errors.email ? 'border-red-500' : 'border-gray-300 focus:border-black'
                   }`}
                   {...register('email', {

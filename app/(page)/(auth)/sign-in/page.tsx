@@ -88,22 +88,36 @@ export default function SignInPage() {
         {/* Email Login */}
         <form onSubmit={handleSubmit} className="space-y-6 rounded ">
           <div className="space-y-1">
+            <label
+              htmlFor="email"
+              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
+            >
+              Email Address
+            </label>
             <input
+              id="email"
               name="email"
               type="email"
               placeholder="EMAIL ADDRESS"
               required
-              className="w-full px-2 bg-transparent rounded border-gray-300  py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
+              className="w-full px-3 bg-transparent rounded border border-gray-300 py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
             />
           </div>
 
           <div className="space-y-1">
+            <label
+              htmlFor="password"
+              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
+            >
+              Password
+            </label>
             <input
+              id="password"
               name="password"
               type="password"
               placeholder="PASSWORD"
               required
-              className="w-full bg-transparent px-2  rounded border border-gray-300  py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
+              className="w-full bg-transparent px-3 rounded border border-gray-300 py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
             />
           </div>
 

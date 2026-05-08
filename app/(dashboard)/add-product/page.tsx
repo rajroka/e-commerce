@@ -3,8 +3,9 @@
 import { FiUpload } from 'react-icons/fi';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { postProduct } from '@/app/api/products'; // your API helper
+import { postProduct } from '@/app/api/products';
 import { CldUploadWidget, CldImage } from 'next-cloudinary';
+import toast from 'react-hot-toast';
 
 type ProductFormData = {
   name: string;
@@ -17,9 +18,6 @@ type ProductFormData = {
   reviews: number;
 };
 
-
-
-
 export default function AddProductPage() {
   const {
     register,
@@ -31,17 +29,21 @@ export default function AddProductPage() {
 
   const [imageId, setImageId] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (data: ProductFormData) => {
+    setSubmitting(true);
     try {
-      const res = await postProduct(data);
-      alert('Product added successfully!');
+      await postProduct(data);
+      toast.success('Product added successfully!');
       reset();
       setImageId('');
       setImageUrl('');
     } catch (error) {
       console.error('Failed to post product:', error);
-      alert('Failed to add product.');
+      toast.error('Failed to add product. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -246,9 +248,10 @@ export default function AddProductPage() {
 
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 transition"
+          disabled={submitting}
+          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-60"
         >
-          Add Product
+          {submitting ? 'Adding...' : 'Add Product'}
         </button>
       </form>
     </div>

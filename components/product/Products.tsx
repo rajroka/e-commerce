@@ -20,7 +20,7 @@ export default function HomePage() {
   const setUserId = useCartStore((state) => state.setUserId);
 
   useEffect(() => {
-    setUserId(session?.user?.email || null , status );
+    setUserId(session?.user?.email || null, session ? "authenticated" : "unauthenticated");
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/products');
@@ -61,7 +61,17 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4  gap-4">
           {isLoading ? (
-             <p>Loading...</p> 
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white flex flex-col rounded animate-pulse">
+                <div className="aspect-[4/5] bg-gray-200" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-3 bg-gray-200 rounded w-full" />
+                  <div className="h-3 bg-gray-200 rounded w-2/3" />
+                  <div className="h-9 bg-gray-200 rounded mt-4" />
+                </div>
+              </div>
+            ))
           ) : (
             products.slice(0, 4).map((product) => (
               <div key={product.id} className="bg-white flex flex-col rounded  group">

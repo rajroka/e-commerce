@@ -28,7 +28,7 @@ export default function SignUpPage() {
     if (res.error) {
       setError(res.error.message || "Something went wrong.");
     } else {
-      router.push("/dashboard");
+      router.push("/");
     }
   }
 
@@ -54,32 +54,53 @@ export default function SignUpPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5 rounded ">
           <div className="space-y-1">
+            <label
+              htmlFor="name"
+              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
+            >
+              Full Name
+            </label>
             <input
+              id="name"
               name="name"
               placeholder="FULL NAME"
               required
-              className="w-full bg-transparent px-2 border-gray-300 py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
+              className="w-full bg-transparent px-3 border border-gray-300 rounded py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
             />
           </div>
           
           <div className="space-y-1">
+            <label
+              htmlFor="email"
+              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
+            >
+              Email Address
+            </label>
             <input
+              id="email"
               name="email"
               type="email"
               placeholder="EMAIL ADDRESS"
               required
-              className="w-full bg-transparent  px-2 border-gray-300  py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
+              className="w-full bg-transparent px-3 border border-gray-300 rounded py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
             />
           </div>
 
           <div className="space-y-1">
+            <label
+              htmlFor="password"
+              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
+            >
+              Password
+            </label>
             <input
+              id="password"
               name="password"
               type="password"
               placeholder="PASSWORD"
               required
               minLength={8}
-              className="w-full bg-transparent px-2 border-gray-300  py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
+              className="w-full bg-transparent px-3 border border-gray-300 rounded py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
             />
           </div>
 

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const links = [
+  { name: "Dashboard", href: "/dashboard" },
   { name: "All Products", href: "/all-products" },
   { name: "Add Product", href: "/add-product" },
 ];

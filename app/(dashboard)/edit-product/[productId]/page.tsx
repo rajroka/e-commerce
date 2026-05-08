@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 
 type ProductFormData = {
   name: string;
@@ -180,7 +179,6 @@ export default function EditProductPage() {
         </button>
       </form>
 
-      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }

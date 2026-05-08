@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 
@@ -52,7 +51,7 @@ const DashboardPage = () => {
         const res = await fetch('/api/products');
         if (!res.ok) throw new Error('Failed to fetch products');
         const data = await res.json();
-        setProducts(data);
+        setProducts(data.products || data);
       } catch (error) {
         toast.error('Failed to load products');
       } finally {
@@ -132,7 +131,7 @@ const DashboardPage = () => {
         )}
       </div>
 
-      <ToastContainer position="top-right" autoClose={3000} />
+      
     </div>
   );
 };

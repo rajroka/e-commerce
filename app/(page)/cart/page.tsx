@@ -29,8 +29,7 @@ const CartPage = () => {
 
   useEffect(() => {
     setMounted(true);
-    // Passing status tells the store: "If we are 'loading', don't wipe the cart!"
-    setUserId(session?.user?.email || null, status);
+    setUserId(session?.user?.email || null, session ? "authenticated" : "unauthenticated");
   }, [session , setUserId]);
 
   const handleCheckout = async () => {

@@ -1,6 +1,8 @@
+import type { Metadata } from 'next';
 import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { fetchProductById } from '@/lib/fetchproducts';
 import RelatedProducts from '@/components/RelatedProducts';
+import ProductErrorBoundary from '@/components/ProductErrorBoundary';
 
 type FetchedProduct = {
   _id: string;
@@ -11,9 +13,31 @@ type FetchedProduct = {
   image: string;
 };
 
-const Page = async ({ params }: { params:  Promise<{productId : string}> }) => {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ productId: string }>;
+}): Promise<Metadata> {
+  try {
+    const { productId } = await params;
+    const product = await fetchProductById(productId);
+    return {
+      title: `${product.name} — GG Shop`,
+      description: product.description || 'View product details at GG Shop.',
+      openGraph: {
+        images: [{ url: product.image }],
+      },
+    };
+  } catch {
+    return {
+      title: 'Product — GG Shop',
+      description: 'View product details at GG Shop.',
+    };
+  }
+}
 
-  const { productId } = await  params;
+const Page = async ({ params }: { params: Promise<{ productId: string }> }) => {
+  const { productId } = await params;
 
   let fetchedProduct: FetchedProduct | null = null;
   try {
@@ -33,7 +57,9 @@ const Page = async ({ params }: { params:  Promise<{productId : string}> }) => {
 
   return (
     <>
-      <ProductDetailsClient product={product} />
+      <ProductErrorBoundary>
+        <ProductDetailsClient product={product} />
+      </ProductErrorBoundary>
       <RelatedProducts category={product.category} />
     </>
   );

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Product from "@/lib/modals/Product";
 import connect from "@/lib/db";
 
-// GET: Fetch all products
+// GET: Fetch all products (with optional pagination)
 export async function GET(request: NextRequest) {
   await connect();
 
@@ -10,10 +10,24 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
 
+    const pageParam = parseInt(url.searchParams.get('page') || '1', 10);
+    const limitParam = parseInt(url.searchParams.get('limit') || '12', 10);
+
+    const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+    const limit = isNaN(limitParam) || limitParam < 1 ? 12 : Math.min(limitParam, 100);
+
     const filter = category ? { category } : {};
 
-    const products = await Product.find(filter);
-    return NextResponse.json(products, { status: 200 });
+    const [products, totalCount] = await Promise.all([
+      Product.find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Product.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return NextResponse.json({ products, totalCount, page, totalPages }, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });

@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    domains: ['fakestoreapi.com' ,"unsplash.com", "cloudinary.com" , "res.cloudinary.com" , "lh3.googleusercontent.com"], // ✅ allow remote images from fakestoreapi.com
+    remotePatterns: [
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'fakestoreapi.com' },
+      { protocol: 'https', hostname: 'unsplash.com' },
+    ],
   },
 };
 

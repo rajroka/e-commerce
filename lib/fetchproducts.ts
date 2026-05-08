@@ -58,3 +58,36 @@ export const getProductsByCategory = async (category: string) => {
     updatedAt: product.updatedAt?.toISOString() || '',
   }));
 };
+
+// Fetch products with pagination
+export const fetchProductsPaginated = async (page: number = 1, limit: number = 12) => {
+  await connect();
+
+  const validPage = isNaN(page) || page < 1 ? 1 : page;
+  const validLimit = isNaN(limit) || limit < 1 ? 12 : Math.min(limit, 100);
+
+  const [rawProducts, totalCount] = await Promise.all([
+    Product.find()
+      .skip((validPage - 1) * validLimit)
+      .limit(validLimit),
+    Product.countDocuments(),
+  ]);
+
+  const products = rawProducts.map((product) => ({
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description || '',
+    image: product.image,
+    price: product.price,
+    category: product.category,
+    createdAt: product.createdAt?.toISOString() || '',
+    updatedAt: product.updatedAt?.toISOString() || '',
+  }));
+
+  return {
+    products,
+    totalCount,
+    page: validPage,
+    totalPages: Math.ceil(totalCount / validLimit),
+  };
+};
