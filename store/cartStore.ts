@@ -1,5 +1,3 @@
-'use client';
-
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import toast from 'react-hot-toast';
@@ -28,14 +26,12 @@ interface CartState {
   clearFromServer: () => Promise<void>;
 }
 
-// Module-level debounce timer ref (outside Zustand state to avoid re-renders)
+// Module-level debounce timer (outside state to avoid re-renders)
 let pushDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 const schedulePush = (pushFn: () => Promise<void>) => {
   if (pushDebounceTimer) clearTimeout(pushDebounceTimer);
-  pushDebounceTimer = setTimeout(() => {
-    pushFn();
-  }, 400);
+  pushDebounceTimer = setTimeout(() => pushFn(), 600);
 };
 
 export const useCartStore = create<CartState>()(
@@ -46,49 +42,64 @@ export const useCartStore = create<CartState>()(
       syncStatus: 'idle',
 
       setUserId: (id, status) => {
-        const currentUserId = get().userId;
-
-        // 1. HYDRATION/LOADING GUARD
+        // Still resolving auth — do nothing
         if (status === 'loading') return;
 
-        // 2. EXPLICIT LOGOUT
-        if (status === 'unauthenticated' && currentUserId !== null) {
-          get().clearFromServer();
-          set({ userId: null, items: [] });
-          return;
-        }
+        const currentUserId = get().userId;
 
-        // 3. SWITCH USER
-        if (id && currentUserId && id !== currentUserId) {
-          set({ userId: id, items: [] });
-          get().syncWithServer();
-          return;
-        }
-
-        // 4. LOGIN / REFRESH SUCCESS
-        if (id) {
-          set({ userId: id });
-          if (status === 'authenticated') {
-            get().syncWithServer();
+        // Explicit logout — clear cart and remove from server
+        if (status === 'unauthenticated') {
+          if (currentUserId !== null) {
+            get().clearFromServer();
+            set({ userId: null, items: [] });
           }
+          return;
+        }
+
+        // Authenticated branch
+        if (id && status === 'authenticated') {
+          // Different user logged in — start fresh and pull from server
+          if (currentUserId && currentUserId !== id) {
+            set({ userId: id, items: [] });
+            get().syncWithServer();
+            return;
+          }
+
+          // Same user (or first login) — set userId and sync
+          set({ userId: id });
+
+          // If we already have local items (restored from localStorage on refresh),
+          // push them to keep the server in sync, then do a server read to merge.
+          get().syncWithServer();
         }
       },
 
       syncWithServer: async () => {
-        const { userId } = get();
+        const { userId, items: localItems } = get();
         if (!userId) return;
 
         set({ syncStatus: 'syncing' });
         try {
           const res = await fetch('/api/cart');
           if (res.status === 401) {
-            set({ items: [], syncStatus: 'error' });
-            toast.error('Cart sync failed. Please sign in again.');
+            set({ syncStatus: 'error' });
             return;
           }
-          if (!res.ok) throw new Error('Failed to sync cart');
+          if (!res.ok) throw new Error('sync failed');
+
           const data = await res.json();
-          set({ items: data.items || [], syncStatus: 'idle' });
+          const serverItems: CartItem[] = data.items ?? [];
+
+          if (serverItems.length > 0) {
+            // Server has items — use them (authoritative)
+            set({ items: serverItems, syncStatus: 'idle' });
+          } else if (localItems.length > 0) {
+            // Server is empty but we have local items — push them up
+            set({ syncStatus: 'idle' });
+            schedulePush(get().pushToServer);
+          } else {
+            set({ syncStatus: 'idle' });
+          }
         } catch {
           set({ syncStatus: 'error' });
           toast.error('Cart sync failed. Please sign in again.');
@@ -106,7 +117,7 @@ export const useCartStore = create<CartState>()(
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ items }),
           });
-          if (!res.ok) throw new Error('Failed to push cart');
+          if (!res.ok) throw new Error('push failed');
           set({ syncStatus: 'idle' });
         } catch {
           set({ syncStatus: 'error' });
@@ -114,9 +125,6 @@ export const useCartStore = create<CartState>()(
       },
 
       clearFromServer: async () => {
-        const { userId } = get();
-        if (!userId) return;
-
         try {
           await fetch('/api/cart', { method: 'DELETE' });
         } catch {
@@ -125,16 +133,15 @@ export const useCartStore = create<CartState>()(
       },
 
       addToCart: (item) => {
-        const { items } = get();
-        const existing = items.find((i) => i.id === item.id);
+        const existing = get().items.find((i) => i.id === item.id);
         if (existing) {
           set({
-            items: items.map((i) =>
+            items: get().items.map((i) =>
               i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
             ),
           });
         } else {
-          set({ items: [...items, { ...item, quantity: 1 }] });
+          set({ items: [...get().items, { ...item, quantity: 1 }] });
         }
         schedulePush(get().pushToServer);
       },
@@ -145,13 +152,13 @@ export const useCartStore = create<CartState>()(
       },
 
       decreaseQuantity: (id) => {
-        const { items } = get();
-        const existing = items.find((i) => i.id === id);
-        if (existing?.quantity === 1) {
-          set({ items: items.filter((i) => i.id !== id) });
-        } else if (existing) {
+        const existing = get().items.find((i) => i.id === id);
+        if (!existing) return;
+        if (existing.quantity === 1) {
+          set({ items: get().items.filter((i) => i.id !== id) });
+        } else {
           set({
-            items: items.map((i) =>
+            items: get().items.map((i) =>
               i.id === id ? { ...i, quantity: i.quantity - 1 } : i
             ),
           });
@@ -165,11 +172,18 @@ export const useCartStore = create<CartState>()(
       },
 
       getTotalQuantity: () => get().items.reduce((acc, i) => acc + i.quantity, 0),
-      getTotalPrice: () => get().items.reduce((acc, i) => acc + i.price * i.quantity, 0),
+      getTotalPrice:    () => get().items.reduce((acc, i) => acc + i.price * i.quantity, 0),
     }),
     {
-      name: 'gg-shop-persistent-v1',
-      storage: createJSONStorage(() => localStorage),
+      name: 'gg-shop-cart-v2',
+      storage: createJSONStorage(() => {
+        if (typeof window === 'undefined') {
+          // SSR: no-op storage so server render doesn't throw
+          return { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+        }
+        return localStorage;
+      }),
+      // Persist items + userId so they survive page refresh
       partialize: (state) => ({ items: state.items, userId: state.userId }),
     }
   )

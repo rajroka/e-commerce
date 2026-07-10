@@ -6,3 +6,13 @@ body {
   background-color: #f9fafb;
   color: #111827;
 }
+
+/* ── Scrollbar hide utility (used in category row, flash sale rail, tabs) ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+

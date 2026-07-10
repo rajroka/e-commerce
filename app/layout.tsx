@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import Top from "@/components/Top";
 import Toastcontainer from "@/components/Toast";
+import Nav from "@/components/Nav";
+import StoreHydration from "@/components/StoreHydration";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -21,9 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={roboto.variable} suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
       
+        <StoreHydration />
         <Toastcontainer />
-
-        <Top />
+        <Nav />
         {children}
         
       

@@ -5,9 +5,7 @@ import Link from 'next/link';
 const Relatedcatcard = ({ products }: { products: any[] }) => {
   if (products.length === 0) {
     return (
-      <p className="text-center text-sm text-gray-500 uppercase tracking-widest py-8 px-4">
-        No related products found.
-      </p>
+      <p className="text-center text-sm text-gray-500 py-8 px-4">No related products found.</p>
     );
   }
 
@@ -17,9 +15,9 @@ const Relatedcatcard = ({ products }: { products: any[] }) => {
         <Link
           href={`/products/${product._id}`}
           key={product._id}
-          className="group bg-white border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-300"
+          className="group bg-white border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-300 rounded-xl overflow-hidden"
         >
-          <div className="relative aspect-[4/5] bg-[#EFEFEF] overflow-hidden">
+          <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
             <Image
               src={product.image}
               alt={product.name}
@@ -29,10 +27,8 @@ const Relatedcatcard = ({ products }: { products: any[] }) => {
             />
           </div>
           <div className="p-4">
-            <h3 className="text-sm font-bold uppercase tracking-tight text-gray-900 line-clamp-1">
-              {product.name}
-            </h3>
-            <p className="text-sm font-bold text-gray-700 mt-1">${product.price}</p>
+            <h3 className="text-sm font-medium text-gray-900 line-clamp-1">{product.name}</h3>
+            <p className="text-sm font-semibold text-gray-700 mt-1">${product.price}</p>
           </div>
         </Link>
       ))}
