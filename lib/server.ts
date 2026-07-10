@@ -1,2 +1,2 @@
-import { auth } from "./auth"; // path to your Better Auth server instance
-
+// Server-side auth helper - re-export for convenience
+export { auth } from './auth';

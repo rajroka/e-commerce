@@ -1,37 +1,19 @@
+'use client';
 
-
-
-
-import React, {  } from 'react';
+import React from 'react';
 import { allProducts } from '../app/api/Allblog';
+import ProductList from '@/components/Productlist';
 
-import Sidebar from '@/components/Sidebar';
-import Productlist from '@/components/Productlist';
+// NOTE: This component is not used in the current routing setup.
+// Products are served by app/(page)/products/page.tsx using the MongoDB API.
+// Kept for reference only.
 
-const Page = async () => {
+const FilteredPage = async () => {
+  const products = await allProducts();
 
-
-
-
-
-  
-         const products  = await allProducts();
-          
-
-
-  
-
-       
-  
- 
   return (
-    <>
-      <Sidebar />
-      <Productlist products={products} />
-      
-      
-    </>
+    <ProductList products={products || []} />
   );
 };
 
-export default Page;
+export default FilteredPage;

@@ -11,7 +11,7 @@ const AboutPage = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-2">About Us</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            We’re passionate about providing high-quality products and unforgettable experiences.
+            We&apos;re passionate about providing high-quality products and unforgettable experiences.
           </p>
         </div>
 
@@ -29,7 +29,7 @@ const AboutPage = () => {
             <Image
               src="/images/about-mission.jpg"
               alt="Our Mission"
-              layout="fill"
+              fill
               className="rounded-xl object-cover"
             />
           </div>
@@ -55,7 +55,7 @@ const AboutPage = () => {
                 <Image
                   src={member.img}
                   alt={member.name}
-                  layout="fill"
+                  fill
                   className="rounded-full object-cover"
                 />
               </div>
@@ -72,7 +72,7 @@ const AboutPage = () => {
             <li>Customer First</li>
             <li>Innovation Driven</li>
             <li>Quality Obsessed</li>
-            <li>Trust & Transparency</li>
+            <li>Trust &amp; Transparency</li>
             <li>Continuous Growth</li>
             <li>Team Collaboration</li>
           </ul>

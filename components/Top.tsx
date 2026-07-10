@@ -18,7 +18,7 @@ const Top = () => {
           <Link href="/contact" className="hover:text-white hover:underline transition">
             Contact
           </Link>
-          <Link href="/help" className="hover:text-white hover:underline transition flex items-center gap-1">
+          <Link href="/faq" className="hover:text-white hover:underline transition flex items-center gap-1">
             <FiHelpCircle size={16} /> Help Center
           </Link>
           <Link href="/privacy" className="hover:text-white hover:underline transition">

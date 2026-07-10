@@ -23,10 +23,9 @@ const AllProductsPage = () => {
 
   const deleteProduct = async (id: string) => {
     try {
-      const response = await deleteProductByID(id);
-      if (response) {
-        setProducts((prev) => prev.filter((p) => p._id !== id));
-      }
+      await deleteProductByID(id);
+      // Optimistically remove from UI regardless of response shape
+      setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch (error) {
       console.error('Error deleting product:', error);
     }

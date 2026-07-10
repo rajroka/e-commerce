@@ -36,6 +36,7 @@ const Footer = () => {
             <li><Link href="/shipping" className="hover:text-white transition duration-200">Shipping & Returns</Link></li>
             <li><Link href="/faq" className="hover:text-white transition duration-200">FAQ</Link></li>
             <li><Link href="/privacy" className="hover:text-white transition duration-200">Privacy Policy</Link></li>
+            <li><Link href="/terms" className="hover:text-white transition duration-200">Terms of Service</Link></li>
           </ul>
         </div>
 
@@ -57,7 +58,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="mt-20 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">
+        <div className="text-[10px] text-gray-500 uppercase tracking-[0.2em]" suppressHydrationWarning>
           © {new Date().getFullYear()} GG COSMETICS. ALL RIGHTS RESERVED.
         </div>
         <div className="flex gap-6 text-[10px] text-gray-500 uppercase tracking-[0.2em]">

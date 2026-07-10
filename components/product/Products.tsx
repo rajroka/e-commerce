@@ -20,11 +20,12 @@ export default function HomePage() {
   const setUserId = useCartStore((state) => state.setUserId);
 
   useEffect(() => {
-    setUserId(session?.user?.email || null, session ? "authenticated" : "unauthenticated");
+    setUserId(session?.user?.id || null, session ? "authenticated" : "unauthenticated");
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/products');
-        setProducts(response.data);
+        // API returns { products, totalCount, page, totalPages }
+        setProducts(response.data.products || response.data);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -74,7 +75,7 @@ export default function HomePage() {
             ))
           ) : (
             products.slice(0, 4).map((product) => (
-              <div key={product.id} className="bg-white flex flex-col rounded  group">
+              <div key={product._id || product.id} className="bg-white flex flex-col rounded  group">
                 {/* Image Container */}
                 <div className="relative aspect-[4/5] bg-[#EFEFEF] overflow-hidden">
                   {/* Badge */}

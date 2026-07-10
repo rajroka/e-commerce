@@ -1,41 +1,26 @@
 "use client";
-import Companies from "@/components/Companies";
-import DiscountPopup from "@/components/DiscountPopup";
 
-import ProductNav from "@/components/ProductNav";
-import Top from "@/components/Top";
-import { Provider } from "react-redux";
-// import Modal from "@/components/Modal";
+import dynamic from "next/dynamic";
+import DiscountPopup from "@/components/DiscountPopup";
 import Customerservice from "@/components/Customerservice";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
-
 import Newslater from "@/components/Newslater";
-import Attendance from "@/components/Attendance";
 import Products from "@/components/product/Products";
-import NextNProgress from 'nextjs-progressbar';
 
+// Loaded client-only to avoid SSR style injection mismatch
+const NextNProgress = dynamic(() => import("nextjs-progressbar"), { ssr: false });
 
 export default function Home() {
   return (
     <>
-    {/* <Provider store={store}> */}
-     <NextNProgress />
-     {/* <Component {...pageProps} />; */}
-      {/* <ProductNav /> */}
+      <NextNProgress />
       <DiscountPopup>Special Offer!</DiscountPopup>
-      {/* <Modal  /> */}
       <Hero />
-       <Products/>
+      <Products />
       <Newslater />
       <Customerservice />
-      {/* <Companies /> */}
-    
-            <Footer />
-
-
-      {/* </Provider> */}
+      <Footer />
     </>
-
   );
 }

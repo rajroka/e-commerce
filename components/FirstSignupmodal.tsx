@@ -4,7 +4,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useModalStore } from '@/store/modalStore';
 
@@ -33,32 +33,12 @@ const FirstSignupmodal = () => {
       setIsLoading(true);
       await axios.post('/api/users/signup', data);
 
-      toast.success('Signup successful!', {
-        autoClose: 2000,
-        position: 'bottom-right',
-        style: {
-          background: '#4CAF50',
-          color: '#fff',
-          fontSize: '16px',
-          padding: '10px',
-          borderRadius: '5px',
-        },
-      });
+      toast.success('Signup successful!');
 
       reset();
       closeSignup();
     } catch (error: any) {
-      toast.error('Signup failed. Please try again.', {
-        autoClose: 2000,
-        position: 'bottom-right',
-        style: {
-          background: '#F44336',
-          color: '#fff',
-          fontSize: '16px',
-          padding: '10px',
-          borderRadius: '5px',
-        },
-      });
+      toast.error('Signup failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -177,7 +157,6 @@ const FirstSignupmodal = () => {
             </button>
           </div>
         </form>
-        <ToastContainer />
       </div>
     </div>
   );

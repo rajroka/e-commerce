@@ -35,7 +35,7 @@ const DashboardPage = () => {
     }
 
     if ((session?.user as any)?.role !== "admin") {
-      router.push("/not-authorized");
+      router.push("/");
       return;
     }
   }
@@ -119,7 +119,7 @@ const DashboardPage = () => {
                     <p className="text-gray-800 font-bold mt-2">${product.price}</p>
                   </div>
                   <Link
-                    href={`/dashboard/edit-product/${product._id}`}
+                    href={`/edit-product/${product._id}`}
                     className="mt-4 block text-center bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
                   >
                     Edit

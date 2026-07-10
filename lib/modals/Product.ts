@@ -1,35 +1,18 @@
-import { model, models, Schema } from "mongoose";
+import { model, models, Schema } from 'mongoose';
 
 const productSchema = new Schema(
   {
-    // Admin only fields
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    image: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    image: { type: String, required: true },
+    category: { type: String, required: true },
+    stock: { type: Number, required: true, default: 0, min: 0 },
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    reviewCount: { type: Number, default: 0 },
   },
-  {
-    timestamps: true, // createdAt and updatedAt
-  }
+  { timestamps: true }
 );
 
-// Prevent model overwrite
-const Product = models.Product || model("Product", productSchema);
-
+const Product = models.Product || model('Product', productSchema);
 export default Product;

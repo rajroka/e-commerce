@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import Top from "@/components/Top";
 import Toastcontainer from "@/components/Toast";
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ['500', '600', '700', '800'],
+  weight: ["300", "400", "500", "700", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,11 +17,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
- 
-
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${inter.variable}`}>
-      <body className="antialiased">
+    <html lang="en" className={roboto.variable} suppressHydrationWarning>
+      <body className="antialiased" suppressHydrationWarning>
       
         <Toastcontainer />
 

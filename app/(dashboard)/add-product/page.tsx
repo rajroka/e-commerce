@@ -86,7 +86,7 @@ export default function AddProductPage() {
 
         {/* Image Upload Button */}
         <CldUploadWidget
-          uploadPreset="unsigned"
+          uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'unsigned'}
           onSuccess={({ event, info }) => {
             if (event === 'success') {
               const uploadInfo = info as  { public_id: string; url: string };

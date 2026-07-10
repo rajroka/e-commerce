@@ -29,7 +29,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
   const setUserId = useCartStore((state) => state.setUserId);
 
   useEffect(() => {
-    setUserId(session?.user?.email || null, session ? "authenticated" : "unauthenticated");
+    setUserId(session?.user?.id || null, session ? "authenticated" : "unauthenticated");
   }, [session, setUserId]);
 
   const handleAddToCart = (product: Product) => {

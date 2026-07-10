@@ -1,24 +1,12 @@
 import axios from 'axios';
-import { data } from 'framer-motion/client';
-import { NextResponse } from 'next/server';
 
-export async function postProduct(data: {  name: string; description: string; price: number; image: string; category: string; stock: number; rating: number; reviews: number; }){
+export async function postProduct(data: { name: string; description: string; price: number; image: string; category: string; stock: number; rating: number; reviews: number; }) {
   const response = await axios.post('/api/products', data, {
     headers: {
-      'Content-Type': 'application/json'
-  }
-
-
-
-    
-   
-
-
-
-
-  })
+      'Content-Type': 'application/json',
+    },
+  });
   return response.data;
-
 }
 
 export async function getByID(id:string){
@@ -101,24 +89,12 @@ export async function updateProductByID(id: string, data: any) {
 
 
 
-export async function deleteProductByID(id: string){
-
+export async function deleteProductByID(id: string) {
   try {
-
     const response = await axios.delete(`/api/products/${id}`);
-    if (response.status !== 200) {
-      throw new Error('Failed to delete product');
-    }
-
-    return response.data; 
-
-    
+    return response.data;
   } catch (error) {
-
-
-    console.error("Error deleting product:", error);
-    NextResponse.json({"message": "Failed to delete product"}, { status: 500 });
-    
+    console.error('Error deleting product:', error);
+    throw new Error('Failed to delete product');
   }
-
 }
