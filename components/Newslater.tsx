@@ -1,104 +1,75 @@
 'use client';
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Mail01Icon, CheckIcon, LoaderPinwheelIcon } from '@hugeicons/core-free-icons';
 
-type FormData = { email: string; agree: boolean };
+const STROKE = 1.5;
 
-const Newsletter = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitSuccessful },
-    reset,
-  } = useForm<FormData>();
+export default function Newsletter() {
+  const [email,   setEmail]   = useState('');
+  const [agreed,  setAgreed]  = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [done,    setDone]    = useState(false);
+  const [error,   setError]   = useState('');
 
-  const [loading, setLoading] = React.useState(false);
-
-  const onSubmit = async (data: FormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (!agreed)              { setError('Please agree to the privacy policy.'); return; }
+    if (!email.includes('@')) { setError('Please enter a valid email address.'); return; }
     setLoading(true);
-    try {
-      await new Promise((res) => setTimeout(res, 1500));
-      console.log('Subscribed:', data);
-      reset();
-    } catch (err) {
-      console.error('Subscription error:', err);
-    } finally {
-      setLoading(false);
-    }
+    await new Promise(r => setTimeout(r, 1200));
+    setLoading(false);
+    setDone(true);
   };
 
   return (
-    <section className="w-full bg-white py-20 px-4 border-t border-gray-100">
-      <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-          Stay in the loop
-        </h2>
-        <p className="text-sm text-gray-500 mb-10">
-          Exclusive updates, new arrivals and curated picks — straight to your inbox.
+    <section className="w-full bg-white border-t border-gray-100 py-16 px-4 sm:px-8">
+      <div className="max-w-lg mx-auto text-center">
+
+        <div className="w-11 h-11 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
+          <HugeiconsIcon icon={Mail01Icon} size={20} color="#ef4444" strokeWidth={STROKE} />
+        </div>
+
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Stay in the loop</h2>
+        <p className="text-sm text-gray-500 mb-8">
+          New arrivals, exclusive deals, and curated picks — straight to your inbox.
         </p>
 
-        {isSubmitSuccessful && !loading ? (
-          <div className="flex flex-col items-center justify-center text-gray-900 py-4 animate-in fade-in duration-500">
-            <Check className="w-8 h-8 mb-2" strokeWidth={3} />
-            <p className="text-sm font-semibold">You&apos;re on the list.</p>
+        {done ? (
+          <div className="flex flex-col items-center gap-3 py-4">
+            <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+              <HugeiconsIcon icon={CheckIcon} size={22} color="#22c55e" strokeWidth={STROKE} />
+            </div>
+            <p className="text-sm font-semibold text-gray-900">You're on the list!</p>
+            <p className="text-xs text-gray-400">We'll be in touch with the good stuff.</p>
           </div>
         ) : (
-          <div className="max-w-md mx-auto">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
-              <div className="relative">
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Your email address"
-                  className={`w-full bg-transparent rounded-lg border px-4 py-3 text-sm placeholder-gray-400 outline-none transition-colors duration-200 ${
-                    errors.email ? 'border-red-500' : 'border-gray-300 focus:border-red-400'
-                  }`}
-                  {...register('email', {
-                    required: 'Email is required',
-                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email address' },
-                  })}
-                />
-                {errors.email && (
-                  <p role="alert" className="text-xs text-red-600 font-medium mt-1.5 text-left">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-red-500 hover:bg-red-600 rounded-full text-white py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:bg-gray-300 flex items-center justify-center"
-              >
-                {loading ? <span className="animate-pulse">Subscribing…</span> : 'Subscribe'}
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            <div className="flex gap-2">
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="Your email address" required
+                className={`input flex-1 ${error ? 'border-red-400' : ''}`} />
+              <button type="submit" disabled={loading}
+                className="btn-primary px-5 rounded-xl flex-shrink-0 gap-1.5">
+                {loading
+                  ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={16} color="white" strokeWidth={STROKE} className="animate-spin" />
+                  : 'Subscribe'}
               </button>
-            </form>
-
-            {!isSubmitSuccessful && (
-              <div className="mt-5 flex flex-col items-center gap-2">
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="agree"
-                    className="w-4 h-4 border-gray-300 text-red-500 focus:ring-0 accent-red-500 cursor-pointer"
-                    {...register('agree', { required: 'Agreement required' })}
-                  />
-                  <label htmlFor="agree" className="text-xs text-gray-500 cursor-pointer select-none">
-                    I agree to the privacy policy
-                  </label>
-                </div>
-                {errors.agree && (
-                  <p className="text-xs text-red-600 font-medium">Required</p>
-                )}
-              </div>
-            )}
-          </div>
+            </div>
+            {error && <p className="text-xs text-red-500 text-left">{error}</p>}
+            <label className="flex items-start gap-2.5 cursor-pointer text-left">
+              <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
+                className="w-4 h-4 mt-0.5 accent-red-500 cursor-pointer flex-shrink-0" />
+              <span className="text-xs text-gray-500 leading-relaxed">
+                I agree to receive marketing emails. I can unsubscribe at any time. View our{' '}
+                <a href="/privacy" className="underline hover:text-gray-700">Privacy Policy</a>.
+              </span>
+            </label>
+          </form>
         )}
       </div>
     </section>
   );
-};
-
-export default Newsletter;
+}

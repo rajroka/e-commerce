@@ -1,18 +1,131 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   Primary:  red-500 (#ef4444)
+   Surface:  white
+   Page bg:  gray-50 (#f9fafb)
+   Border:   gray-100 (#f3f4f6) light / gray-200 (#e5e7eb) medium
+   Text:     gray-900 heading / gray-600 body / gray-400 muted
+   Radius:   4px small / 8px base / 12px card / 20px large / 9999px pill
+   Shadow:   0 1px 3px rgba(0,0,0,.06) card / 0 4px 16px rgba(0,0,0,.08) modal
+   Font:     Roboto — 400 body / 500 label / 600 button / 700 heading
+───────────────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
   font-family: var(--font-roboto), Roboto, sans-serif;
   background-color: #f9fafb;
   color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Scrollbar hide utility (used in category row, flash sale rail, tabs) ── */
+/* ── Scrollbar hide ── */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ── Focus visible ring ── */
+:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ── Smooth accordion (FAQ) ── */
+details > summary { cursor: pointer; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+/* ── Page section spacing ── */
+.section { padding-block: 4rem; }
+@media (min-width: 768px) { .section { padding-block: 5rem; } }
+
+/* ── Consistent card ── */
+.card {
+  background: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 
+/* ── Primary button ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .625rem 1.25rem;
+  background: #ef4444;
+  color: white;
+  font-size: .875rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: background .15s, transform .1s;
+}
+.btn-primary:hover { background: #dc2626; }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+
+/* ── Ghost button ── */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .625rem 1.25rem;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: .875rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: border-color .15s, background .15s;
+}
+.btn-ghost:hover { border-color: #9ca3af; background: #f9fafb; }
+
+/* ── Input base ── */
+.input {
+  width: 100%;
+  padding: .625rem .875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: .875rem;
+  background: white;
+  color: #111827;
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+}
+.input:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.12);
+}
+.input::placeholder { color: #9ca3af; }
+
+/* ── Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .25rem .625rem;
+  border-radius: 9999px;
+  font-size: .75rem;
+  font-weight: 500;
+}
+
+/* ── Page header (shared across legal/info pages) ── */
+.page-header { margin-bottom: 2.5rem; }
+.page-header h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+.page-header p {
+  margin-top: .5rem;
+  font-size: .875rem;
+  color: #6b7280;
+}

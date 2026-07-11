@@ -1,87 +1,84 @@
 import type { Metadata } from 'next';
 import ContactForm from './ContactForm';
-import { FiMapPin, FiMail, FiPhone } from 'react-icons/fi';
+import { FiMapPin, FiMail, FiPhone, FiClock } from 'react-icons/fi';
 
 export const metadata: Metadata = {
   title: 'Contact Us — GG Shop',
-  description:
-    'Get in touch with GG Shop. Send us a message, find our address, or reach us by phone.',
+  description: 'Get in touch with GG Shop. Send us a message, find our address, or reach us by phone.',
 };
+
+const details = [
+  {
+    icon: <FiMapPin size={18} className="text-red-500 flex-shrink-0 mt-0.5" />,
+    label: 'Address',
+    value: 'Lakeside, Pokhara\nGandaki Province, Nepal',
+  },
+  {
+    icon: <FiMail size={18} className="text-red-500 flex-shrink-0 mt-0.5" />,
+    label: 'Email',
+    value: 'support@ggshop.com',
+    href: 'mailto:support@ggshop.com',
+  },
+  {
+    icon: <FiPhone size={18} className="text-red-500 flex-shrink-0 mt-0.5" />,
+    label: 'Phone',
+    value: '+977-61-123456',
+    href: 'tel:+97761123456',
+  },
+];
+
+const hours = [
+  { days: 'Sunday – Friday', time: '9:00 AM – 6:00 PM' },
+  { days: 'Saturday',        time: '10:00 AM – 4:00 PM' },
+];
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-[#F9F4F5] py-16 px-4 sm:px-8">
+    <main className="min-h-screen bg-gray-50 py-16 px-4 sm:px-8">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900">Contact Us</h1>
-          <p className="text-sm text-gray-500 uppercase tracking-widest mt-2">
-            We'd love to hear from you
-          </p>
+
+        <div className="page-header">
+          <h1>Contact Us</h1>
+          <p>We'd love to hear from you. Fill in the form or reach out directly.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form (client component) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ContactForm />
 
-          {/* Store Info */}
-          <div className="space-y-8">
-            <div className="bg-white border border-gray-100 shadow-sm p-8 space-y-6">
-              <h2 className="text-sm font-black uppercase tracking-widest text-gray-900">
-                Get in Touch
-              </h2>
-
-              <div className="flex items-start gap-4">
-                <FiMapPin className="text-gray-400 mt-0.5 shrink-0" size={18} />
-                <div>
-                  <p className="text-sm font-bold text-gray-900 uppercase tracking-tight">Address</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Lakeside, Pokhara<br />
-                    Gandaki Province, Nepal
-                  </p>
+          <div className="space-y-5">
+            {/* Contact details */}
+            <div className="card p-6 sm:p-8 space-y-5">
+              <h2 className="text-base font-semibold text-gray-900">Get in touch</h2>
+              {details.map(d => (
+                <div key={d.label} className="flex items-start gap-4">
+                  {d.icon}
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 mb-0.5">{d.label}</p>
+                    {d.href ? (
+                      <a href={d.href} className="text-sm text-gray-700 hover:text-red-500 transition-colors whitespace-pre-line">
+                        {d.value}
+                      </a>
+                    ) : (
+                      <p className="text-sm text-gray-700 whitespace-pre-line">{d.value}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <FiMail className="text-gray-400 mt-0.5 shrink-0" size={18} />
-                <div>
-                  <p className="text-sm font-bold text-gray-900 uppercase tracking-tight">Email</p>
-                  <a
-                    href="mailto:support@ggcosmetics.com"
-                    className="text-sm text-gray-500 hover:text-gray-900 transition-colors mt-1 block"
-                  >
-                    support@ggcosmetics.com
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <FiPhone className="text-gray-400 mt-0.5 shrink-0" size={18} />
-                <div>
-                  <p className="text-sm font-bold text-gray-900 uppercase tracking-tight">Phone</p>
-                  <a
-                    href="tel:+977-61-123456"
-                    className="text-sm text-gray-500 hover:text-gray-900 transition-colors mt-1 block"
-                  >
-                    +977-61-123456
-                  </a>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="bg-white border border-gray-100 shadow-sm p-8">
-              <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-                Business Hours
-              </h2>
-              <div className="space-y-2 text-sm text-gray-500">
-                <div className="flex justify-between">
-                  <span className="uppercase tracking-widest text-[11px]">Sunday – Friday</span>
-                  <span className="font-bold text-gray-900 text-[11px]">9:00 AM – 6:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="uppercase tracking-widest text-[11px]">Saturday</span>
-                  <span className="font-bold text-gray-900 text-[11px]">10:00 AM – 4:00 PM</span>
-                </div>
+            {/* Business hours */}
+            <div className="card p-6 sm:p-8">
+              <div className="flex items-center gap-2 mb-4">
+                <FiClock size={16} className="text-red-500" />
+                <h2 className="text-base font-semibold text-gray-900">Business hours</h2>
+              </div>
+              <div className="space-y-3">
+                {hours.map(h => (
+                  <div key={h.days} className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">{h.days}</span>
+                    <span className="font-medium text-gray-900">{h.time}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

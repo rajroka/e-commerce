@@ -11,6 +11,9 @@ type FetchedProduct = {
   description?: string;
   category: string;
   image: string;
+  stock: number;
+  rating: number;
+  reviewCount: number;
 };
 
 export async function generateMetadata({
@@ -47,12 +50,15 @@ const Page = async ({ params }: { params: Promise<{ productId: string }> }) => {
   }
 
   const product = {
-    id: fetchedProduct._id,
-    title: fetchedProduct.name,
-    price: fetchedProduct.price,
+    id:          fetchedProduct._id,
+    title:       fetchedProduct.name,
+    price:       fetchedProduct.price,
     description: fetchedProduct.description || 'No description available',
-    category: fetchedProduct.category,
-    image: fetchedProduct.image,
+    category:    fetchedProduct.category,
+    image:       fetchedProduct.image,
+    stock:       fetchedProduct.stock,
+    rating:      fetchedProduct.rating,
+    reviewCount: fetchedProduct.reviewCount,
   };
 
   return (

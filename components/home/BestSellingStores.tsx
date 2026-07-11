@@ -2,7 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaStar } from 'react-icons/fa';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { StarIcon } from '@hugeicons/core-free-icons';
+
+const STROKE = 1.5;
 
 // Static store data modelled after the design screenshot
 const stores = [
@@ -99,7 +102,7 @@ export default function BestSellingStores() {
 
               {/* Stars + count */}
               <div className="flex items-center gap-1 mt-3">
-                <FaStar size={11} className="text-yellow-400" />
+                <HugeiconsIcon icon={StarIcon} size={11} color="#facc15" strokeWidth={STROKE} />
                 <span className="text-xs font-bold text-gray-700">{store.rating}</span>
                 <span className="text-[10px] text-gray-400">· {store.products} items</span>
               </div>

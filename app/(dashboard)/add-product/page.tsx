@@ -1,11 +1,14 @@
 'use client';
 
-import { FiUpload } from 'react-icons/fi';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { postProduct } from '@/app/api/products';
 import { CldUploadWidget, CldImage } from 'next-cloudinary';
 import toast from 'react-hot-toast';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Upload01Icon, AddCircleIcon, LoaderPinwheelIcon } from '@hugeicons/core-free-icons';
+
+const STROKE = 1.5;
 
 type ProductFormData = {
   name: string;
@@ -14,33 +17,29 @@ type ProductFormData = {
   image: string;
   category: string;
   stock: number;
-  rating: number;
-  reviews: number;
 };
 
-export default function AddProductPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    reset,
-  } = useForm<ProductFormData>();
+const inputCls = (err = false) =>
+  `w-full border ${err ? 'border-red-400' : 'border-gray-200'} rounded-xl px-3 py-2.5 text-sm outline-none focus:border-red-400 focus:ring-1 focus:ring-red-200 transition-colors`;
 
-  const [imageId, setImageId] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <label className="block text-xs font-medium text-gray-600 mb-1.5">{children}</label>
+);
+
+export default function AddProductPage() {
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<ProductFormData>();
+  const [imageId,    setImageId]    = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (data: ProductFormData) => {
+    if (!data.image) { toast.error('Please upload a product image'); return; }
     setSubmitting(true);
     try {
       await postProduct(data);
-      toast.success('Product added successfully!');
+      toast.success('Product added!');
       reset();
       setImageId('');
-      setImageUrl('');
-    } catch (error) {
-      console.error('Failed to post product:', error);
+    } catch {
       toast.error('Failed to add product. Please try again.');
     } finally {
       setSubmitting(false);
@@ -48,212 +47,96 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-3xl font-semibold mb-6 text-center text-gray-900">Add New Product</h1>
+    <div className="max-w-xl">
+      <div className="flex items-center gap-3 mb-6">
+        <HugeiconsIcon icon={AddCircleIcon} size={22} color="#ef4444" strokeWidth={STROKE} />
+        <h1 className="text-2xl font-bold text-gray-900">Add New Product</h1>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-        {/* Product Name */}
-        <div>
-          <label htmlFor="name" className="block mb-1 font-medium text-gray-700">
-            Product Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="name"
-            {...register('name', { required: 'Product name is required' })}
-            className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter product name"
-          />
-          {errors.name && (
-            <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
-          )}
-        </div>
-
-        {/* Image Preview */}
-        {imageId && (
-          <div className="mb-4 flex justify-center">
-            <CldImage
-              src={imageId}
-              alt="Uploaded product image"
-              width={480}
-              height={300}
-              className="rounded-md object-contain"
-            />
-          </div>
-        )}
-
-        {/* Image Upload Button */}
-        <CldUploadWidget
-          uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'unsigned'}
-          onSuccess={({ event, info }) => {
-            if (event === 'success') {
-              const uploadInfo = info as  { public_id: string; url: string };
-              setImageId(uploadInfo?.public_id || '');
-              setImageUrl(uploadInfo?.url || '');
-              setValue('image', uploadInfo?.url || '');
-            }
-          }}
-        >
-          {({ open }) => (
-            <button
-              type="button"
-              onClick={() => open()}
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded hover:bg-indigo-700 transition"
+          {/* Image upload */}
+          <div>
+            <Label>Product Image <span className="text-red-400">*</span></Label>
+            {imageId && (
+              <div className="mb-3 rounded-xl overflow-hidden border border-gray-100">
+                <CldImage src={imageId} alt="Product" width={480} height={300} className="w-full object-contain max-h-52" />
+              </div>
+            )}
+            <CldUploadWidget
+              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'unsigned'}
+              onSuccess={({ event, info }) => {
+                if (event === 'success') {
+                  const i = info as { public_id: string; secure_url: string };
+                  setImageId(i.public_id);
+                  setValue('image', i.secure_url, { shouldValidate: true });
+                }
+              }}
             >
-              <FiUpload className="text-lg" />
-              Upload Image
-            </button>
-          )}
-        </CldUploadWidget>
-        <input type="hidden" {...register('image', { required: 'Image is required' })} />
-        {errors.image && (
-          <p className="text-red-600 text-sm mt-1">{errors.image.message}</p>
-        )}
+              {({ open }) => (
+                <button type="button" onClick={() => open()}
+                  className="inline-flex items-center gap-2 bg-gray-900 hover:bg-red-500 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+                  <HugeiconsIcon icon={Upload01Icon} size={15} color="white" strokeWidth={STROKE} />
+                  {imageId ? 'Change Image' : 'Upload Image'}
+                </button>
+              )}
+            </CldUploadWidget>
+            <input type="hidden" {...register('image', { required: 'Image is required' })} />
+            {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image.message}</p>}
+          </div>
 
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block mb-1 font-medium text-gray-700">
-            Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="description"
-            {...register('description', { required: 'Description is required' })}
-            className={`w-full rounded border px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.description ? 'border-red-500' : 'border-gray-300'
-            }`}
-            rows={4}
-            placeholder="Enter product description"
-          />
-          {errors.description && (
-            <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>
-          )}
-        </div>
+          {/* Name */}
+          <div>
+            <Label>Product Name <span className="text-red-400">*</span></Label>
+            <input {...register('name', { required: 'Required' })} placeholder="Enter product name" className={inputCls(!!errors.name)} />
+            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+          </div>
 
-        {/* Price */}
-        <div>
-          <label htmlFor="price" className="block mb-1 font-medium text-gray-700">
-            Price ($) <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="price"
-            type="number"
-            step="0.01"
-            {...register('price', {
-              required: 'Price is required',
-              valueAsNumber: true,
-              min: { value: 0, message: 'Price cannot be negative' },
-            })}
-            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.price ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter price"
-          />
-          {errors.price && (
-            <p className="text-red-600 text-sm mt-1">{errors.price.message}</p>
-          )}
-        </div>
+          {/* Description */}
+          <div>
+            <Label>Description <span className="text-red-400">*</span></Label>
+            <textarea {...register('description', { required: 'Required' })} rows={3} placeholder="Enter description"
+              className={`${inputCls(!!errors.description)} resize-none`} />
+            {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
+          </div>
 
-        {/* Category */}
-        <div>
-          <label htmlFor="category" className="block mb-1 font-medium text-gray-700">
-            Category <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="category"
-            {...register('category', { required: 'Category is required' })}
-            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.category ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter category"
-          />
-          {errors.category && (
-            <p className="text-red-600 text-sm mt-1">{errors.category.message}</p>
-          )}
-        </div>
+          {/* Price + Stock */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Price ($) <span className="text-red-400">*</span></Label>
+              <input type="number" step="0.01" placeholder="0.00"
+                {...register('price', { required: 'Required', valueAsNumber: true, min: { value: 0, message: 'Min 0' } })}
+                className={inputCls(!!errors.price)} />
+              {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
+            </div>
+            <div>
+              <Label>Stock <span className="text-red-400">*</span></Label>
+              <input type="number" placeholder="0"
+                {...register('stock', { required: 'Required', valueAsNumber: true, min: { value: 0, message: 'Min 0' } })}
+                className={inputCls(!!errors.stock)} />
+              {errors.stock && <p className="text-xs text-red-500 mt-1">{errors.stock.message}</p>}
+            </div>
+          </div>
 
-        {/* Stock */}
-        <div>
-          <label htmlFor="stock" className="block mb-1 font-medium text-gray-700">
-            Stock Quantity <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="stock"
-            type="number"
-            {...register('stock', {
-              required: 'Stock quantity is required',
-              valueAsNumber: true,
-              min: { value: 0, message: 'Stock cannot be negative' },
-            })}
-            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.stock ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter stock quantity"
-          />
-          {errors.stock && (
-            <p className="text-red-600 text-sm mt-1">{errors.stock.message}</p>
-          )}
-        </div>
+          {/* Category */}
+          <div>
+            <Label>Category <span className="text-red-400">*</span></Label>
+            <input {...register('category', { required: 'Required' })} placeholder="e.g. shirt, shoes, bag"
+              className={inputCls(!!errors.category)} />
+            {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category.message}</p>}
+          </div>
 
-        {/* Rating */}
-        <div>
-          <label htmlFor="rating" className="block mb-1 font-medium text-gray-700">
-            Rating (0 to 5) <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="rating"
-            type="number"
-            step="0.1"
-            min="0"
-            max="5"
-            {...register('rating', {
-              required: 'Rating is required',
-              valueAsNumber: true,
-              min: { value: 0, message: 'Rating cannot be less than 0' },
-              max: { value: 5, message: 'Rating cannot be more than 5' },
-            })}
-            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.rating ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter rating"
-          />
-          {errors.rating && (
-            <p className="text-red-600 text-sm mt-1">{errors.rating.message}</p>
-          )}
-        </div>
+          {/* Rating + Reviews — removed from admin form (managed automatically) */}
 
-        {/* Reviews */}
-        <div>
-          <label htmlFor="reviews" className="block mb-1 font-medium text-gray-700">
-            Number of Reviews <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="reviews"
-            type="number"
-            {...register('reviews', {
-              required: 'Reviews count is required',
-              valueAsNumber: true,
-              min: { value: 0, message: 'Reviews cannot be negative' },
-            })}
-            className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.reviews ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter number of reviews"
-          />
-          {errors.reviews && (
-            <p className="text-red-600 text-sm mt-1">{errors.reviews.message}</p>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-60"
-        >
-          {submitting ? 'Adding...' : 'Add Product'}
-        </button>
-      </form>
+          <button type="submit" disabled={submitting}
+            className="w-full btn-primary py-3 rounded-xl mt-2">
+            {submitting
+              ? <><HugeiconsIcon icon={LoaderPinwheelIcon} size={15} color="white" strokeWidth={STROKE} className="animate-spin" />Adding…</>
+              : 'Add Product'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

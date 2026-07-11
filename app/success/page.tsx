@@ -1,41 +1,31 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { FiCheckCircle } from "react-icons/fi";
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { CircleCheckIcon, Package01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons';
+import { useCartStore } from '@/store/cartStore';
+
+const STROKE = 1.5;
 
 export default function SuccessPage() {
+  const clearCart = useCartStore(s => s.clearCart);
+  useEffect(() => { clearCart(); }, [clearCart]);
+
   return (
-    <main className="min-h-screen bg-[#F9F4F5] flex items-center justify-center px-4">
-      <div className="bg-white border border-gray-100 shadow-sm p-12 max-w-md w-full text-center space-y-6">
-        <div className="flex justify-center">
-          <FiCheckCircle className="text-green-500 text-6xl" />
+    <main className="min-h-[calc(100vh-64px)] bg-gray-50 flex items-center justify-center px-4 py-12">
+      <div className="card max-w-sm w-full p-10 text-center">
+        <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5">
+          <HugeiconsIcon icon={CircleCheckIcon} size={30} color="#22c55e" strokeWidth={STROKE} />
         </div>
-
-        <div className="space-y-2">
-          <h1 className="text-2xl font-black uppercase tracking-tighter text-gray-900">
-            Payment Successful
-          </h1>
-          <p className="text-sm text-gray-500 uppercase tracking-widest">
-            Thank you for your purchase!
-          </p>
-        </div>
-
-        <p className="text-sm text-gray-600 leading-relaxed">
-          Your order has been confirmed. You'll receive a confirmation email shortly.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
-          <Link
-            href="/products"
-            className="flex-1 py-3 bg-gray-800 text-white text-sm font-bold uppercase tracking-[0.15em] hover:bg-black transition-all rounded text-center"
-          >
-            Continue Shopping
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Payment successful</h1>
+        <p className="text-sm text-gray-500 leading-relaxed mb-8">Your order is confirmed. A receipt has been sent to your email.</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href="/profile" className="btn-primary flex-1 justify-center py-2.5 rounded-xl">
+            <HugeiconsIcon icon={Package01Icon} size={15} color="white" strokeWidth={STROKE} /> View Orders
           </Link>
-          <Link
-            href="/"
-            className="flex-1 py-3 border border-gray-300 text-gray-700 text-sm font-bold uppercase tracking-[0.15em] hover:bg-gray-50 transition-all rounded text-center"
-          >
-            Go Home
+          <Link href="/products" className="btn-ghost flex-1 justify-center py-2.5 rounded-xl">
+            Keep Shopping <HugeiconsIcon icon={ArrowRight01Icon} size={15} color="currentColor" strokeWidth={STROKE} />
           </Link>
         </div>
       </div>

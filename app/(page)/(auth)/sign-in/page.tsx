@@ -1,146 +1,208 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { signIn } from "@/lib/auth-client";
 import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Mail01Icon,
+  LockPasswordIcon,
+  AlertCircleIcon,
+  LoaderPinwheelIcon,
+  EyeIcon,
+  EyeOffIcon,
+} from "@hugeicons/core-free-icons";
 
-export default function SignInPage() {
-  const router = useRouter();
+const STROKE = 1.5;
 
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+// ─── Inner component — uses useSearchParams, must be inside <Suspense> ────────
+function SignInForm() {
+  const router       = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl  = searchParams.get("callbackUrl");
+  const redirectTo   = callbackUrl ? decodeURIComponent(callbackUrl) : "/";
+
+  const [error,         setError]         = useState<string | null>(null);
+  const [loading,       setLoading]       = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [githubLoading, setGithubLoading] = useState(false);
+  const [showPassword,  setShowPassword]  = useState(false);
+
+  const anyLoading = loading || googleLoading || githubLoading;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-
+    const fd  = new FormData(e.currentTarget);
     const res = await signIn.email({
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
+      email:       fd.get("email")    as string,
+      password:    fd.get("password") as string,
+      callbackURL: redirectTo,
     });
 
     setLoading(false);
-
     if (res.error) {
-      setError(res.error.message || "Something went wrong.");
+      setError(res.error.message || "Invalid email or password.");
     } else {
-      router.push("/");
+      router.push(redirectTo);
+      router.refresh();
     }
   }
 
-  async function handleGoogleLogin() {
+  async function handleGoogle() {
     setError(null);
     setGoogleLoading(true);
-
-    const res = await signIn.social({
-      provider: "google",
-    });
-
+    await signIn.social({ provider: "google", callbackURL: redirectTo });
+    // OAuth redirects away — no need to handle res here
     setGoogleLoading(false);
+  }
 
-    if (res?.error) {
-      setError(res.error.message || "Google login failed.");
-    }
+  async function handleGitHub() {
+    setError(null);
+    setGithubLoading(true);
+    await signIn.social({ provider: "github", callbackURL: redirectTo });
+    setGithubLoading(false);
   }
 
   return (
-    <main className="min-h-screen bg-[#F9F4F5] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md bg-white p-8 border border-gray-100 shadow-sm space-y-8">
-        
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-black uppercase tracking-tighter text-gray-900">
-            Welcome Back
-          </h1>
-          <p className="text-sm text-gray-500 rounded  uppercase tracking-widest">
-            Sign in to your account
-          </p>
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-5">
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 rounded-lg px-4 py-3 text-sm" role="alert">
+          <HugeiconsIcon icon={AlertCircleIcon} size={16} color="currentColor" strokeWidth={STROKE} className="flex-shrink-0 mt-0.5" />
+          {error}
         </div>
+      )}
 
-        {error && (
-          <div className="bg-red-50 text-red-600 p-3 text-sm font-medium border-l-2 border-red-500">
-            {error}
-          </div>
-        )}
-
-        {/* Google Login - Square and Minimal */}
+      {/* OAuth buttons */}
+      <div className="space-y-3">
         <button
+          onClick={handleGoogle}
+          disabled={anyLoading}
           type="button"
-          onClick={handleGoogleLogin}
-          disabled={googleLoading}
-          className="w-full flex items-center  rounded justify-center gap-3 border border-gray-300 py-3 text-sm font-bold uppercase tracking-widest hover:bg-gray-50 transition-all active:scale-[0.98] disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
         >
-          <FcGoogle size={18} />
-          {googleLoading ? "Connecting..." : "Continue with Google"}
+          {googleLoading
+            ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={16} color="#9ca3af" strokeWidth={STROKE} className="animate-spin" />
+            : <FcGoogle size={18} />}
+          {googleLoading ? "Connecting…" : "Continue with Google"}
         </button>
 
-        <div className="relative flex items-center py-2">
-          <div className="flex-grow border-t border-gray-200"></div>
-          <span className="flex-shrink mx-4 text-[10px] text-gray-400 uppercase tracking-widest">Or use email</span>
-          <div className="flex-grow border-t border-gray-200"></div>
-        </div>
+        <button
+          onClick={handleGitHub}
+          disabled={anyLoading}
+          type="button"
+          className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
+        >
+          {githubLoading
+            ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={16} color="#9ca3af" strokeWidth={STROKE} className="animate-spin" />
+            : <FaGithub size={18} className="text-gray-800" />}
+          {githubLoading ? "Connecting…" : "Continue with GitHub"}
+        </button>
+      </div>
 
-        {/* Email Login */}
-        <form onSubmit={handleSubmit} className="space-y-6 rounded ">
-          <div className="space-y-1">
-            <label
-              htmlFor="email"
-              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
-            >
-              Email Address
-            </label>
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-gray-100" />
+        <span className="text-xs text-gray-400">or</span>
+        <div className="flex-1 h-px bg-gray-100" />
+      </div>
+
+      {/* Email / password form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email */}
+        <div>
+          <label htmlFor="si-email" className="block text-xs font-medium text-gray-600 mb-1.5">
+            Email address
+          </label>
+          <div className="relative">
+            <HugeiconsIcon icon={Mail01Icon} size={15} color="#9ca3af" strokeWidth={STROKE} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
-              id="email"
+              id="si-email"
               name="email"
               type="email"
-              placeholder="EMAIL ADDRESS"
               required
-              className="w-full px-3 bg-transparent rounded border border-gray-300 py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
+              autoComplete="email"
+              placeholder="you@example.com"
+              className="input pl-9"
+              disabled={anyLoading}
             />
           </div>
-
-          <div className="space-y-1">
-            <label
-              htmlFor="password"
-              className="block text-[11px] font-bold uppercase tracking-widest text-gray-500"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="PASSWORD"
-              required
-              className="w-full bg-transparent px-3 rounded border border-gray-300 py-3 text-sm uppercase tracking-widest placeholder-gray-400 focus:border-black outline-none transition-all"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gray-800 rounded text-white text-sm font-bold uppercase tracking-[0.2em] py-4 hover:bg-black transition-all active:scale-[0.98] disabled:bg-gray-400"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        <div className="text-center pt-4">
-          <p className="text-[11px] text-gray-400 uppercase tracking-widest">
-            Don’t have an account?{" "}
-            <span
-              onClick={() => router.push("/sign-up")}
-              className="text-gray-900 font-bold rounded  hover:underline cursor-pointer"
-            >
-              Sign up
-            </span>
-          </p>
         </div>
+
+        {/* Password */}
+        <div>
+          <label htmlFor="si-pw" className="block text-xs font-medium text-gray-600 mb-1.5">
+            Password
+          </label>
+          <div className="relative">
+            <HugeiconsIcon icon={LockPasswordIcon} size={15} color="#9ca3af" strokeWidth={STROKE} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              id="si-pw"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+              autoComplete="current-password"
+              placeholder="••••••••"
+              className="input pl-9 pr-10"
+              disabled={anyLoading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((p) => !p)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <HugeiconsIcon icon={showPassword ? EyeOffIcon : EyeIcon} size={15} color="currentColor" strokeWidth={STROKE} />
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={anyLoading}
+          className="btn-primary w-full py-2.5 rounded-xl mt-1 flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <HugeiconsIcon icon={LoaderPinwheelIcon} size={15} color="white" strokeWidth={STROKE} className="animate-spin" />
+              Signing in…
+            </>
+          ) : "Sign In"}
+        </button>
+      </form>
+
+      <p className="text-center text-sm text-gray-500">
+        Don&apos;t have an account?{" "}
+        <Link href="/sign-up" className="text-red-500 font-semibold hover:underline">
+          Sign up
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+// ─── Page shell — Suspense required for useSearchParams ──────────────────────
+export default function SignInPage() {
+  return (
+    <main className="min-h-[calc(100vh-64px)] bg-gray-50 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <Link href="/" className="text-2xl font-bold text-red-500">GG Shop</Link>
+          <h1 className="mt-3 text-xl font-semibold text-gray-900">Welcome back</h1>
+          <p className="mt-1 text-sm text-gray-500">Sign in to your account to continue</p>
+        </div>
+        <Suspense fallback={
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex justify-center">
+            <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          <SignInForm />
+        </Suspense>
       </div>
     </main>
   );

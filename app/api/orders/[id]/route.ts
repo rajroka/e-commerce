@@ -10,16 +10,33 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   await connect();
   const { id } = await params;
-  const order = await Order.findById(id);
+  const order = await Order.findById(id).lean<any>();
 
   if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
   const isAdmin = (session.user as any).role === 'admin';
-  if (!isAdmin && order.userId !== session.user.id) {
+  if (!isAdmin && order.userId?.toString() !== session.user.id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  return NextResponse.json({ order }, { status: 200 });
+  const serialized = {
+    ...order,
+    _id:       order._id?.toString()       ?? '',
+    userId:    order.userId?.toString()    ?? '',
+    createdAt: order.createdAt instanceof Date ? order.createdAt.toISOString() : (order.createdAt ?? null),
+    updatedAt: order.updatedAt instanceof Date ? order.updatedAt.toISOString() : (order.updatedAt ?? null),
+    total:    typeof order.total    === 'number' ? order.total    : 0,
+    subtotal: typeof order.subtotal === 'number' ? order.subtotal : (order.total ?? 0),
+    discount: typeof order.discount === 'number' ? order.discount : 0,
+    items: (order.items ?? []).map((item: any) => ({
+      ...item,
+      productId: item.productId?.toString() ?? '',
+      price:    typeof item.price    === 'number' ? item.price    : 0,
+      quantity: typeof item.quantity === 'number' ? item.quantity : 1,
+    })),
+  };
+
+  return NextResponse.json({ order: serialized }, { status: 200 });
 }
 
 // PATCH — admin updates order status

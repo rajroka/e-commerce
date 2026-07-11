@@ -1,36 +1,36 @@
 'use client';
 
 import React from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  PiStorefrontLight,
-  PiTruckLight,
-  PiTagLight,
-  PiChatTeardropLight,
-} from 'react-icons/pi';
+  ShoppingBag01Icon, TruckDeliveryIcon, Tag01Icon, CustomerSupportIcon,
+} from '@hugeicons/core-free-icons';
 
-const Customerservice = () => {
-  const features = [
-    { icon: <PiStorefrontLight size={32} />, title: 'Store Pickup',     desc: 'Available in select boutiques' },
-    { icon: <PiTruckLight size={32} />,      title: 'Fast Shipping',    desc: 'Complimentary on orders over $50' },
-    { icon: <PiTagLight size={32} />,        title: 'Exclusive Offers', desc: 'Best price guaranteed' },
-    { icon: <PiChatTeardropLight size={32} />, title: 'Concierge',      desc: 'Dedicated support team' },
-  ];
+const features = [
+  { icon: ShoppingBag01Icon, title: 'Store Pickup',    desc: 'Available in select locations' },
+  { icon: TruckDeliveryIcon, title: 'Fast Shipping',   desc: 'Free on orders over $50' },
+  { icon: Tag01Icon,         title: 'Best Prices',     desc: 'Price match guaranteed' },
+  { icon: CustomerSupportIcon, title: '24/7 Support',  desc: 'Dedicated customer service' },
+];
 
+const STROKE = 1.5;
+
+export default function Customerservice() {
   return (
-    <section aria-label="Customer Service Features" className="w-full py-16 px-6 bg-gray-50 border-t border-gray-100">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-4 text-gray-900">
-        {features.map((item, index) => (
-          <article key={index} className="flex flex-col items-center text-center group">
-            <div className="mb-4 text-gray-900 transition-transform duration-300 group-hover:-translate-y-1">
-              {item.icon}
+    <section aria-label="Service features" className="w-full bg-white border-t border-gray-100 py-10 px-4 sm:px-8">
+      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+        {features.map(({ icon, title, desc }) => (
+          <div key={title} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
+            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+              <HugeiconsIcon icon={icon} size={20} color="#ef4444" strokeWidth={STROKE} />
             </div>
-            <h3 className="text-sm font-bold text-gray-900">{item.title}</h3>
-            <p className="text-xs text-gray-500 mt-2 leading-relaxed max-w-[150px]">{item.desc}</p>
-          </article>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{title}</p>
+              <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{desc}</p>
+            </div>
+          </div>
         ))}
       </div>
     </section>
   );
-};
-
-export default Customerservice;
+}

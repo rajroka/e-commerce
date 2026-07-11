@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import Toastcontainer from "@/components/Toast";
-import Nav from "@/components/Nav";
+import ConditionalNav from "@/components/ConditionalNav";
 import StoreHydration from "@/components/StoreHydration";
 
 const roboto = Roboto({
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       
         <StoreHydration />
         <Toastcontainer />
-        <Nav />
+        <ConditionalNav />
         {children}
         
       

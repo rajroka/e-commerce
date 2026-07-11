@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useModalStore } from '@/store/modalStore';
 import { useCartStore } from '@/store/cartStore';
 import FirstSignupmodal from './FirstSignupmodal';
 import { useSession } from '@/lib/auth-client';
-import { FaStar } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
 interface Product {
@@ -16,34 +15,29 @@ interface Product {
   title: string;
   price: number;
   description?: string;
-  rating?: { rate: number; count: number };
   category?: string;
   name?: string;
-  quantity?: number;
+  stock?: number;
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
   const { data: session } = useSession();
-  const { openLogin } = useModalStore();
-  const addToCart = useCartStore((state) => state.addToCart);
-  const setUserId = useCartStore((state) => state.setUserId);
-
-  useEffect(() => {
-    setUserId(session?.user?.id || null, session ? 'authenticated' : 'unauthenticated');
-  }, [session, setUserId]);
+  const { openLogin }     = useModalStore();
+  const addToCart         = useCartStore((s) => s.addToCart);
 
   const handleAddToCart = (product: Product) => {
     if (!session) {
-      toast.error('Please login to add items', { position: 'top-right' });
+      toast.error('Please sign in to add items to cart', { position: 'top-right' });
       openLogin();
       return;
     }
     addToCart({
-      id: product.id,
-      name: product.title || product.name || '',
-      image: product.image,
-      price: product.price,
+      id:       product.id,
+      name:     product.title || product.name || '',
+      image:    product.image,
+      price:    product.price,
       quantity: 1,
+      stock:    product.stock,
     });
     toast.success('Added to cart', { position: 'top-right' });
   };
@@ -53,15 +47,15 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
       {sortedProducts.map((product) => (
         <div key={product.id} className="group flex rounded flex-col relative bg-transparent">
 
-          {/* Badge */}
+          {/* Category badge */}
           <div className="absolute top-0 right-0 z-10">
-            <span className="bg-white text-xs px-3 py-1 font-medium text-gray-600 border-l border-b border-gray-100">
+            <span className="bg-white text-xs px-3 py-1 font-medium text-gray-600 border-l border-b border-gray-100 capitalize">
               {product.category || 'New'}
             </span>
           </div>
 
           {/* Image */}
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#EFEFEF]">
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100 rounded-t">
             <Link href={`/products/${product.id}`}>
               <Image
                 src={product.image}
@@ -85,16 +79,14 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
               </span>
             </div>
 
-            <p className="text-xs text-gray-500 mb-4 italic line-clamp-1">{product.description}</p>
+            <p className="text-xs text-gray-500 mb-4 line-clamp-1">{product.description}</p>
 
-            <div className="mt-auto">
-              <button
-                onClick={() => handleAddToCart(product)}
-                className="w-full bg-gray-800 hover:bg-black rounded text-white text-xs py-3 font-semibold transition-all duration-300 active:scale-[0.98]"
-              >
-                Add to cart — ${product.price.toFixed(2)}
-              </button>
-            </div>
+            <button
+              onClick={() => handleAddToCart(product)}
+              className="mt-auto w-full bg-gray-900 hover:bg-red-500 rounded text-white text-xs py-3 font-semibold transition-colors active:scale-[0.98]"
+            >
+              Add to cart — ${product.price.toFixed(2)}
+            </button>
           </div>
         </div>
       ))}

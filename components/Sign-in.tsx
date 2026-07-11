@@ -1,10 +1,15 @@
+"use client";
 
-"use client"
+import { signIn } from "@/lib/auth-client";
 
-import { signIn } from "next-auth/react"
- 
+/**
+ * Sign-in button — uses better-auth Google OAuth.
+ * Kept for legacy import compatibility; prefer the full sign-in page.
+ */
 export default function SignIn() {
-  return <button onClick={() => signIn("google")}>
-    Sign In with Google
-  </button>
+  return (
+    <button onClick={() => signIn.social({ provider: "google" })}>
+      Sign In with Google
+    </button>
+  );
 }

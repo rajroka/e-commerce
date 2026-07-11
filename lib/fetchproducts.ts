@@ -18,7 +18,6 @@ export const fetchProducts = async () => {
   }));
 };
 
-// Fetch a single product by ID
 export const fetchProductById = async (id: string) => {
   await connect();
   const product = await Product.findById(id);
@@ -28,14 +27,17 @@ export const fetchProductById = async (id: string) => {
   }
 
   return {
-    _id: product._id.toString(),
-    name: product.name,
+    _id:         product._id.toString(),
+    name:        product.name,
     description: product.description || '',
-    image: product.image,
-    price: product.price,
-    category: product.category,
-    createdAt: product.createdAt?.toISOString() || '',
-    updatedAt: product.updatedAt?.toISOString() || '',
+    image:       product.image,
+    price:       product.price,
+    category:    product.category,
+    stock:       product.stock       ?? 0,
+    rating:      product.rating      ?? 0,
+    reviewCount: product.reviewCount ?? 0,
+    createdAt:   product.createdAt?.toISOString() || '',
+    updatedAt:   product.updatedAt?.toISOString() || '',
   };
 };
 

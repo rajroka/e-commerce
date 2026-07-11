@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import connect from '@/lib/db';
-import Order from '@/lib/modals/Order';
-import Product from '@/lib/modals/Product';
-import clientPromise from '@/lib/mongodb';
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-utils";
+import connect from "@/lib/db";
+import Order from "@/lib/modals/Order";
+import Product from "@/lib/modals/Product";
+import clientPromise from "@/lib/mongodb";
 
+// ─── GET /api/admin/analytics ─────────────────────────────────────────────────
 export async function GET(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: request.headers });
-  if (!session || (session.user as any).role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
+  const { error } = await requireAdmin(request);
+  if (error) return error;
 
   await connect();
 
@@ -20,11 +19,11 @@ export async function GET(request: NextRequest) {
   ]);
 
   const db = client.db();
-  const userCount = await db.collection('user').countDocuments();
+  const userCount = await db.collection("user").countDocuments();
 
   // Revenue metrics
   const totalRevenue = orders.reduce((s, o) => s + (o.total ?? 0), 0);
-  const deliveredOrders = orders.filter((o) => o.status === 'delivered');
+  const deliveredOrders = orders.filter((o) => o.status === "delivered");
   const deliveredRevenue = deliveredOrders.reduce((s, o) => s + (o.total ?? 0), 0);
 
   // Orders by status
@@ -41,7 +40,7 @@ export async function GET(request: NextRequest) {
         productRevenue[item.productId] = { name: item.name, revenue: 0, units: 0 };
       }
       productRevenue[item.productId].revenue += item.price * item.quantity;
-      productRevenue[item.productId].units += item.quantity;
+      productRevenue[item.productId].units   += item.quantity;
     }
   }
   const topProducts = Object.entries(productRevenue)
@@ -54,25 +53,28 @@ export async function GET(request: NextRequest) {
   const monthlyRevenue: { month: string; revenue: number; orders: number }[] = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const label = d.toLocaleString('default', { month: 'short', year: '2-digit' });
+    const label = d.toLocaleString("default", { month: "short", year: "2-digit" });
     const monthOrders = orders.filter((o) => {
       const created = new Date(o.createdAt as string);
-      return created.getFullYear() === d.getFullYear() && created.getMonth() === d.getMonth();
+      return (
+        created.getFullYear() === d.getFullYear() &&
+        created.getMonth()    === d.getMonth()
+      );
     });
     monthlyRevenue.push({
-      month: label,
+      month:   label,
       revenue: monthOrders.reduce((s, o) => s + (o.total ?? 0), 0),
-      orders: monthOrders.length,
+      orders:  monthOrders.length,
     });
   }
 
   return NextResponse.json({
     totalRevenue,
     deliveredRevenue,
-    totalOrders: orders.length,
-    deliveredOrders: deliveredOrders.length,
-    totalProducts: productCount,
-    totalUsers: userCount,
+    totalOrders:      orders.length,
+    deliveredOrders:  deliveredOrders.length,
+    totalProducts:    productCount,
+    totalUsers:       userCount,
     statusCounts,
     topProducts,
     monthlyRevenue,

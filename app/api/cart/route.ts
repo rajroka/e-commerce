@@ -1,56 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import Cart from '@/lib/modals/Cart';
+import Product from '@/lib/modals/Product';
 import connect from '@/lib/db';
 
-// GET: Return cart items for the authenticated user
-export async function GET(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: request.headers });
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+// ─── helpers ──────────────────────────────────────────────────────────────────
+async function requireSession(request: NextRequest) {
+  // connect() must run before auth.api.getSession because better-auth
+  // may hit the DB to validate the session token.
   await connect();
-
-  const userId = session.user.id;
-  const cart = await Cart.findOne({ userId });
-
-  return NextResponse.json({ items: cart ? cart.items : [] }, { status: 200 });
+  const session = await auth.api.getSession({ headers: request.headers });
+  return session;
 }
 
-// POST: Upsert cart for the authenticated user
+// ─── GET /api/cart ─────────────────────────────────────────────────────────────
+export async function GET(request: NextRequest) {
+  const session = await requireSession(request);
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const cart = await Cart.findOne({ userId: session.user.id }).lean<{ items: any[] }>();
+  return NextResponse.json({ items: cart?.items ?? [] });
+}
+
+// ─── POST /api/cart ────────────────────────────────────────────────────────────
+// Full cart upsert. Validates each item against current stock before saving.
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: request.headers });
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const session = await requireSession(request);
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  await connect();
-
-  const userId = session.user.id;
   const body = await request.json();
   const { items } = body;
 
+  if (!Array.isArray(items)) {
+    return NextResponse.json({ error: 'items must be an array' }, { status: 400 });
+  }
+
+  // ── Stock validation ────────────────────────────────────────────────────────
+  const violations: string[] = [];
+
+  const checked = await Promise.all(
+    items.map(async (item: any) => {
+      const product = await Product.findById(item.id).select('stock name').lean() as any;
+      if (!product) return item; // product deleted — keep as-is, UI will reflect on next page load
+
+      const available = product.stock ?? Infinity;
+      if (item.quantity > available) {
+        violations.push(`"${product.name}" only has ${available} in stock`);
+        return { ...item, quantity: Math.max(1, available) }; // clamp
+      }
+      return item;
+    })
+  );
+
   await Cart.findOneAndUpdate(
-    { userId },
-    { userId, items },
+    { userId: session.user.id },
+    { userId: session.user.id, items: checked },
     { upsert: true, new: true }
   );
 
-  return NextResponse.json({ ok: true }, { status: 200 });
-}
-
-// DELETE: Clear cart for the authenticated user
-export async function DELETE(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: request.headers });
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (violations.length > 0) {
+    return NextResponse.json({
+      ok: true,
+      warnings: violations,
+      items: checked,
+    });
   }
 
-  await connect();
+  return NextResponse.json({ ok: true });
+}
 
-  const userId = session.user.id;
-  await Cart.findOneAndDelete({ userId });
+// ─── DELETE /api/cart ──────────────────────────────────────────────────────────
+export async function DELETE(request: NextRequest) {
+  const session = await requireSession(request);
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  return NextResponse.json({ ok: true }, { status: 200 });
+  await Cart.findOneAndDelete({ userId: session.user.id });
+  return NextResponse.json({ ok: true });
 }

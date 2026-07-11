@@ -1,148 +1,121 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — GG Shop',
-  description:
-    'Read the GG Shop privacy policy to understand how we collect, use, and protect your personal data.',
+  description: 'How GG Shop collects, uses, and protects your personal data.',
 };
+
+const sections = [
+  {
+    title: '1. Introduction',
+    body: 'GG Shop ("we", "us", or "our") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you visit our website or make a purchase. By using our services, you agree to the practices described in this policy.',
+  },
+  {
+    title: '2. Information We Collect',
+    items: [
+      { label: 'Account Information', detail: 'Name, email address, and password (stored as a secure hash) when you register.' },
+      { label: 'Order Information', detail: 'Billing/shipping address and payment details (processed by Stripe — we never store card numbers).' },
+      { label: 'Usage Data', detail: 'Pages visited, time spent, and referring URLs collected automatically.' },
+      { label: 'Communications', detail: 'Email address and message content if you contact us or subscribe to our newsletter.' },
+    ],
+  },
+  {
+    title: '3. How We Use Your Information',
+    list: [
+      'Process and fulfill your orders',
+      'Send order confirmations and shipping updates',
+      'Respond to inquiries and provide customer support',
+      'Send promotional emails (only with your consent)',
+      'Improve our website and product offerings',
+      'Detect and prevent fraud or unauthorized access',
+    ],
+  },
+  {
+    title: '4. Data Sharing',
+    body: "We do not sell, trade, or rent your personal information to third parties. We may share data with trusted service providers who help us operate our website and process orders (Stripe for payments, Cloudinary for image hosting, shipping carriers). These providers are contractually obligated to keep your information confidential.",
+  },
+  {
+    title: '5. Cookies',
+    body: 'We use cookies to maintain your session, remember your cart, and analyze traffic. You can control cookie settings through your browser; disabling cookies may affect some site functionality.',
+  },
+  {
+    title: '6. Your Rights',
+    list: [
+      'Access the personal data we hold about you',
+      'Request correction of inaccurate data',
+      'Request deletion of your account and associated data',
+      'Opt out of marketing communications at any time',
+      'Lodge a complaint with a data protection authority',
+    ],
+    footer: 'To exercise any of these rights, email support@ggshop.com.',
+  },
+  {
+    title: '7. Data Security',
+    body: 'We implement SSL encryption, secure password hashing, and access controls to protect your information. No method of internet transmission is 100% secure, and we cannot guarantee absolute security.',
+  },
+  {
+    title: '8. Changes to This Policy',
+    body: 'We may update this policy from time to time. Material changes will be posted here with an updated date. Continued use of our services constitutes acceptance of the updated policy.',
+  },
+  {
+    title: '9. Contact',
+    body: null,
+    contact: true,
+  },
+];
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#F9F4F5] py-16 px-4 sm:px-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900">
-            Privacy Policy
-          </h1>
-          <p className="text-sm text-gray-500 uppercase tracking-widest mt-2">
-            Last updated: January 2025
-          </p>
+    <main className="min-h-screen bg-gray-50 py-16 px-4 sm:px-8">
+      <div className="max-w-2xl mx-auto">
+
+        <div className="page-header">
+          <h1>Privacy Policy</h1>
+          <p>Last updated: January 2025</p>
         </div>
 
-        <div className="bg-white border border-gray-100 shadow-sm p-8 space-y-10">
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              1. Introduction
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              GG Cosmetics ("we", "us", or "our") is committed to protecting your personal information.
-              This Privacy Policy explains how we collect, use, disclose, and safeguard your data when
-              you visit our website or make a purchase. By using our services, you agree to the
-              practices described in this policy.
-            </p>
-          </section>
+        <div className="card divide-y divide-gray-50">
+          {sections.map(s => (
+            <div key={s.title} className="px-6 sm:px-8 py-7">
+              <h2 className="text-sm font-semibold text-gray-900 mb-3">{s.title}</h2>
 
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              2. Information We Collect
-            </h2>
-            <div className="text-sm text-gray-600 leading-relaxed space-y-3">
-              <p><strong className="text-gray-900">Account Information:</strong> When you create an account, we collect your name, email address, and password (stored as a secure hash).</p>
-              <p><strong className="text-gray-900">Order Information:</strong> When you place an order, we collect your billing address, shipping address, and payment details (processed securely by Stripe — we never store card numbers).</p>
-              <p><strong className="text-gray-900">Usage Data:</strong> We automatically collect information about how you interact with our website, including pages visited, time spent, and referring URLs.</p>
-              <p><strong className="text-gray-900">Communications:</strong> If you contact us or subscribe to our newsletter, we store your email address and message content.</p>
+              {s.body && (
+                <p className="text-sm text-gray-600 leading-relaxed">{s.body}</p>
+              )}
+
+              {s.items && (
+                <div className="space-y-3">
+                  {s.items.map(item => (
+                    <p key={item.label} className="text-sm text-gray-600 leading-relaxed">
+                      <strong className="text-gray-900">{item.label}:</strong> {item.detail}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {s.list && (
+                <ul className="text-sm text-gray-600 leading-relaxed space-y-1.5 list-disc list-inside">
+                  {s.list.map(item => <li key={item}>{item}</li>)}
+                </ul>
+              )}
+
+              {s.footer && (
+                <p className="text-sm text-gray-600 mt-3">{s.footer}</p>
+              )}
+
+              {s.contact && (
+                <p className="text-sm text-gray-600">
+                  Questions about this policy? Email{' '}
+                  <a href="mailto:support@ggshop.com" className="text-red-500 hover:underline">
+                    support@ggshop.com
+                  </a>{' '}
+                  or visit our{' '}
+                  <Link href="/contact" className="text-red-500 hover:underline">Contact page</Link>.
+                </p>
+              )}
             </div>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              3. How We Use Your Information
-            </h2>
-            <ul className="text-sm text-gray-600 leading-relaxed space-y-2 list-disc list-inside">
-              <li>To process and fulfill your orders</li>
-              <li>To send order confirmations and shipping updates</li>
-              <li>To respond to your inquiries and provide customer support</li>
-              <li>To send promotional emails (only with your consent)</li>
-              <li>To improve our website and product offerings</li>
-              <li>To detect and prevent fraud or unauthorized access</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              4. Data Sharing
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              We do not sell, trade, or rent your personal information to third parties. We may share
-              your data with trusted service providers who assist us in operating our website and
-              processing orders (such as Stripe for payments, Cloudinary for image hosting, and
-              shipping carriers). These providers are contractually obligated to keep your information
-              confidential and use it only for the services they provide to us.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              5. Cookies
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              We use cookies and similar tracking technologies to maintain your session, remember your
-              cart, and analyze website traffic. You can control cookie settings through your browser.
-              Disabling cookies may affect some functionality of our website.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              6. Your Rights
-            </h2>
-            <div className="text-sm text-gray-600 leading-relaxed space-y-3">
-              <p>You have the right to:</p>
-              <ul className="list-disc list-inside space-y-2">
-                <li>Access the personal data we hold about you</li>
-                <li>Request correction of inaccurate data</li>
-                <li>Request deletion of your account and associated data</li>
-                <li>Opt out of marketing communications at any time</li>
-                <li>Lodge a complaint with a data protection authority</li>
-              </ul>
-              <p>
-                To exercise any of these rights, contact us at{' '}
-                <a href="mailto:support@ggcosmetics.com" className="text-gray-900 underline">
-                  support@ggcosmetics.com
-                </a>.
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              7. Data Security
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              We implement industry-standard security measures including SSL encryption, secure
-              password hashing, and access controls to protect your personal information. However,
-              no method of transmission over the internet is 100% secure, and we cannot guarantee
-              absolute security.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              8. Changes to This Policy
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              We may update this Privacy Policy from time to time. We will notify you of significant
-              changes by posting the new policy on this page with an updated date. Continued use of
-              our services after changes constitutes acceptance of the updated policy.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-sm font-black uppercase tracking-widest text-gray-900 mb-4">
-              9. Contact
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              If you have questions about this Privacy Policy, please contact us at{' '}
-              <a href="mailto:support@ggcosmetics.com" className="text-gray-900 underline">
-                support@ggcosmetics.com
-              </a>{' '}
-              or visit our{' '}
-              <a href="/contact" className="text-gray-900 underline">
-                Contact page
-              </a>.
-            </p>
-          </section>
+          ))}
         </div>
       </div>
     </main>

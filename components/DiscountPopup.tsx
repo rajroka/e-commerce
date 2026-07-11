@@ -1,55 +1,58 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RxCross2 } from "react-icons/rx";
-import Image from 'next/image';
-import hurry from '../public/hurry.png'; // Adjust if needed
+import Link from 'next/link';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon, Tag01Icon } from '@hugeicons/core-free-icons';
 
 const DiscountPopup = ({ children }: { children?: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
+  const STROKE = 1.5;
 
   useEffect(() => {
-    const hasShownPopup = localStorage.getItem('discountPopupShown');
-
-    if (!hasShownPopup) {
-      // Show popup and mark as shown
-      setOpen(true);
-      localStorage.setItem('discountPopupShown', 'true');
+    if (!localStorage.getItem('gg-popup-shown')) {
+      const timer = setTimeout(() => {
+        setOpen(true);
+        localStorage.setItem('gg-popup-shown', 'true');
+      }, 2000);
+      return () => clearTimeout(timer);
     }
   }, []);
-
-  const closePopup = () => {
-    setOpen(false);
-  };
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-6 md:px-12 lg:px-24">
-      <div className="relative bg-white rounded-xl shadow-lg p-4 max-w-lg w-full">
-        {/* Close button */}
-        <button
-          onClick={closePopup}
-          className="absolute top-2 right-2 text-gray-700 hover:text-black transition"
-        >
-          <RxCross2 className="text-2xl" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+      role="dialog" aria-modal="true" aria-label="Special offer">
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden">
+        <button onClick={() => setOpen(false)} aria-label="Close offer"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors z-10">
+          <HugeiconsIcon icon={Cancel01Icon} size={16} color="currentColor" strokeWidth={STROKE} />
         </button>
 
-        {/* Discount Image */}
-        <div className="flex justify-center items-center">
-          <Image
-            src={hurry}
-            alt="Discount Banner"
-            width={400}
-            height={200}
-            className="rounded-xl"
-          />
+        <div className="bg-gradient-to-br from-red-500 to-red-600 px-6 pt-8 pb-10 text-white text-center">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <HugeiconsIcon icon={Tag01Icon} size={22} color="white" strokeWidth={STROKE} />
+          </div>
+          <h2 className="text-2xl font-bold mb-1">15% Off Today</h2>
+          <p className="text-red-100 text-sm">On your first order</p>
         </div>
 
-        {/* Optional Custom Content */}
-        {children && (
-          <div className="mt-4 text-center text-sm text-gray-700">{children}</div>
-        )}
+        <div className="px-6 py-6 text-center">
+          <div className="bg-gray-50 rounded-xl border border-dashed border-gray-200 px-4 py-3 mb-5">
+            <p className="text-xs text-gray-500 mb-1">Use code at checkout</p>
+            <p className="text-lg font-bold text-gray-900 tracking-wider">WELCOME15</p>
+          </div>
+          {children && <p className="text-sm text-gray-600 mb-4">{children}</p>}
+          <Link href="/products" onClick={() => setOpen(false)}
+            className="btn-primary w-full justify-center py-3 rounded-xl text-sm">
+            Shop Now
+          </Link>
+          <button onClick={() => setOpen(false)}
+            className="mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors">
+            No thanks, I'll pay full price
+          </button>
+        </div>
       </div>
     </div>
   );
