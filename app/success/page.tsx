@@ -51,8 +51,10 @@ function SuccessContent() {
 
         {sessionId && (
           <div className="border border-gray-100 rounded-xl px-4 py-3 text-left">
-            <p className="text-[10px] text-gray-400 mb-0.5">Stripe Session</p>
-            <p className="font-mono text-xs text-gray-600 break-all">{sessionId}</p>
+            <p className="text-[10px] text-gray-400 mb-0.5">Order Reference</p>
+            <p className="font-mono text-xs text-gray-600 break-all">
+              #{sessionId.slice(-12).toUpperCase()}
+            </p>
           </div>
         )}
 
@@ -74,7 +76,7 @@ function SuccessContent() {
 
         <div className="flex flex-col sm:flex-row gap-3 pt-1">
           <Link
-            href="/profile"
+            href="/profile?tab=orders"
             className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-full transition-colors"
           >
             <HugeiconsIcon icon={Package01Icon} size={15} color="white" strokeWidth={STROKE} />

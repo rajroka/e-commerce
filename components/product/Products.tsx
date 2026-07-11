@@ -4,20 +4,24 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useModalStore } from '@/store/modalStore';
 import { useCartStore } from '@/store/cartStore';
+import { useBuyNow } from '@/lib/buyNow';
 import toast from 'react-hot-toast';
 import { useSession } from '@/lib/auth-client';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { LoaderPinwheelIcon } from '@hugeicons/core-free-icons';
+
+const STROKE = 1.5;
 
 export default function FeaturedProducts() {
   const [products, setProducts]   = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const router             = useRouter();
-  const { data: session }  = useSession();
-  const { openLogin }      = useModalStore();
-  const addToCart          = useCartStore((s) => s.addToCart);
+  const { data: session }   = useSession();
+  const { openLogin }       = useModalStore();
+  const addToCart           = useCartStore((s) => s.addToCart);
+  const { buyNow, buying }  = useBuyNow();
 
   useEffect(() => {
     axios
@@ -51,15 +55,12 @@ export default function FeaturedProducts() {
 
   const handleBuyNow = (product: any) => {
     if (!requireAuth()) return;
-    addToCart({
-      id:       product._id || product.id,
-      name:     product.name,
-      image:    product.image,
-      price:    product.price,
-      quantity: 1,
-      stock:    product.stock,
+    buyNow({
+      id:    product._id || product.id,
+      name:  product.name,
+      image: product.image,
+      price: product.price,
     });
-    router.push('/cart');
   };
 
   return (
@@ -126,19 +127,22 @@ export default function FeaturedProducts() {
                       {product.description}
                     </p>
 
-                    {/* Two-button row */}
                     <div className="mt-auto flex gap-2">
                       <button
                         onClick={() => handleAddToCart(product)}
-                        className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 py-2.5 text-xs rounded-full font-semibold transition-colors"
+                        disabled={buying}
+                        className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 py-2.5 text-xs rounded-full font-semibold transition-colors disabled:opacity-50"
                       >
                         Add to Cart
                       </button>
                       <button
                         onClick={() => handleBuyNow(product)}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 text-xs rounded-full font-semibold transition-colors active:scale-[0.98]"
+                        disabled={buying}
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 text-xs rounded-full font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-1"
                       >
-                        Buy Now
+                        {buying
+                          ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={11} color="white" strokeWidth={STROKE} className="animate-spin" />
+                          : 'Buy Now'}
                       </button>
                     </div>
                   </div>

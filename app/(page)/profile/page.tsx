@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession, signOut } from '@/lib/auth-client';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
@@ -42,11 +42,17 @@ const STATUS_CFG: Record<string, { bg: string; text: string; dot: string }> = {
 };
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
-export default function ProfilePage() {
+function ProfilePageInner() {
   const { data: session, isPending } = useSession();
-  const router = useRouter();
+  const router       = useRouter();
+  const searchParams = useSearchParams();
 
-  const [tab,           setTab]           = useState<ProfileTab>('overview');
+  // Read ?tab=orders (or any valid tab) from the URL on first render
+  const initialTab = (searchParams.get('tab') as ProfileTab | null) ?? 'overview';
+  const validTabs  = NAV_ITEMS.map(n => n.id);
+  const [tab,           setTab]           = useState<ProfileTab>(
+    validTabs.includes(initialTab) ? initialTab : 'overview'
+  );
   const [sidebarOpen,   setSidebarOpen]   = useState(false);
   const [profile,       setProfile]       = useState<UserProfile | null>(null);
   const [orders,        setOrders]        = useState<Order[]>([]);
@@ -277,6 +283,18 @@ export default function ProfilePage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <ProfilePageInner />
+    </Suspense>
   );
 }
 
