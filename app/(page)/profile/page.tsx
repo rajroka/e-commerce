@@ -131,18 +131,18 @@ export default function ProfilePage() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center gap-3">
             {profile.image ? (
               <Image src={profile.image} alt={profile.name} width={72} height={72}
-                className="rounded-full ring-4 ring-red-100 object-cover w-[72px] h-[72px]" />
+                className="rounded-full ring-2 ring-gray-200 object-cover w-[72px] h-[72px]" />
             ) : (
-              <div className="w-[72px] h-[72px] rounded-full bg-red-50 ring-4 ring-red-100 flex items-center justify-center">
-                <HugeiconsIcon icon={UserIcon} size={28} color="#fca5a5" strokeWidth={STROKE} />
+              <div className="w-[72px] h-[72px] rounded-full border-2 border-gray-200 flex items-center justify-center">
+                <HugeiconsIcon icon={UserIcon} size={28} color="#9ca3af" strokeWidth={STROKE} />
               </div>
             )}
             <div className="min-w-0 w-full">
               <p className="font-semibold text-gray-900 text-sm truncate">{profile.name}</p>
               <p className="text-xs text-gray-400 truncate mt-0.5">{profile.email}</p>
             </div>
-            <span className={`text-xs font-semibold px-3 py-0.5 rounded-full capitalize ${
-              role === 'admin' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'
+            <span className={`text-xs font-semibold px-3 py-0.5 rounded-full border capitalize ${
+              role === 'admin' ? 'border-red-300 text-red-600' : 'border-gray-200 text-gray-500'
             }`}>{role}</span>
           </div>
 
@@ -185,12 +185,12 @@ export default function ProfilePage() {
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <StatCard icon={<HugeiconsIcon icon={Package01Icon} size={18} color="#ef4444" strokeWidth={STROKE} />}
-                  label="Total Orders" value={orders.length} bg="bg-red-50" />
+                  label="Total Orders" value={orders.length} />
                 <StatCard icon={<HugeiconsIcon icon={StarIcon} size={16} color="#fbbf24" strokeWidth={STROKE} />}
-                  label="Delivered" value={delivered} bg="bg-amber-50" />
+                  label="Delivered" value={delivered} />
                 <StatCard icon={<span className="text-green-500 font-bold text-sm">$</span>}
                   label="Total Spent" value={`$${totalSpent.toFixed(2)}`}
-                  bg="bg-green-50" className="col-span-2 sm:col-span-1" />
+                  className="col-span-2 sm:col-span-1" />
               </div>
 
               {/* Recent orders */}
@@ -216,15 +216,15 @@ export default function ProfilePage() {
               {/* Quick actions */}
               <div className="grid grid-cols-2 gap-4">
                 <QuickCard href="/products" icon={<HugeiconsIcon icon={Package01Icon} size={18} color="#ef4444" strokeWidth={STROKE} />}
-                  label="Browse Products" sub="New arrivals & deals" bg="bg-red-50" />
+                  label="Browse Products" sub="New arrivals & deals" />
                 <QuickCard href="/wishlist" icon={<span className="text-pink-500 text-lg">♡</span>}
-                  label="My Wishlist" sub="Saved for later" bg="bg-pink-50" />
+                  label="My Wishlist" sub="Saved for later" />
               </div>
 
               {/* Profile completion nudge */}
               {(!profile.phone || !profile.bio) && (
-                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex items-center gap-4">
-                  <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="border border-blue-200 rounded-2xl p-4 flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl border border-blue-200 flex items-center justify-center flex-shrink-0">
                     <HugeiconsIcon icon={UserIcon} size={16} color="#3b82f6" strokeWidth={STROKE} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -281,12 +281,12 @@ export default function ProfilePage() {
 }
 
 // ─── Small shared components ──────────────────────────────────────────────────
-function StatCard({ icon, label, value, bg, className = '' }: {
-  icon: React.ReactNode; label: string; value: string | number; bg: string; className?: string;
+function StatCard({ icon, label, value, className = '' }: {
+  icon: React.ReactNode; label: string; value: string | number; bg?: string; className?: string;
 }) {
   return (
     <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 ${className}`}>
-      <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}>{icon}</div>
+      <div className="w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center flex-shrink-0">{icon}</div>
       <div>
         <p className="text-xs text-gray-400">{label}</p>
         <p className="text-lg font-bold text-gray-900 leading-tight">{value}</p>
@@ -315,13 +315,13 @@ function MiniOrderRow({ order }: { order: Order }) {
   );
 }
 
-function QuickCard({ href, icon, label, sub, bg }: {
-  href: string; icon: React.ReactNode; label: string; sub: string; bg: string;
+function QuickCard({ href, icon, label, sub }: {
+  href: string; icon: React.ReactNode; label: string; sub: string; bg?: string;
 }) {
   return (
     <Link href={href}
       className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-shadow group">
-      <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
+      <div className="w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
         {icon}
       </div>
       <div className="min-w-0">

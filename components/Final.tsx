@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useModalStore } from '@/store/modalStore';
 import { useCartStore } from '@/store/cartStore';
 import FirstSignupmodal from './FirstSignupmodal';
@@ -21,16 +22,22 @@ interface Product {
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
+  const router            = useRouter();
   const { data: session } = useSession();
   const { openLogin }     = useModalStore();
   const addToCart         = useCartStore((s) => s.addToCart);
 
-  const handleAddToCart = (product: Product) => {
+  const requireAuth = (): boolean => {
     if (!session) {
-      toast.error('Please sign in to add items to cart', { position: 'top-right' });
+      toast.error('Please sign in first', { position: 'top-right' });
       openLogin();
-      return;
+      return false;
     }
+    return true;
+  };
+
+  const handleAddToCart = (product: Product) => {
+    if (!requireAuth()) return;
     addToCart({
       id:       product.id,
       name:     product.title || product.name || '',
@@ -40,6 +47,19 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
       stock:    product.stock,
     });
     toast.success('Added to cart', { position: 'top-right' });
+  };
+
+  const handleBuyNow = (product: Product) => {
+    if (!requireAuth()) return;
+    addToCart({
+      id:       product.id,
+      name:     product.title || product.name || '',
+      image:    product.image,
+      price:    product.price,
+      quantity: 1,
+      stock:    product.stock,
+    });
+    router.push('/cart');
   };
 
   return (
@@ -81,12 +101,21 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
             <p className="text-xs text-gray-500 mb-4 line-clamp-1">{product.description}</p>
 
-            <button
-              onClick={() => handleAddToCart(product)}
-              className="mt-auto w-full bg-gray-900 hover:bg-red-500 rounded text-white text-xs py-3 font-semibold transition-colors active:scale-[0.98]"
-            >
-              Add to cart — ${product.price.toFixed(2)}
-            </button>
+            {/* Two-button row */}
+            <div className="mt-auto flex gap-2">
+              <button
+                onClick={() => handleAddToCart(product)}
+                className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 rounded text-xs py-2.5 font-semibold transition-colors active:scale-[0.98]"
+              >
+                Add to Cart
+              </button>
+              <button
+                onClick={() => handleBuyNow(product)}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs py-2.5 font-semibold transition-colors active:scale-[0.98]"
+              >
+                Buy Now
+              </button>
+            </div>
           </div>
         </div>
       ))}

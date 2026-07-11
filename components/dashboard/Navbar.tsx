@@ -64,11 +64,11 @@ export default function Navbar() {
 
         {/* User + logout */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-teal-100 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center flex-shrink-0">
             {userImage ? (
               <Image src={userImage} alt={userName} width={32} height={32} className="object-cover" />
             ) : (
-              <span className="text-xs font-bold text-teal-600">
+              <span className="text-xs font-bold text-gray-600">
                 {userName.charAt(0).toUpperCase()}
               </span>
             )}

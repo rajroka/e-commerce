@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useModalStore } from '@/store/modalStore';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
@@ -13,6 +14,7 @@ export default function FeaturedProducts() {
   const [products, setProducts]   = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const router             = useRouter();
   const { data: session }  = useSession();
   const { openLogin }      = useModalStore();
   const addToCart          = useCartStore((s) => s.addToCart);
@@ -25,12 +27,17 @@ export default function FeaturedProducts() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const handleAddToCart = (product: any) => {
+  const requireAuth = (): boolean => {
     if (!session) {
-      toast.error('Please sign in to add items to cart', { position: 'top-right' });
+      toast.error('Please sign in first', { position: 'top-right' });
       openLogin();
-      return;
+      return false;
     }
+    return true;
+  };
+
+  const handleAddToCart = (product: any) => {
+    if (!requireAuth()) return;
     addToCart({
       id:       product._id || product.id,
       name:     product.name,
@@ -40,6 +47,19 @@ export default function FeaturedProducts() {
       stock:    product.stock,
     });
     toast.success('Added to cart', { position: 'top-right' });
+  };
+
+  const handleBuyNow = (product: any) => {
+    if (!requireAuth()) return;
+    addToCart({
+      id:       product._id || product.id,
+      name:     product.name,
+      image:    product.image,
+      price:    product.price,
+      quantity: 1,
+      stock:    product.stock,
+    });
+    router.push('/cart');
   };
 
   return (
@@ -106,12 +126,21 @@ export default function FeaturedProducts() {
                       {product.description}
                     </p>
 
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      className="w-full mt-auto bg-gray-900 hover:bg-red-500 text-white py-2.5 text-xs rounded-full font-semibold transition-colors"
-                    >
-                      Add to cart — ${product.price}
-                    </button>
+                    {/* Two-button row */}
+                    <div className="mt-auto flex gap-2">
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 py-2.5 text-xs rounded-full font-semibold transition-colors"
+                      >
+                        Add to Cart
+                      </button>
+                      <button
+                        onClick={() => handleBuyNow(product)}
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 text-xs rounded-full font-semibold transition-colors active:scale-[0.98]"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

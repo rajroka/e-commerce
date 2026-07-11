@@ -90,10 +90,10 @@ export default function AllUsersPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
                       user.role === 'admin'
-                        ? 'bg-red-50 text-red-600 border border-red-200'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'border-red-300 text-red-600'
+                        : 'border-gray-200 text-gray-600'
                     }`}>
                       {user.role === 'admin' && (
                         <HugeiconsIcon icon={Shield01Icon} size={10} color="currentColor" strokeWidth={STROKE} />
@@ -110,8 +110,8 @@ export default function AllUsersPage() {
                       disabled={updating === user._id}
                       className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 ${
                         user.role === 'admin'
-                          ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'border border-red-300 text-red-600 hover:bg-red-50'
+                          : 'border border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       {updating === user._id && (

@@ -28,7 +28,7 @@ export default function Newsletter() {
     <section className="w-full bg-white border-t border-gray-100 py-16 px-4 sm:px-8">
       <div className="max-w-lg mx-auto text-center">
 
-        <div className="w-11 h-11 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
+        <div className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center mx-auto mb-5">
           <HugeiconsIcon icon={Mail01Icon} size={20} color="#ef4444" strokeWidth={STROKE} />
         </div>
 
@@ -39,7 +39,7 @@ export default function Newsletter() {
 
         {done ? (
           <div className="flex flex-col items-center gap-3 py-4">
-            <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full border border-green-200 flex items-center justify-center">
               <HugeiconsIcon icon={CheckIcon} size={22} color="#22c55e" strokeWidth={STROKE} />
             </div>
             <p className="text-sm font-semibold text-gray-900">You're on the list!</p>

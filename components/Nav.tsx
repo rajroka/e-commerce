@@ -193,8 +193,8 @@ export default function Nav() {
                       <Image2 src={userImage} alt={userName || "User"} width={28} height={28}
                         className="rounded-full ring-2 ring-red-100 flex-shrink-0" />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
-                        <HugeiconsIcon icon={UserIcon} size={14} color="#ef4444" strokeWidth={STROKE} />
+                      <div className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center flex-shrink-0">
+                        <HugeiconsIcon icon={UserIcon} size={14} color="#6b7280" strokeWidth={STROKE} />
                       </div>
                     )}
                     <div className="flex flex-col items-start leading-tight">
@@ -316,10 +316,10 @@ function MobileNav({ userEmail, userName, userImage, cartCount, showSpinner, isA
             </div>
           ) : userEmail ? (
             <>
-              <div className="flex items-center gap-3 px-3 py-3 bg-gray-50 rounded-xl mb-1">
+              <div className="flex items-center gap-3 px-3 py-3 border border-gray-100 rounded-xl mb-1">
                 {userImage
-                  ? <Image src={userImage} alt={userName || "User"} width={34} height={34} className="rounded-full ring-2 ring-red-100" />
-                  : <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center"><HugeiconsIcon icon={UserIcon} size={16} color="#ef4444" strokeWidth={STROKE} /></div>}
+                  ? <Image src={userImage} alt={userName || "User"} width={34} height={34} className="rounded-full" />
+                  : <div className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center"><HugeiconsIcon icon={UserIcon} size={16} color="#6b7280" strokeWidth={STROKE} /></div>}
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{userName || "User"}</p>
                   <p className="text-xs text-gray-400 truncate max-w-[160px]">{userEmail}</p>

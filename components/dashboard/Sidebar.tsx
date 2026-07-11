@@ -91,12 +91,12 @@ export default function Sidebar() {
       {/* Bottom: user + logout */}
       <div className="px-3 pb-4 border-t border-gray-100 pt-3">
         {/* User pill */}
-        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 mb-2">
-          <div className="w-7 h-7 rounded-full overflow-hidden bg-red-100 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 mb-2">
+          <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center flex-shrink-0">
             {userImage ? (
               <Image src={userImage} alt={userName} width={28} height={28} className="object-cover" />
             ) : (
-              <span className="text-xs font-bold text-red-500">{userName.charAt(0).toUpperCase()}</span>
+              <span className="text-xs font-bold text-gray-600">{userName.charAt(0).toUpperCase()}</span>
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -119,7 +119,7 @@ export default function Sidebar() {
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-gray-500
-                     hover:bg-red-50 hover:text-red-600 transition-colors mt-0.5"
+                     hover:text-red-600 transition-colors mt-0.5"
         >
           <HugeiconsIcon icon={Logout01Icon} size={15} color="currentColor" strokeWidth={STROKE} />
           Sign Out

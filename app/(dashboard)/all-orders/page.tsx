@@ -21,11 +21,11 @@ type Order = {
 const STATUS_OPTIONS = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
 const STATUS_STYLES: Record<string, string> = {
-  pending:    'bg-amber-50 text-amber-700 border-amber-200',
-  processing: 'bg-blue-50 text-blue-700 border-blue-200',
-  shipped:    'bg-purple-50 text-purple-700 border-purple-200',
-  delivered:  'bg-green-50 text-green-700 border-green-200',
-  cancelled:  'bg-red-50 text-red-700 border-red-200',
+  pending:    'border border-amber-300 text-amber-700',
+  processing: 'border border-blue-300 text-blue-700',
+  shipped:    'border border-purple-300 text-purple-700',
+  delivered:  'border border-green-300 text-green-700',
+  cancelled:  'border border-gray-300 text-gray-600',
 };
 
 export default function AllOrdersPage() {

@@ -65,11 +65,35 @@ export default function CartPage() {
     if (items.length === 0) { toast.error('Your cart is empty'); return; }
     checkoutRef.current = true;
     setCheckoutLoading(true);
+
+    // Snapshot the items now — store may change before redirect completes
+    const checkoutItems = items.map(i => ({
+      id:       i.id,
+      name:     i.name,
+      image:    i.image,
+      price:    i.price,
+      quantity: i.quantity,
+    }));
+
     try {
-      const res  = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartItems: items.map(i => ({ id: i.id, name: i.name, image: i.image, price: i.price, quantity: i.quantity })), couponCode: coupon?.code ?? null, discount }) });
+      const res  = await fetch('/api/checkout', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          cartItems:  checkoutItems,
+          couponCode: coupon?.code ?? null,
+          discount,
+        }),
+      });
       const data = await res.json();
       if (!res.ok) { toast.error(data.error ?? 'Checkout failed.'); return; }
-      if (data.url) { window.location.href = data.url; return; }
+      if (data.url) {
+        // Clear the client cart immediately before navigating to Stripe.
+        // The server cart is cleared by the webhook after payment succeeds.
+        clearCart();
+        window.location.href = data.url;
+        return;
+      }
       toast.error('No checkout URL returned.');
     } catch { toast.error('Network error.'); }
     finally { checkoutRef.current = false; setCheckoutLoading(false); }
