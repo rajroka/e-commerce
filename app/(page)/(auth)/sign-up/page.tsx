@@ -6,21 +6,18 @@ import Link from "next/link";
 import { signUp, signIn } from "@/lib/auth-client";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  UserIcon, Mail01Icon, LockPasswordIcon,
-  AlertCircleIcon, LoaderPinwheelIcon, EyeIcon, EyeOffIcon,
-} from "@hugeicons/core-free-icons";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   PASSWORD_RULES, passwordStrength,
   STRENGTH_LABEL, STRENGTH_COLOR, isStrongPassword,
 } from "@/lib/password";
 
-const STROKE = 1.5;
-
 export default function SignUpPage() {
   const router = useRouter();
-
   const [error,         setError]         = useState<string | null>(null);
   const [loading,       setLoading]       = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -28,7 +25,6 @@ export default function SignUpPage() {
   const [password,      setPassword]      = useState("");
   const [showPassword,  setShowPassword]  = useState(false);
   const [touched,       setTouched]       = useState(false);
-
   const anyLoading = loading || googleLoading || githubLoading;
   const strength   = passwordStrength(password);
 
@@ -36,39 +32,23 @@ export default function SignUpPage() {
     e.preventDefault();
     setError(null);
     setTouched(true);
-
-    if (!isStrongPassword(password)) {
-      setError("Please choose a stronger password — see the requirements below.");
-      return;
-    }
-
+    if (!isStrongPassword(password)) { setError("Please choose a stronger password — see the requirements below."); return; }
     setLoading(true);
     const fd  = new FormData(e.currentTarget);
-    const res = await signUp.email({
-      name:     fd.get("name")  as string,
-      email:    fd.get("email") as string,
-      password,
-    });
+    const res = await signUp.email({ name: fd.get("name") as string, email: fd.get("email") as string, password });
     setLoading(false);
-
-    if (res.error) {
-      setError(res.error.message || "Something went wrong. Please try again.");
-    } else {
-      router.push("/");
-      router.refresh();
-    }
+    if (res.error) setError(res.error.message || "Something went wrong. Please try again.");
+    else { router.push("/"); router.refresh(); }
   }
 
   async function handleGoogle() {
-    setError(null);
-    setGoogleLoading(true);
+    setError(null); setGoogleLoading(true);
     await signIn.social({ provider: "google", callbackURL: "/" });
     setGoogleLoading(false);
   }
 
   async function handleGitHub() {
-    setError(null);
-    setGithubLoading(true);
+    setError(null); setGithubLoading(true);
     await signIn.social({ provider: "github", callbackURL: "/" });
     setGithubLoading(false);
   }
@@ -79,132 +59,73 @@ export default function SignUpPage() {
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-red-500">GG Shop</Link>
           <h1 className="mt-3 text-xl font-semibold text-gray-900">Create your account</h1>
-          <p className="mt-1 text-sm text-gray-500">Join thousands of happy customers</p>
+          <p className="mt-1 text-sm text-muted-foreground">Join thousands of happy customers</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-5">
-          {/* Error banner */}
           {error && (
-            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 rounded-lg px-4 py-3 text-sm" role="alert">
-              <HugeiconsIcon icon={AlertCircleIcon} size={16} color="currentColor" strokeWidth={STROKE} className="flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 border border-red-200 text-red-600 rounded-lg px-4 py-3 text-sm" role="alert">
+              <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
               {error}
             </div>
           )}
 
-          {/* OAuth buttons */}
           <div className="space-y-3">
-            <button
-              onClick={handleGoogle}
-              disabled={anyLoading}
-              type="button"
-              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            >
-              {googleLoading
-                ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={16} color="#9ca3af" strokeWidth={STROKE} className="animate-spin" />
-                : <FcGoogle size={18} />}
+            <Button variant="outline" type="button" className="w-full" disabled={anyLoading} onClick={handleGoogle}>
+              {googleLoading ? <Loader2 size={16} className="animate-spin" /> : <FcGoogle size={18} />}
               {googleLoading ? "Connecting…" : "Continue with Google"}
-            </button>
-
-            <button
-              onClick={handleGitHub}
-              disabled={anyLoading}
-              type="button"
-              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            >
-              {githubLoading
-                ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={16} color="#9ca3af" strokeWidth={STROKE} className="animate-spin" />
-                : <FaGithub size={18} className="text-gray-800" />}
+            </Button>
+            <Button variant="outline" type="button" className="w-full" disabled={anyLoading} onClick={handleGitHub}>
+              {githubLoading ? <Loader2 size={16} className="animate-spin" /> : <FaGithub size={18} />}
               {githubLoading ? "Connecting…" : "Continue with GitHub"}
-            </button>
+            </Button>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-xs text-gray-400">or</span>
-            <div className="flex-1 h-px bg-gray-100" />
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <Separator className="flex-1" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full name */}
-            <div>
-              <label htmlFor="su-name" className="block text-xs font-medium text-gray-600 mb-1.5">Full name</label>
-              <div className="relative">
-                <HugeiconsIcon icon={UserIcon} size={15} color="#9ca3af" strokeWidth={STROKE} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  id="su-name"
-                  name="name"
-                  type="text"
-                  required
-                  autoComplete="name"
-                  placeholder="Jane Smith"
-                  className="input pl-9"
-                  disabled={anyLoading}
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="su-name">Full name</Label>
+              <Input id="su-name" name="name" type="text" required autoComplete="name"
+                placeholder="Jane Smith" disabled={anyLoading} />
             </div>
 
-            {/* Email */}
-            <div>
-              <label htmlFor="su-email" className="block text-xs font-medium text-gray-600 mb-1.5">Email address</label>
-              <div className="relative">
-                <HugeiconsIcon icon={Mail01Icon} size={15} color="#9ca3af" strokeWidth={STROKE} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  id="su-email"
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className="input pl-9"
-                  disabled={anyLoading}
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="su-email">Email address</Label>
+              <Input id="su-email" name="email" type="email" required autoComplete="email"
+                placeholder="you@example.com" disabled={anyLoading} />
             </div>
 
-            {/* Password + strength meter */}
-            <div>
-              <label htmlFor="su-pw" className="block text-xs font-medium text-gray-600 mb-1.5">Password</label>
+            <div className="space-y-1.5">
+              <Label htmlFor="su-pw">Password</Label>
               <div className="relative">
-                <HugeiconsIcon icon={LockPasswordIcon} size={15} color="#9ca3af" strokeWidth={STROKE} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  id="su-pw"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setTouched(true); }}
-                  placeholder="Create a strong password"
-                  autoComplete="new-password"
-                  className="input pl-9 pr-10"
-                  disabled={anyLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((p) => !p)}
+                <Input id="su-pw" name="password" type={showPassword ? "text" : "password"} required
+                  value={password} onChange={e => { setPassword(e.target.value); setTouched(true); }}
+                  placeholder="Create a strong password" autoComplete="new-password"
+                  className="pr-10" disabled={anyLoading} />
+                <button type="button" onClick={() => setShowPassword(p => !p)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <HugeiconsIcon icon={showPassword ? EyeOffIcon : EyeIcon} size={15} color="currentColor" strokeWidth={STROKE} />
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
-
-              {/* Strength meter — visible once typing starts */}
               {touched && password.length > 0 && (
                 <div className="mt-2 space-y-1.5">
                   <div className="flex gap-1">
                     {PASSWORD_RULES.map((_, i) => (
-                      <div
-                        key={i}
-                        className={`flex-1 h-1 rounded-full transition-colors ${i < strength ? STRENGTH_COLOR[strength] : "bg-gray-100"}`}
-                      />
+                      <div key={i} className={`flex-1 h-1 rounded-full transition-colors ${i < strength ? STRENGTH_COLOR[strength] : "bg-gray-100"}`} />
                     ))}
                   </div>
-                  <p className="text-[11px] text-gray-400">{STRENGTH_LABEL[strength]}</p>
+                  <p className="text-[11px] text-muted-foreground">{STRENGTH_LABEL[strength]}</p>
                   <ul className="space-y-0.5">
-                    {PASSWORD_RULES.map((rule) => {
+                    {PASSWORD_RULES.map(rule => {
                       const ok = rule.test(password);
                       return (
-                        <li key={rule.id} className={`text-[11px] flex items-center gap-1.5 ${ok ? "text-green-500" : "text-gray-400"}`}>
+                        <li key={rule.id} className={`text-[11px] flex items-center gap-1.5 ${ok ? "text-green-500" : "text-muted-foreground"}`}>
                           <span className={`inline-block w-3 h-3 rounded-full flex-shrink-0 border ${ok ? "bg-green-500 border-green-500" : "bg-white border-gray-300"}`} />
                           {rule.label}
                         </li>
@@ -215,27 +136,18 @@ export default function SignUpPage() {
               )}
             </div>
 
-            <button
-              type="submit"
-              disabled={anyLoading}
-              className="btn-primary w-full py-2.5 rounded-xl mt-1 flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <HugeiconsIcon icon={LoaderPinwheelIcon} size={15} color="white" strokeWidth={STROKE} className="animate-spin" />
-                  Creating…
-                </>
-              ) : "Create Account"}
-            </button>
+            <Button type="submit" disabled={anyLoading} className="w-full bg-red-500 hover:bg-red-600 text-white rounded-full mt-1">
+              {loading ? <><Loader2 size={15} className="animate-spin" />Creating…</> : "Create Account"}
+            </Button>
           </form>
 
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-muted-foreground">
             By signing up you agree to our{" "}
             <Link href="/terms" className="underline hover:text-gray-600">Terms</Link>{" "}
             and{" "}
             <Link href="/privacy" className="underline hover:text-gray-600">Privacy Policy</Link>.
           </p>
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/sign-in" className="text-red-500 font-semibold hover:underline">Sign in</Link>
           </p>

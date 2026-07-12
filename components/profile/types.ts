@@ -67,5 +67,4 @@ export type ProfileTab =
   | 'addresses'
   | 'orders'
   | 'security'
-  | 'notifications'
   | 'danger';

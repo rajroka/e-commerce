@@ -1,6 +1,30 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ── shadcn/ui design tokens (Tailwind v4 format) ───────────────────────────── */
+@theme inline {
+  --color-background:        #ffffff;
+  --color-foreground:        #111827;
+  --color-card:              #ffffff;
+  --color-card-foreground:   #111827;
+  --color-popover:           #ffffff;
+  --color-popover-foreground:#111827;
+  --color-primary:           #ef4444;
+  --color-primary-foreground:#ffffff;
+  --color-secondary:         #f3f4f6;
+  --color-secondary-foreground: #111827;
+  --color-muted:             #f9fafb;
+  --color-muted-foreground:  #6b7280;
+  --color-accent:            #fef2f2;
+  --color-accent-foreground: #ef4444;
+  --color-destructive:       #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-border:            #e5e7eb;
+  --color-input:             #e5e7eb;
+  --color-ring:              #ef4444;
+  --radius:                  0.5rem;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    DESIGN TOKENS
    Primary:  red-500 (#ef4444)
