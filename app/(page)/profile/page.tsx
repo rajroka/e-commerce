@@ -166,15 +166,15 @@ function ProfilePageInner() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-border px-4 sm:px-8 py-3 flex items-center justify-between">
-        <Link href="/" className="text-red-500 font-bold text-base">GG Shop</Link>
-        <nav className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Link href="/" className="hover:text-red-500 transition-colors">Home</Link>
-          <HugeiconsIcon icon={ChevronRightIcon} size={12} color="currentColor" strokeWidth={STROKE} />
-          <span className="text-gray-700 font-medium capitalize">
-            {NAV_ITEMS.find(n => n.id === tab)?.label ?? 'Profile'}
-          </span>
-        </nav>
+      <div className="bg-white border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <nav className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Link href="/" className="hover:text-red-500 transition-colors">Home</Link>
+            <HugeiconsIcon icon={ChevronRightIcon} size={12} color="currentColor" strokeWidth={STROKE} />
+            <span className="text-gray-700 font-medium capitalize">
+              {NAV_ITEMS.find(n => n.id === tab)?.label ?? 'Profile'}
+            </span>
+          </nav>
 
         {/* Mobile sheet trigger */}
         <Sheet>
@@ -189,6 +189,7 @@ function ProfilePageInner() {
             </div>
           </SheetContent>
         </Sheet>
+      </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col lg:flex-row gap-6">

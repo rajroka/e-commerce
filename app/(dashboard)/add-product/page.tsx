@@ -1,32 +1,63 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { postProduct } from '@/app/api/products';
 import { CldUploadWidget, CldImage } from 'next-cloudinary';
 import toast from 'react-hot-toast';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Upload01Icon, AddCircleIcon, LoaderPinwheelIcon } from '@hugeicons/core-free-icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Upload01Icon, AddCircleIcon } from '@hugeicons/core-free-icons';
+import { Button }   from '@/components/ui/button';
+import { Input }    from '@/components/ui/input';
+import { Label }    from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 
 const STROKE = 1.5;
 
+// ── Sports product categories ───────────────────────────────────────────────
+const SPORT_CATEGORIES = [
+  { value: 'football',       label: '⚽ Football / Soccer' },
+  { value: 'basketball',     label: '🏀 Basketball' },
+  { value: 'cricket',        label: '🏏 Cricket' },
+  { value: 'tennis',         label: '🎾 Tennis' },
+  { value: 'badminton',      label: '🏸 Badminton' },
+  { value: 'running',        label: '🏃 Running' },
+  { value: 'cycling',        label: '🚴 Cycling' },
+  { value: 'swimming',       label: '🏊 Swimming' },
+  { value: 'gym-fitness',    label: '🏋️ Gym & Fitness' },
+  { value: 'yoga',           label: '🧘 Yoga & Pilates' },
+  { value: 'boxing-mma',     label: '🥊 Boxing & MMA' },
+  { value: 'hiking-outdoor', label: '🥾 Hiking & Outdoor' },
+  { value: 'team-sports',    label: '🏅 Team Sports' },
+  { value: 'water-sports',   label: '🏄 Water Sports' },
+  { value: 'winter-sports',  label: '⛷️ Winter Sports' },
+  { value: 'apparel',        label: '👕 Sports Apparel' },
+  { value: 'footwear',       label: '👟 Sports Footwear' },
+  { value: 'accessories',    label: '🎒 Accessories & Gear' },
+  { value: 'nutrition',      label: '💊 Nutrition & Supplements' },
+  { value: 'other',          label: '🏆 Other' },
+];
+
 type ProductFormData = {
-  name: string;
+  name:        string;
   description: string;
-  price: number;
-  image: string;
-  category: string;
-  stock: number;
+  price:       number;
+  image:       string;
+  category:    string;
+  stock:       number;
 };
 
 export default function AddProductPage() {
-  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<ProductFormData>();
+  const {
+    register, handleSubmit, control,
+    formState: { errors }, setValue, reset,
+  } = useForm<ProductFormData>();
+
   const [imageId,    setImageId]    = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,7 +66,7 @@ export default function AddProductPage() {
     setSubmitting(true);
     try {
       await postProduct(data);
-      toast.success('Product added!');
+      toast.success('Product added successfully!');
       reset();
       setImageId('');
     } catch {
@@ -53,15 +84,24 @@ export default function AddProductPage() {
       </div>
 
       <Card>
-        <CardContent className="pt-6">
+        <CardHeader>
+          <CardTitle className="text-sm text-muted-foreground font-normal">
+            Fill in the product details. All fields marked <span className="text-red-400">*</span> are required.
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-            {/* Image upload */}
+            {/* ── Image upload ── */}
             <div className="space-y-1.5">
               <Label>Product Image <span className="text-red-400">*</span></Label>
               {imageId && (
-                <div className="mb-3 rounded-xl overflow-hidden border border-border">
-                  <CldImage src={imageId} alt="Product" width={480} height={300} className="w-full object-contain max-h-52" />
+                <div className="mb-3 rounded-xl overflow-hidden">
+                  <CldImage
+                    src={imageId} alt="Product preview"
+                    width={480} height={300}
+                    className="w-full object-contain max-h-52 rounded-xl"
+                  />
                 </div>
               )}
               <CldUploadWidget
@@ -85,52 +125,95 @@ export default function AddProductPage() {
               {errors.image && <p className="text-xs text-red-500">{errors.image.message}</p>}
             </div>
 
-            {/* Name */}
+            {/* ── Product name ── */}
             <div className="space-y-1.5">
               <Label htmlFor="p-name">Product Name <span className="text-red-400">*</span></Label>
-              <Input id="p-name" {...register('name', { required: 'Required' })}
-                placeholder="Enter product name" aria-invalid={!!errors.name} />
+              <Input
+                id="p-name"
+                placeholder="e.g. Nike Air Zoom Pegasus Running Shoes"
+                {...register('name', { required: 'Required' })}
+                aria-invalid={!!errors.name}
+              />
               {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
             </div>
 
-            {/* Description */}
+            {/* ── Description ── */}
             <div className="space-y-1.5">
               <Label htmlFor="p-desc">Description <span className="text-red-400">*</span></Label>
-              <Textarea id="p-desc" {...register('description', { required: 'Required' })}
-                rows={3} placeholder="Enter description" aria-invalid={!!errors.description} />
+              <Textarea
+                id="p-desc"
+                rows={3}
+                placeholder="Describe the product — materials, features, suitable for…"
+                {...register('description', { required: 'Required' })}
+                aria-invalid={!!errors.description}
+              />
               {errors.description && <p className="text-xs text-red-500">{errors.description.message}</p>}
             </div>
 
-            {/* Price + Stock */}
+            {/* ── Category dropdown ── */}
+            <div className="space-y-1.5">
+              <Label>Category <span className="text-red-400">*</span></Label>
+              <Controller
+                name="category"
+                control={control}
+                rules={{ required: 'Please select a category' }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                    <SelectTrigger className={`w-full ${errors.category ? 'border-red-400' : ''}`}>
+                      <SelectValue placeholder="Select a sports category…" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-64">
+                      {SPORT_CATEGORIES.map(cat => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.category && <p className="text-xs text-red-500">{errors.category.message}</p>}
+            </div>
+
+            {/* ── Price + Stock ── */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="p-price">Price ($) <span className="text-red-400">*</span></Label>
-                <Input id="p-price" type="number" step="0.01" placeholder="0.00"
-                  {...register('price', { required: 'Required', valueAsNumber: true, min: { value: 0, message: 'Min 0' } })}
-                  aria-invalid={!!errors.price} />
+                <Input
+                  id="p-price" type="number" step="0.01" placeholder="0.00"
+                  {...register('price', {
+                    required: 'Required',
+                    valueAsNumber: true,
+                    min: { value: 0, message: 'Min $0' },
+                  })}
+                  aria-invalid={!!errors.price}
+                />
                 {errors.price && <p className="text-xs text-red-500">{errors.price.message}</p>}
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="p-stock">Stock <span className="text-red-400">*</span></Label>
-                <Input id="p-stock" type="number" placeholder="0"
-                  {...register('stock', { required: 'Required', valueAsNumber: true, min: { value: 0, message: 'Min 0' } })}
-                  aria-invalid={!!errors.stock} />
+                <Input
+                  id="p-stock" type="number" placeholder="0"
+                  {...register('stock', {
+                    required: 'Required',
+                    valueAsNumber: true,
+                    min: { value: 0, message: 'Min 0' },
+                  })}
+                  aria-invalid={!!errors.stock}
+                />
                 {errors.stock && <p className="text-xs text-red-500">{errors.stock.message}</p>}
               </div>
             </div>
 
-            {/* Category */}
-            <div className="space-y-1.5">
-              <Label htmlFor="p-cat">Category <span className="text-red-400">*</span></Label>
-              <Input id="p-cat" {...register('category', { required: 'Required' })}
-                placeholder="e.g. shirt, shoes, bag" aria-invalid={!!errors.category} />
-              {errors.category && <p className="text-xs text-red-500">{errors.category.message}</p>}
-            </div>
-
-            <Button type="submit" disabled={submitting} className="w-full bg-red-500 hover:bg-red-600 text-white rounded-full">
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-red-500 hover:bg-red-600 text-white rounded-full"
+            >
               {submitting
-                ? <><Loader2 size={15} className="animate-spin" />Adding…</>
-                : <><HugeiconsIcon icon={AddCircleIcon} size={15} color="white" strokeWidth={STROKE} />Add Product</>}
+                ? <><Loader2 size={15} className="animate-spin" />Adding product…</>
+                : <><HugeiconsIcon icon={AddCircleIcon} size={15} color="white" strokeWidth={STROKE} />Add Product</>
+              }
             </Button>
           </form>
         </CardContent>

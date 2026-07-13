@@ -4,17 +4,28 @@ import Link from "next/link";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ShoppingCart01Icon, HeartIcon, Search01Icon, UserIcon,
-  Menu01Icon, Cancel01Icon, ChevronDownIcon,
-  Home01Icon, Package01Icon, Logout01Icon,
+  ShoppingCart01Icon, HeartIcon, Search01Icon,
+  Menu01Icon, Cancel01Icon, Home01Icon, Logout01Icon,
+  UserIcon, Package01Icon,
 } from "@hugeicons/core-free-icons";
 import { useCartStore } from "@/store/cartStore";
-import { useEffect, useRef, useState } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { signOut } from "@/lib/auth-client";
 import { useWishlistStore } from "@/store/wishlistStore";
-import Image2 from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Loader2, LogOut, LayoutDashboard, UserCircle, ShoppingBag, Heart } from "lucide-react";
+
+const STROKE = 1.5;
+const SZ = 20;
 
 // ─── Session cache ─────────────────────────────────────────────────────────────
 interface CachedSession {
@@ -32,25 +43,11 @@ function writeCache(s: CachedSession | null) {
   catch {}
 }
 
-const LANGS = [
-  { code: "EN", label: "English", flag: "🇺🇸" },
-  { code: "NP", label: "Nepali",  flag: "🇳🇵" },
-  { code: "AR", label: "Arabic",  flag: "🇸🇦" },
-];
-
-const STROKE = 1.5;
-const SZ = 20;
-
 export default function Nav() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [displaySession, setDisplaySession] = useState<CachedSession | null>(readCache);
-  const [searchQuery,  setSearchQuery]  = useState("");
-  const [langOpen,     setLangOpen]     = useState(false);
-  const [activeLang,   setActiveLang]   = useState(LANGS[0]);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const langRef     = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [searchQuery,    setSearchQuery]    = useState("");
 
   const setUserId        = useCartStore(s => s.setUserId);
   const getTotalQuantity = useCartStore(s => s.getTotalQuantity);
@@ -60,42 +57,47 @@ export default function Nav() {
     if (isPending) return;
     if (session?.user) {
       const next: CachedSession = {
-        email: session.user.email ?? null, name: session.user.name ?? null,
-        image: session.user.image ?? null, role: (session.user as any).role ?? null,
-        id: session.user.id ?? null,
+        email: session.user.email ?? null,
+        name:  session.user.name  ?? null,
+        image: session.user.image ?? null,
+        role:  (session.user as any).role ?? null,
+        id:    session.user.id ?? null,
       };
-      setDisplaySession(next); writeCache(next);
-    } else { setDisplaySession(null); writeCache(null); }
+      setDisplaySession(next);
+      writeCache(next);
+    } else {
+      setDisplaySession(null);
+      writeCache(null);
+    }
   }, [session, isPending]);
 
   useEffect(() => {
-    setUserId(session?.user?.id ?? null, isPending ? "loading" : session ? "authenticated" : "unauthenticated");
+    setUserId(
+      session?.user?.id ?? null,
+      isPending ? "loading" : session ? "authenticated" : "unauthenticated"
+    );
   }, [session, isPending, setUserId]);
 
-  useEffect(() => { if (session?.user && !synced) fetchWishlist(); }, [session?.user, synced, fetchWishlist]);
-
   useEffect(() => {
-    function h(e: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
-    }
-    document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
-  }, []);
+    if (session?.user && !synced) fetchWishlist();
+  }, [session?.user, synced, fetchWishlist]);
 
-  const userEmail = displaySession?.email ?? undefined;
-  const userName  = displaySession?.name  ?? undefined;
-  const userImage = displaySession?.image ?? undefined;
-  const isAdmin   = displaySession?.role === "admin";
-  const cartCount = getTotalQuantity();
-  const showSpinner = isPending && displaySession === null;
+  const userEmail    = displaySession?.email ?? undefined;
+  const userName     = displaySession?.name  ?? undefined;
+  const userImage    = displaySession?.image ?? undefined;
+  const isAdmin      = displaySession?.role === "admin";
+  const cartCount    = getTotalQuantity();
+  const showSpinner  = isPending && displaySession === null;
+  const initials     = userName ? userName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() : "?";
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
   };
+
   const handleSignOut = async () => {
-    setUserMenuOpen(false); writeCache(null); setDisplaySession(null);
+    writeCache(null);
+    setDisplaySession(null);
     await signOut({ fetchOptions: { onSuccess: () => router.push("/sign-in") } });
   };
 
@@ -106,18 +108,22 @@ export default function Nav() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0 group">
-            <Image src="/ggimage.png" alt="GG Shop" width={36} height={36} priority
+            <Image src="/ggimage.png" alt="SportShop" width={36} height={36} priority
               className="rounded-full transition-transform duration-200 group-hover:scale-105" />
-            <span className="text-base font-bold text-red-500 hidden sm:block">GG Shop</span>
+            <span className="text-base font-bold text-red-500 hidden sm:block">SportShop</span>
           </Link>
 
           {/* Search — desktop */}
           <form onSubmit={handleSearch}
             className="hidden md:flex flex-1 max-w-xl mx-auto items-center bg-gray-50 border border-gray-200 rounded-full px-4 py-2 gap-2 focus-within:border-red-400 focus-within:ring-1 focus-within:ring-red-200 transition-all">
             <HugeiconsIcon icon={Search01Icon} size={15} color="#9ca3af" strokeWidth={STROKE} />
-            <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              placeholder="What are you looking for?"
-              className="flex-1 bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search sports gear, shoes, equipment…"
+              className="flex-1 bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
+            />
           </form>
 
           {/* Right actions */}
@@ -125,7 +131,7 @@ export default function Nav() {
 
             {/* Cart — hidden for admins */}
             {!isAdmin && (
-              <Link href="/cart" aria-label="Cart" className="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
+              <Link href="/cart" aria-label="Cart" className="relative p-2 text-gray-600 hover:text-red-500 transition-colors rounded-lg">
                 <HugeiconsIcon icon={ShoppingCart01Icon} size={SZ} color="currentColor" strokeWidth={STROKE} />
                 {cartCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -137,7 +143,7 @@ export default function Nav() {
 
             {/* Wishlist — hidden for admins */}
             {!isAdmin && (
-              <Link href="/wishlist" aria-label="Wishlist" className="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
+              <Link href="/wishlist" aria-label="Wishlist" className="relative p-2 text-gray-600 hover:text-red-500 transition-colors rounded-lg">
                 <HugeiconsIcon icon={HeartIcon} size={SZ} color="currentColor" strokeWidth={STROKE} />
                 {wishlistItems.length > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -158,94 +164,90 @@ export default function Nav() {
               </Link>
             )}
 
-            {/* Language */}
-            <div ref={langRef} className="relative hidden sm:block">
-              <button onClick={() => setLangOpen(o => !o)}
-                className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors"
-                aria-expanded={langOpen} aria-label="Select language">
-                <span className="text-base leading-none">{activeLang.flag}</span>
-                <span className="font-medium text-xs">{activeLang.label}</span>
-                <HugeiconsIcon icon={ChevronDownIcon} size={12} color="currentColor" strokeWidth={STROKE}
-                  className={`transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} />
-              </button>
-              {langOpen && (
-                <div className="absolute right-0 top-full mt-1 w-36 bg-white border border-gray-100 rounded-xl shadow-lg py-1 z-50">
-                  {LANGS.map(l => (
-                    <button key={l.code} onClick={() => { setActiveLang(l); setLangOpen(false); }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${activeLang.code === l.code ? "text-red-500 font-semibold" : "text-gray-700"}`}>
-                      <span>{l.flag}</span><span>{l.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* User section */}
-            <div className="hidden md:flex items-center pl-2 border-l border-gray-100">
+            {/* ── User section — desktop ── */}
+            <div className="hidden md:flex items-center pl-2 border-l border-gray-100 ml-1">
               {showSpinner ? (
-                <div className="w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full animate-spin mx-3" />
+                <Loader2 size={18} className="animate-spin text-red-400 mx-3" />
               ) : userEmail ? (
-                <div ref={userMenuRef} className="relative">
-                  <button onClick={() => setUserMenuOpen(o => !o)}
-                    className="flex items-center gap-2 hover:bg-gray-50 rounded-xl px-2 py-1.5 transition-colors"
-                    aria-expanded={userMenuOpen}>
-                    {userImage ? (
-                      <Image2 src={userImage} alt={userName || "User"} width={28} height={28}
-                        className="rounded-full ring-2 ring-red-100 flex-shrink-0" />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center flex-shrink-0">
-                        <HugeiconsIcon icon={UserIcon} size={14} color="#6b7280" strokeWidth={STROKE} />
-                      </div>
-                    )}
-                    <div className="flex flex-col items-start leading-tight">
-                      <span className="text-[10px] text-gray-400">Welcome back</span>
-                      <span className="text-xs font-semibold text-gray-800 max-w-[96px] truncate">{userName || userEmail}</span>
-                    </div>
-                    <HugeiconsIcon icon={ChevronDownIcon} size={11} color="#9ca3af" strokeWidth={STROKE}
-                      className={`transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`} />
-                  </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2">
+                      <Avatar className="size-8 cursor-pointer hover:opacity-90 transition-opacity">
+                        <AvatarImage src={userImage ?? ""} alt={userName ?? "User"} />
+                        <AvatarFallback className="bg-red-100 text-red-600 text-xs font-bold">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </DropdownMenuTrigger>
 
-                  {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-100 rounded-xl shadow-lg py-1 z-50">
-                      {[
-                        { href: "/profile", label: "My Profile" },
-                        { href: "/orders",  label: "My Orders"  },
-                        { href: "/wishlist", label: "Wishlist"  },
-                        ...(isAdmin ? [{ href: "/dashboard", label: "Dashboard" }] : []),
-                      ].map(item => (
-                        <Link key={item.href} href={item.href} onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-500 transition-colors">
-                          {item.label}
-                        </Link>
-                      ))}
-                      <div className="h-px bg-gray-100 mx-3 my-1" />
-                      <button onClick={handleSignOut}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors font-medium">
-                        <HugeiconsIcon icon={Logout01Icon} size={14} color="currentColor" strokeWidth={STROKE} />
-                        Sign Out
-                      </button>
+                  <DropdownMenuContent align="end" sideOffset={8} className="w-48 rounded-xl shadow-lg p-1">
+                    {/* User info header */}
+                    <div className="px-3 py-2 mb-1">
+                      <p className="text-xs font-semibold text-gray-900 truncate">{userName || "User"}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{userEmail}</p>
                     </div>
-                  )}
-                </div>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link href="/profile" className="flex items-center gap-2">
+                        <UserCircle size={14} /> My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link href="/profile?tab=orders" className="flex items-center gap-2">
+                        <ShoppingBag size={14} /> My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    {!isAdmin && (
+                      <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                        <Link href="/wishlist" className="flex items-center gap-2">
+                          <Heart size={14} /> Wishlist
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                        <Link href="/dashboard" className="flex items-center gap-2">
+                          <LayoutDashboard size={14} /> Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="cursor-pointer rounded-lg text-red-500 focus:text-red-500 focus:bg-red-50"
+                    >
+                      <LogOut size={14} className="mr-2" /> Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <div className="flex items-center gap-2">
-                  <button onClick={() => router.push("/sign-in")}
-                    className="text-sm font-medium text-gray-600 hover:text-red-500 transition-colors px-2 py-1.5">
+                  <Button variant="ghost" size="sm" onClick={() => router.push("/sign-in")}
+                    className="text-gray-600 hover:text-red-500">
                     Sign In
-                  </button>
-                  <button onClick={() => router.push("/sign-up")}
-                    className="btn-primary py-1.5 px-4 text-sm">
+                  </Button>
+                  <Button size="sm" onClick={() => router.push("/sign-up")}
+                    className="bg-red-500 hover:bg-red-600 text-white rounded-full">
                     Sign Up
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
 
             {/* Mobile hamburger */}
             <MobileNav
-              userEmail={userEmail} userName={userName} userImage={userImage}
-              cartCount={cartCount} showSpinner={showSpinner} isAdmin={isAdmin}
-              wishlistCount={wishlistItems.length} onSignOut={handleSignOut}
+              userEmail={userEmail}
+              userName={userName}
+              userImage={userImage}
+              cartCount={cartCount}
+              showSpinner={showSpinner}
+              isAdmin={isAdmin}
+              wishlistCount={wishlistItems.length}
+              onSignOut={handleSignOut}
+              initials={initials}
             />
           </div>
         </div>
@@ -254,9 +256,13 @@ export default function Nav() {
         <form onSubmit={handleSearch}
           className="md:hidden flex items-center bg-gray-50 border border-gray-200 rounded-full px-4 py-2 gap-2 mb-3 focus-within:border-red-400 focus-within:ring-1 focus-within:ring-red-200 transition-all">
           <HugeiconsIcon icon={Search01Icon} size={15} color="#9ca3af" strokeWidth={STROKE} />
-          <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            placeholder="What are you looking for?"
-            className="flex-1 bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search sports gear…"
+            className="flex-1 bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
+          />
         </form>
       </div>
     </header>
@@ -264,10 +270,13 @@ export default function Nav() {
 }
 
 // ─── MobileNav ────────────────────────────────────────────────────────────────
-function MobileNav({ userEmail, userName, userImage, cartCount, showSpinner, isAdmin, wishlistCount, onSignOut }: {
+function MobileNav({
+  userEmail, userName, userImage, cartCount, showSpinner,
+  isAdmin, wishlistCount, onSignOut, initials,
+}: {
   userEmail?: string; userName?: string | null; userImage?: string | null;
-  cartCount: number; showSpinner: boolean; isAdmin: boolean; wishlistCount: number;
-  onSignOut: () => void;
+  cartCount: number; showSpinner: boolean; isAdmin: boolean;
+  wishlistCount: number; onSignOut: () => void; initials: string;
 }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -275,8 +284,11 @@ function MobileNav({ userEmail, userName, userImage, cartCount, showSpinner, isA
 
   return (
     <div className="md:hidden flex items-center">
-      <button onClick={() => setOpen(o => !o)} className="p-2 text-gray-600 hover:text-red-500 transition-colors"
-        aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="p-2 text-gray-600 hover:text-red-500 transition-colors rounded-lg focus:outline-none"
+        aria-label={open ? "Close menu" : "Open menu"}
+      >
         <HugeiconsIcon icon={open ? Cancel01Icon : Menu01Icon} size={SZ} color="currentColor" strokeWidth={STROKE} />
       </button>
 
@@ -284,8 +296,8 @@ function MobileNav({ userEmail, userName, userImage, cartCount, showSpinner, isA
 
       <div className={`fixed top-0 right-0 w-72 h-full bg-white shadow-2xl z-40 flex flex-col transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <span className="text-base font-bold text-red-500">GG Shop</span>
-          <button onClick={() => setOpen(false)} className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-50">
+          <span className="text-base font-bold text-red-500">SportShop</span>
+          <button onClick={() => setOpen(false)} className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg focus:outline-none">
             <HugeiconsIcon icon={Cancel01Icon} size={18} color="currentColor" strokeWidth={STROKE} />
           </button>
         </div>
@@ -303,7 +315,7 @@ function MobileNav({ userEmail, userName, userImage, cartCount, showSpinner, isA
             ),
           ].map(item => (
             <button key={item.href} onClick={() => go(item.href)}
-              className="w-full text-left px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+              className="w-full text-left px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors focus:outline-none">
               {item.label}
             </button>
           ))}
@@ -312,27 +324,35 @@ function MobileNav({ userEmail, userName, userImage, cartCount, showSpinner, isA
 
           {showSpinner ? (
             <div className="flex items-center gap-2 text-gray-400 text-sm px-3 py-2">
-              <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />Loading…
+              <Loader2 size={16} className="animate-spin" /> Loading…
             </div>
           ) : userEmail ? (
             <>
-              <div className="flex items-center gap-3 px-3 py-3 border border-gray-100 rounded-xl mb-1">
-                {userImage
-                  ? <Image src={userImage} alt={userName || "User"} width={34} height={34} className="rounded-full" />
-                  : <div className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center"><HugeiconsIcon icon={UserIcon} size={16} color="#6b7280" strokeWidth={STROKE} /></div>}
+              <div className="flex items-center gap-3 px-3 py-3 bg-gray-50 rounded-xl mb-1">
+                <Avatar className="size-9">
+                  <AvatarImage src={userImage ?? ""} alt={userName ?? "User"} />
+                  <AvatarFallback className="bg-red-100 text-red-600 text-xs font-bold">{initials}</AvatarFallback>
+                </Avatar>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{userName || "User"}</p>
                   <p className="text-xs text-gray-400 truncate max-w-[160px]">{userEmail}</p>
                 </div>
               </div>
-              {[{ label: "My Profile", href: "/profile" }, { label: "My Orders", href: "/orders" }].map(i => (
+              {[
+                { label: "My Profile", href: "/profile" },
+                { label: "My Orders",  href: "/profile?tab=orders" },
+              ].map(i => (
                 <button key={i.href} onClick={() => go(i.href)}
-                  className="w-full text-left px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">{i.label}</button>
+                  className="w-full text-left px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors focus:outline-none">
+                  {i.label}
+                </button>
               ))}
               <div className="h-px bg-gray-100 my-2" />
-              <button onClick={() => { setOpen(false); onSignOut(); }}
-                className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                <HugeiconsIcon icon={Logout01Icon} size={15} color="currentColor" strokeWidth={STROKE} /> Sign Out
+              <button
+                onClick={() => { setOpen(false); onSignOut(); }}
+                className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors focus:outline-none"
+              >
+                <LogOut size={15} /> Sign Out
               </button>
             </>
           ) : (

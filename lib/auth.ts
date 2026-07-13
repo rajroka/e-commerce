@@ -34,20 +34,35 @@ if (process.env.NODE_ENV === "development") {
 
 const db = mongoClient.db();
 
+// ─── Resolve base URL ─────────────────────────────────────────────────────────
+// On Vercel, VERCEL_URL is set to the deployment URL (without protocol).
+// We prefer the explicit BETTER_AUTH_URL (set in env) for production,
+// and fall back to VERCEL_URL for preview deployments.
+function resolveBaseUrl(): string {
+  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+  if (process.env.VERCEL_URL)      return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:3000";
+}
+
 // ─── Better Auth instance ──────────────────────────────────────────────────────
 export const auth = betterAuth({
   database: mongodbAdapter(db),
 
   // Base URL — used to construct OAuth redirect URIs and cookie domain
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  baseURL: resolveBaseUrl(),
 
-  // Allow requests from these origins (add your production domain here)
+  // Allow requests from these origins.
+  // On Vercel: production URL + all preview deployments under the same project.
   trustedOrigins: [
     "http://localhost:3000",
     "http://localhost:3001",
+    // Production URL (from env)
     ...(process.env.NEXT_PUBLIC_BASE_URL
       ? [process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, "")]
       : []),
+    // Vercel preview deployments — matches any *.vercel.app URL for this project.
+    // The wildcard pattern is supported by better-auth's origin check.
+    "https://*.vercel.app",
   ],
 
   // ─── Session ──────────────────────────────────────────────────────────────
