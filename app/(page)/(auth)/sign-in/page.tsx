@@ -56,13 +56,13 @@ function SignInForm() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-5">
       {error && (
-        <div className="flex items-start gap-2 border border-red-200 text-red-600 rounded-lg px-4 py-3 text-sm" role="alert">
+        <div className="flex items-start gap-2 border border-red-200 text-red-600 rounded-lg px-3 py-2 text-sm" role="alert">
           <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
           {error}
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <Button variant="outline" type="button" className="w-full" disabled={anyLoading} onClick={handleGoogle}>
           {googleLoading ? <Loader2 size={16} className="animate-spin" /> : <FcGoogle size={18} />}
           {googleLoading ? "Connecting…" : "Continue with Google"}
@@ -79,14 +79,14 @@ function SignInForm() {
         <Separator className="flex-1" />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1.5">
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="space-y-1">
           <Label htmlFor="si-email">Email address</Label>
           <Input id="si-email" name="email" type="email" required autoComplete="email"
             placeholder="you@example.com" disabled={anyLoading} />
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <Label htmlFor="si-pw">Password</Label>
           <div className="relative">
             <Input id="si-pw" name="password" type={showPassword ? "text" : "password"} required
@@ -114,12 +114,14 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <main className="min-h-[calc(100vh-64px)] bg-gray-50 flex items-center justify-center px-4 py-12">
+    <main className="min-h-[calc(100vh-64px)] bg-gray-50 flex items-center justify-center px-4 py-6">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold text-red-500">GG Shop</Link>
-          <h1 className="mt-3 text-xl font-semibold text-gray-900">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in to your account to continue</p>
+        <div className="text-center mb-3">
+          <Link href="/" className="inline-block">
+            <img src="/m.png" alt="SportShop" className="h-[160px] w-auto mx-auto" />
+          </Link>
+          <h1 className="mt-0 text-xl font-semibold text-gray-900">Welcome back</h1>
+          <p className="text-sm text-muted-foreground">Sign in to your account to continue</p>
         </div>
         <Suspense fallback={
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex justify-center">

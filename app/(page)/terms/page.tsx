@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — GG Shop',
-  description: 'GG Shop terms of service covering purchase terms, refund policy, and acceptable use.',
+  title: 'Terms of Service — SportShop',
+  description: 'SportShop terms of service covering purchase terms, refund policy, and acceptable use.',
 };
 
 const sections = [
   {
     title: '1. Acceptance of Terms',
-    body: 'By accessing or using GG Shop, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services. We reserve the right to update these terms at any time; continued use constitutes acceptance.',
+    body: 'By accessing or using SportShop, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services. We reserve the right to update these terms at any time; continued use constitutes acceptance.',
   },
   {
     title: '2. Purchase Terms',
@@ -22,7 +22,7 @@ const sections = [
   {
     title: '3. Refund Policy',
     paras: [
-      'We offer refunds on unused, unopened items returned within 14 days of delivery. To request a refund, email support@ggshop.com with your order number.',
+      'We offer refunds on unused, unopened items returned within 14 days of delivery. To request a refund, email support@sportshop.com with your order number.',
       'Refunds are issued to the original payment method within 5–7 business days of receiving the return. Shipping costs are non-refundable unless the return is due to our error.',
       'For hygiene and safety reasons, opened cosmetics and personal care products cannot be returned unless defective or damaged on arrival.',
     ],
@@ -41,7 +41,7 @@ const sections = [
   },
   {
     title: '5. Intellectual Property',
-    body: 'All content on this website — text, images, logos, and product descriptions — is the property of GG Shop and protected by copyright law. You may not reproduce, distribute, or create derivative works without express written permission.',
+    body: 'All content on this website — text, images, logos, and product descriptions — is the property of SportShop and protected by copyright law. You may not reproduce, distribute, or create derivative works without express written permission.',
   },
   {
     title: '6. Limitation of Liability',
@@ -95,8 +95,8 @@ export default function TermsPage() {
               {s.contact && (
                 <p className="text-sm text-gray-600">
                   Questions? Email{' '}
-                  <a href="mailto:support@ggshop.com" className="text-red-500 hover:underline">
-                    support@ggshop.com
+                  <a href="mailto:support@sportshop.com" className="text-red-500 hover:underline">
+                    support@sportshop.com
                   </a>.
                 </p>
               )}

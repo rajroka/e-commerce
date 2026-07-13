@@ -4,18 +4,18 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { CustomerSupportIcon } from '@hugeicons/core-free-icons';
 
 export const metadata: Metadata = {
-  title: 'FAQ — GG Shop',
-  description: 'Frequently asked questions about GG Shop products, orders, shipping, and returns.',
+  title: 'FAQ — SportShop',
+  description: 'Frequently asked questions about SportShop products, orders, shipping, and returns.',
 };
 
 const faqs = [
-  { q: 'Are your products cruelty-free?', a: 'Yes. All GG Shop products are 100% cruelty-free. We never test on animals and do not work with suppliers who do.' },
+  { q: 'What sports gear do you carry?', a: 'We stock a wide range of sports equipment and apparel including footwear, gym fitness gear, running, cycling, basketball, football and more.' },
   { q: 'How do I track my order?', a: "Once your order ships, you'll receive a confirmation email with a tracking number to monitor delivery in real time." },
-  { q: 'Can I return or exchange a product?', a: 'We accept returns within 14 days of delivery for unused, unopened items. Email support@ggshop.com with your order number to start a return.' },
+  { q: 'Can I return or exchange a product?', a: 'We accept returns within 14 days of delivery for unused, unopened items. Email support@sportshop.com with your order number to start a return.' },
   { q: 'What payment methods do you accept?', a: 'All major credit and debit cards via Stripe. All transactions are SSL-encrypted. We never store card details.' },
   { q: 'How long does shipping take?', a: 'Domestic orders: 3–5 business days standard, 1–2 express. International: 7–14 business days. Free shipping over $50.' },
-  { q: 'Do you offer wholesale or bulk pricing?', a: 'Yes. Email support@ggshop.com with your business details and our team will respond within 2 business days.' },
-  { q: 'Are your products suitable for sensitive skin?', a: 'Many products are formulated for sensitive skin with clean, dermatologist-tested ingredients. Full ingredient lists on each product page.' },
+  { q: 'Do you offer wholesale or bulk pricing?', a: 'Yes. Email support@sportshop.com with your business details and our team will respond within 2 business days.' },
+  { q: 'Are your products genuine?', a: 'Yes. All products are 100% authentic and sourced directly from verified suppliers and brands.' },
   { q: 'How do I create an account?', a: 'Click "Sign Up" in the nav bar and enter your name, email, and password — or sign up instantly with Google.' },
 ];
 

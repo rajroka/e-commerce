@@ -139,12 +139,6 @@ export default function DiscountsPage() {
 
   return (
     <div className="space-y-6 max-w-5xl">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Tag size={22} className="text-red-500" />
-        <h1 className="text-2xl font-bold text-gray-900">Manage Discounts</h1>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* ── Apply panel ── */}

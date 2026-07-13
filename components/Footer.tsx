@@ -13,7 +13,9 @@ const Footer = () => (
 
       {/* Brand */}
       <div className="col-span-2 md:col-span-1">
-        <h2 className="text-lg font-bold mb-4 text-white">SportShop</h2>
+        <Link href="/">
+          <img src="/m.png" alt="SportShop" className="h-10 w-auto mb-4" />
+        </Link>
         <p className="text-sm text-gray-400 leading-relaxed max-w-[200px]">
           Premium sports gear and equipment delivered to your door. Trusted by athletes worldwide.
         </p>

@@ -3,8 +3,8 @@ import ContactForm from './ContactForm';
 import { FiMapPin, FiMail, FiPhone, FiClock } from 'react-icons/fi';
 
 export const metadata: Metadata = {
-  title: 'Contact Us — GG Shop',
-  description: 'Get in touch with GG Shop. Send us a message, find our address, or reach us by phone.',
+  title: 'Contact Us — SportShop',
+  description: 'Get in touch with SportShop. Send us a message, find our address, or reach us by phone.',
 };
 
 const details = [
@@ -16,8 +16,8 @@ const details = [
   {
     icon: <FiMail size={18} className="text-red-500 flex-shrink-0 mt-0.5" />,
     label: 'Email',
-    value: 'support@ggshop.com',
-    href: 'mailto:support@ggshop.com',
+    value: 'support@sportshop.com',
+    href: 'mailto:support@sportshop.com',
   },
   {
     icon: <FiPhone size={18} className="text-red-500 flex-shrink-0 mt-0.5" />,

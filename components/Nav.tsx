@@ -104,13 +104,12 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4 h-16">
+        <div className="flex items-center gap-4 h-16 overflow-visible">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0 group">
-            <Image src="/ggimage.png" alt="SportShop" width={36} height={36} priority
-              className="rounded-full transition-transform duration-200 group-hover:scale-105" />
-            <span className="text-base font-bold text-red-500 hidden sm:block">SportShop</span>
+          <Link href="/" className="flex items-center flex-shrink-0 group">
+            <Image src="/m.png" alt="SportShop" width={360} height={120} priority
+              className="h-[120px] w-auto transition-transform duration-200 group-hover:scale-105" />
           </Link>
 
           {/* Search — desktop */}

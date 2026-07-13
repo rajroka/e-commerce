@@ -69,11 +69,6 @@ export default function AllOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <HugeiconsIcon icon={ShoppingCart01Icon} size={22} color="#ef4444" strokeWidth={STROKE} />
-        <h1 className="text-2xl font-bold text-gray-900">All Orders</h1>
-        {!loading && <Badge variant="secondary">{orders.length}</Badge>}
-      </div>
 
       {loading ? (
         <div className="space-y-3">

@@ -58,8 +58,6 @@ export default function AllProductsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <HugeiconsIcon icon={Package01Icon} size={22} color="#ef4444" strokeWidth={STROKE} />
-            <h1 className="text-2xl font-bold text-gray-900">All Products</h1>
             {!loading && <Badge variant="secondary">{products.length}</Badge>}
           </div>
           <Button asChild className="bg-red-500 hover:bg-red-600 text-white rounded-full gap-2">

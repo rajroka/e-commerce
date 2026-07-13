@@ -29,16 +29,16 @@ export async function generateMetadata({
     const { productId } = await params;
     const product = await fetchProductById(productId);
     return {
-      title: `${product.name} — GG Shop`,
-      description: product.description || 'View product details at GG Shop.',
+      title: `${product.name} — SportShop`,
+      description: product.description || 'View product details at SportShop.',
       openGraph: {
         images: [{ url: product.image }],
       },
     };
   } catch {
     return {
-      title: 'Product — GG Shop',
-      description: 'View product details at GG Shop.',
+      title: 'Product — SportShop',
+      description: 'View product details at SportShop.',
     };
   }
 }

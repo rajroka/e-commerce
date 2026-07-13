@@ -85,12 +85,6 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <HugeiconsIcon icon={Analytics01Icon} size={22} color="#ef4444" strokeWidth={STROKE} />
-        <h1 className="text-2xl font-bold text-gray-900">Analytics &amp; Reports</h1>
-      </div>
-
       {/* KPI cards — no coloured backgrounds */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map(k => (

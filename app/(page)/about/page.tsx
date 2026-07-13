@@ -3,8 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About Us — GG Shop',
-  description: 'Learn about GG Shop — our mission, values, and the team behind the products.',
+  title: 'About Us — SportShop',
+  description: 'Learn about SportShop — our mission, values, and the team behind the products.',
 };
 
 const values = [
@@ -27,7 +27,7 @@ export default function AboutPage() {
             We're building the future of online shopping
           </h1>
           <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            GG Shop is on a mission to make premium products accessible, with outstanding service
+            SportShop is on a mission to make premium sports gear accessible, with outstanding service
             and an unwavering commitment to quality.
           </p>
         </div>

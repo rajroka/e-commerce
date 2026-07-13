@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — GG Shop',
-  description: 'How GG Shop collects, uses, and protects your personal data.',
+  title: 'Privacy Policy — SportShop',
+  description: 'How SportShop collects, uses, and protects your personal data.',
 };
 
 const sections = [
   {
     title: '1. Introduction',
-    body: 'GG Shop ("we", "us", or "our") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you visit our website or make a purchase. By using our services, you agree to the practices described in this policy.',
+    body: 'SportShop ("we", "us", or "our") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you visit our website or make a purchase. By using our services, you agree to the practices described in this policy.',
   },
   {
     title: '2. Information We Collect',
@@ -48,7 +48,7 @@ const sections = [
       'Opt out of marketing communications at any time',
       'Lodge a complaint with a data protection authority',
     ],
-    footer: 'To exercise any of these rights, email support@ggshop.com.',
+    footer: 'To exercise any of these rights, email support@sportshop.com.',
   },
   {
     title: '7. Data Security',
@@ -107,8 +107,8 @@ export default function PrivacyPage() {
               {s.contact && (
                 <p className="text-sm text-gray-600">
                   Questions about this policy? Email{' '}
-                  <a href="mailto:support@ggshop.com" className="text-red-500 hover:underline">
-                    support@ggshop.com
+                  <a href="mailto:support@sportshop.com" className="text-red-500 hover:underline">
+                    support@sportshop.com
                   </a>{' '}
                   or visit our{' '}
                   <Link href="/contact" className="text-red-500 hover:underline">Contact page</Link>.

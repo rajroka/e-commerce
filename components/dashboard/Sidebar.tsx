@@ -13,7 +13,6 @@ import {
   Analytics01Icon,
   Menu01Icon,
   Cancel01Icon,
-  Settings01Icon,
   Logout01Icon,
   Tag01Icon,
 } from "@hugeicons/core-free-icons";
@@ -45,103 +44,84 @@ export default function Sidebar() {
   const handleSignOut = () =>
     signOut({ fetchOptions: { onSuccess: () => router.push("/sign-in") } });
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-100">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-xl bg-red-500 flex items-center justify-center flex-shrink-0
-                          transition-transform duration-200 group-hover:scale-105">
-            <span className="text-white text-sm font-black leading-none">G</span>
-          </div>
-          <span className="font-bold text-base text-gray-900">GG Shop</span>
-        </Link>
-      </div>
+  const NavLinks = () => (
+    <nav className="flex flex-col gap-0.5 px-3 py-3 flex-1">
+      {links.map((link) => {
+        const isActive =
+          pathname === link.href ||
+          (link.href !== "/dashboard" && pathname.startsWith(link.href));
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={() => setOpen(false)}
+            className={`
+              flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all
+              ${isActive
+                ? "bg-red-500 text-white shadow-sm"
+                : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+              }
+            `}
+          >
+            <HugeiconsIcon
+              icon={link.icon}
+              size={16}
+              color={isActive ? "white" : "currentColor"}
+              strokeWidth={STROKE}
+            />
+            {link.name}
+          </Link>
+        );
+      })}
+    </nav>
+  );
 
-      {/* Nav links */}
-      <nav className="flex flex-col gap-0.5 px-3 py-4 flex-1">
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 mb-2">Menu</p>
-        {links.map((link) => {
-          const isActive =
-            pathname === link.href ||
-            (link.href !== "/dashboard" && pathname.startsWith(link.href));
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
-                ${isActive
-                  ? "bg-red-500 text-white shadow-sm"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                }
-              `}
-            >
-              <HugeiconsIcon
-                icon={link.icon}
-                size={16}
-                color={isActive ? "white" : "currentColor"}
-                strokeWidth={STROKE}
-              />
-              {link.name}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Bottom: user + logout */}
-      <div className="px-3 pb-4 border-t border-gray-100 pt-3">
-        {/* User pill */}
-        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 mb-2">
-          <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center flex-shrink-0">
-            {userImage ? (
-              <Image src={userImage} alt={userName} width={28} height={28} className="object-cover" />
-            ) : (
-              <span className="text-xs font-bold text-gray-600">{userName.charAt(0).toUpperCase()}</span>
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-gray-900 truncate">{userName}</p>
-            <p className="text-[10px] text-gray-400">Admin</p>
-          </div>
+  const UserFooter = () => (
+    <div className="px-3 py-3 border-t border-gray-200">
+      {/* User pill */}
+      <div className="flex items-center gap-2.5 px-3 py-3 rounded-xl bg-gray-100 mb-1">
+        <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-300 flex items-center justify-center flex-shrink-0">
+          {userImage ? (
+            <Image src={userImage} alt={userName} width={28} height={28} className="object-cover" />
+          ) : (
+            <span className="text-xs font-bold text-gray-600">{userName.charAt(0).toUpperCase()}</span>
+          )}
         </div>
-
-        {/* Settings */}
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-gray-500
-                     hover:bg-gray-100 hover:text-gray-800 transition-colors"
-        >
-          <HugeiconsIcon icon={Settings01Icon} size={15} color="currentColor" strokeWidth={STROKE} />
-          Settings
-        </Link>
-
-        {/* Sign out */}
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-gray-500
-                     hover:text-red-600 transition-colors mt-0.5"
-        >
-          <HugeiconsIcon icon={Logout01Icon} size={15} color="currentColor" strokeWidth={STROKE} />
-          Sign Out
-        </button>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-gray-900 truncate">{userName}</p>
+          <p className="text-[10px] text-gray-500">Admin</p>
+        </div>
       </div>
+
+      {/* Sign out */}
+      <button
+        onClick={handleSignOut}
+        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-gray-500
+                   hover:bg-gray-100 hover:text-red-500 transition-all"
+      >
+        <HugeiconsIcon icon={Logout01Icon} size={16} color="currentColor" strokeWidth={STROKE} />
+        Sign Out
+      </button>
     </div>
   );
 
   return (
     <>
-      {/* ── Mobile top bar ─────────────────────────────────────────────────── */}
-      <div className="md:hidden flex items-center justify-between bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-red-500 flex items-center justify-center">
-            <span className="text-white text-xs font-black">G</span>
-          </div>
-          <span className="font-bold text-sm text-gray-900">GG Shop Admin</span>
+      {/* ── Desktop sidebar (fixed) ──────────────────────────────────────── */}
+      <aside className="hidden md:flex flex-col fixed top-0 left-0 h-screen w-56 bg-white border-r border-gray-200 z-30">
+        {/* Logo */}
+        <div className="flex items-center px-5 py-4 border-b border-gray-200">
+          <img src="/m.png" alt="SportShop" className="h-10 w-auto" />
         </div>
+        <NavLinks />
+        <UserFooter />
+      </aside>
+
+      {/* ── Mobile top bar ───────────────────────────────────────────────── */}
+      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 z-30">
+        <img src="/m.png" alt="SportShop" className="h-8 w-auto" />
         <button
-          onClick={() => setOpen(!open)}
+          onClick={() => setOpen(o => !o)}
           className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
           aria-label={open ? "Close menu" : "Open menu"}
         >
@@ -149,38 +129,29 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* ── Desktop sidebar ─────────────────────────────────────────────────── */}
-      <aside className="hidden md:flex flex-col w-56 flex-shrink-0 bg-white border-r border-gray-100 h-screen sticky top-0">
-        <SidebarContent />
-      </aside>
-
-      {/* ── Mobile drawer ───────────────────────────────────────────────────── */}
+      {/* ── Mobile drawer ────────────────────────────────────────────────── */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col
+          fixed inset-y-0 left-0 z-50 w-64 bg-white flex flex-col
           transition-transform duration-300 md:hidden
           ${open ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
         `}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-red-500 flex items-center justify-center">
-              <span className="text-white text-xs font-black">G</span>
-            </div>
-            <span className="font-bold text-sm text-gray-900">GG Shop Admin</span>
-          </div>
-          <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+          <img src="/m.png" alt="SportShop" className="h-8 w-auto" />
+          <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100">
             <HugeiconsIcon icon={Cancel01Icon} size={18} color="currentColor" strokeWidth={STROKE} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">
-          <SidebarContent />
+        <div className="flex flex-col flex-1 overflow-y-auto">
+          <NavLinks />
+          <UserFooter />
         </div>
       </aside>
 
       {/* Mobile backdrop */}
       {open && (
-        <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={() => setOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setOpen(false)} />
       )}
     </>
   );

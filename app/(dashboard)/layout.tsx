@@ -15,9 +15,10 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto p-6 min-w-0">
+      {/* pt-16 on mobile offsets the fixed top bar; md:ml-56 offsets the fixed sidebar */}
+      <main className="md:ml-56 pt-14 md:pt-[32px] min-h-screen px-6 pb-6">
         {children}
       </main>
     </div>

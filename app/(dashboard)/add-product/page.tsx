@@ -84,10 +84,6 @@ export default function AddProductPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <div className="flex items-center gap-3">
-        <HugeiconsIcon icon={AddCircleIcon} size={22} color="#ef4444" strokeWidth={STROKE} />
-        <h1 className="text-2xl font-bold text-gray-900">Add New Product</h1>
-      </div>
 
       <Card>
         <CardHeader>
