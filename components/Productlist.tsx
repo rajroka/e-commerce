@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 const STROKE = 1.5;
 
-type Product = { _id: string; title?: string; name?: string; price: number; category: string; image: string; description?: string; quantity?: number; };
+type Product = { _id: string; title?: string; name?: string; price: number; category: string; image: string; description?: string; quantity?: number; discountPct?: number | null; discountEndsAt?: string | null; };
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name';
 type Filters = { searchQuery: string; priceRange: [number, number]; category: string; sort: SortOption; };
 
@@ -44,10 +44,21 @@ const ProductList = ({ products, totalCount = 0, totalPages = 1, currentPage = 1
       </div>
       <div className="mb-8">
         <h3 className="text-xs font-semibold text-gray-600 mb-3">Category</h3>
-        <select value={filters.category} onChange={e => handleFilterChange('category', e.target.value)}
-          className="w-full border-b border-gray-300 bg-transparent text-gray-900 text-sm py-2 outline-none appearance-none cursor-pointer capitalize">
-          {categories.map(cat => <option key={cat} value={cat} className="capitalize">{cat}</option>)}
-        </select>
+        <div className="space-y-2">
+          {categories.map(cat => (
+            <label key={cat} className="flex items-center gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={filters.category === cat}
+                onChange={() => handleFilterChange('category', filters.category === cat ? 'all' : cat)}
+                className="w-4 h-4 rounded border-gray-300 accent-red-500 cursor-pointer"
+              />
+              <span className={`text-sm capitalize transition-colors ${filters.category === cat ? 'text-red-500 font-medium' : 'text-gray-600 group-hover:text-gray-900'}`}>
+                {cat === 'all' ? 'All' : cat}
+              </span>
+            </label>
+          ))}
+        </div>
       </div>
       <div className="mb-8">
         <h3 className="text-xs font-semibold text-gray-600 mb-3">Price Range</h3>
@@ -106,7 +117,7 @@ const ProductList = ({ products, totalCount = 0, totalPages = 1, currentPage = 1
 
             <div className="min-h-[400px]">
               {filteredProducts.length > 0 ? (
-                <Final sortedProducts={filteredProducts.map(p => ({ id: p._id, title: p.title ?? p.name ?? '', price: p.price, image: p.image, description: p.description ?? '', quantity: p.quantity ?? 1, category: p.category }))} />
+                <Final sortedProducts={filteredProducts.map(p => ({ id: p._id, title: p.title ?? p.name ?? '', price: p.price, image: p.image, description: p.description ?? '', quantity: p.quantity ?? 1, category: p.category, discountPct: p.discountPct ?? null, discountEndsAt: p.discountEndsAt ?? null }))} />
               ) : (
                 <div className="text-center py-32 border-2 border-dashed border-gray-200 rounded-2xl">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No items found</h3>

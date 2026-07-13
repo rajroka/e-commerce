@@ -7,12 +7,15 @@ export interface CartItem {
   image: string;
   price: number;
   quantity: number;
-  stock?: number; // optional — used for client-side stock validation
+  stock?: number;
+  color?: string | null;
+  size?: string | null;
 }
 
 interface CartState {
   items: CartItem[];
   userId: string | null;
+  synced: boolean;
   syncStatus: 'idle' | 'syncing' | 'error';
 
   // Actions
@@ -32,15 +35,15 @@ interface CartState {
   clearFromServer: () => Promise<void>;
 }
 
-// ─── Debounced push ────────────────────────────────────────────────────────────
+// ─── Debounced push ─────────────────────────────────────────────────────────
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 
-function schedulePush(fn: () => Promise<void>) {
+function schedulePush(fn: () => Promise<void>, delay = 800) {
   if (pushTimer) clearTimeout(pushTimer);
-  pushTimer = setTimeout(() => fn(), 600);
+  pushTimer = setTimeout(() => fn(), delay);
 }
 
-// ─── SSR-safe storage ──────────────────────────────────────────────────────────
+// ─── SSR-safe storage ───────────────────────────────────────────────────────
 const safeStorage = createJSONStorage(() => {
   if (typeof window === 'undefined') {
     return { getItem: () => null, setItem: () => {}, removeItem: () => {} };
@@ -48,34 +51,27 @@ const safeStorage = createJSONStorage(() => {
   return localStorage;
 });
 
-// ─── Store ─────────────────────────────────────────────────────────────────────
+// ─── Store ──────────────────────────────────────────────────────────────────
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
       userId: null,
+      synced: false,
       syncStatus: 'idle',
 
-      // ── setUserId ────────────────────────────────────────────────────────────
-      // Called by Nav / cart page whenever the auth state changes.
-      // Rules:
-      //  • loading → do nothing (session still resolving)
-      //  • unauthenticated + we had a userId → user just signed out → clear
-      //  • unauthenticated + no prior userId → guest browsing → leave items alone
-      //  • authenticated, same user → just make sure server is in sync
-      //  • authenticated, different user → start fresh from server
+      // ── setUserId ──────────────────────────────────────────────────────────
       setUserId: (id, status) => {
         if (status === 'loading') return;
 
-        const prev = get().userId;
+        const { userId: prev, synced } = get();
 
         if (status === 'unauthenticated') {
           if (prev !== null) {
-            // Actual sign-out — wipe cart
+            // Real sign-out — wipe cart
             get().clearFromServer();
-            set({ userId: null, items: [] });
+            set({ userId: null, items: [], synced: false });
           }
-          // else: guest with no prior session — leave items untouched
           return;
         }
 
@@ -84,40 +80,42 @@ export const useCartStore = create<CartState>()(
 
         if (prev && prev !== id) {
           // Different user — reset and fetch from server
-          set({ userId: id, items: [] });
+          set({ userId: id, items: [], synced: false });
           get().syncWithServer();
           return;
         }
 
-        // Same user (or first login this session)
+        // Same user: only sync once per session
         set({ userId: id });
-        get().syncWithServer();
+        if (!synced) get().syncWithServer();
       },
 
-      // ── addToCart ────────────────────────────────────────────────────────────
+      // ── addToCart ──────────────────────────────────────────────────────────
       addToCart: (item) => {
         const items = get().items;
-        const existing = items.find((i) => i.id === item.id);
+        // Same product + same color + same size = same cart line
+        const existing = items.find(
+          (i) => i.id === item.id && i.color === (item.color ?? null) && i.size === (item.size ?? null)
+        );
 
         if (existing) {
-          // Respect stock limit if provided
-          const maxQty = item.stock ?? Infinity;
-          if (existing.quantity >= maxQty) return; // silently cap — caller shows toast
-
+          const maxQty = existing.stock ?? item.stock ?? Infinity;
+          if (existing.quantity >= maxQty) return;
           set({
             items: items.map((i) =>
-              i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+              i.id === item.id && i.color === existing.color && i.size === existing.size
+                ? { ...i, quantity: i.quantity + 1 }
+                : i
             ),
           });
         } else {
-          set({ items: [...items, { ...item, quantity: 1 }] });
+          set({ items: [...items, { ...item, quantity: 1, color: item.color ?? null, size: item.size ?? null }] });
         }
         schedulePush(get().pushToServer);
       },
 
-      // ── updateQuantity ───────────────────────────────────────────────────────
-      // Replaces both the old increaseQuantity / decreaseQuantity pair.
-      // Pass 0 or negative to remove.
+      // ── updateQuantity ─────────────────────────────────────────────────────
+      // id here is the cart line key — for variant products we use a composite key
       updateQuantity: (id, quantity) => {
         if (quantity <= 0) {
           set({ items: get().items.filter((i) => i.id !== id) });
@@ -125,40 +123,37 @@ export const useCartStore = create<CartState>()(
           const item = get().items.find((i) => i.id === id);
           if (!item) return;
           const maxQty = item.stock ?? Infinity;
-          const clamped = Math.min(quantity, maxQty);
           set({
             items: get().items.map((i) =>
-              i.id === id ? { ...i, quantity: clamped } : i
+              i.id === id ? { ...i, quantity: Math.min(quantity, maxQty) } : i
             ),
           });
         }
         schedulePush(get().pushToServer);
       },
 
-      // ── removeFromCart ───────────────────────────────────────────────────────
+      // ── removeFromCart ─────────────────────────────────────────────────────
       removeFromCart: (id) => {
         set({ items: get().items.filter((i) => i.id !== id) });
         schedulePush(get().pushToServer);
       },
 
-      // ── clearCart ────────────────────────────────────────────────────────────
+      // ── clearCart ──────────────────────────────────────────────────────────
       clearCart: () => {
         set({ items: [] });
         schedulePush(get().pushToServer);
       },
 
-      // ── getTotalQuantity / getTotalPrice ─────────────────────────────────────
+      // ── computed ───────────────────────────────────────────────────────────
       getTotalQuantity: () =>
         get().items.reduce((acc, i) => acc + i.quantity, 0),
 
       getTotalPrice: () =>
         get().items.reduce((acc, i) => acc + i.price * i.quantity, 0),
 
-      // ── syncWithServer ───────────────────────────────────────────────────────
-      // Fetches the server cart and merges:
-      //  • Server has items  → server wins (authoritative after login)
-      //  • Server empty, local has items → push local up (added while logged out)
-      //  • Both empty → nothing to do
+      // ── syncWithServer ─────────────────────────────────────────────────────
+      // Runs once per session per user. Server wins if it has items;
+      // otherwise local items are pushed up.
       syncWithServer: async () => {
         const { userId, items: local } = get();
         if (!userId) return;
@@ -167,32 +162,28 @@ export const useCartStore = create<CartState>()(
         try {
           const res = await fetch('/api/cart', { credentials: 'include' });
 
-          if (res.status === 401) {
-            // Session expired mid-flight — don't blow up
-            set({ syncStatus: 'idle' });
-            return;
-          }
+          if (res.status === 401) { set({ syncStatus: 'idle' }); return; }
           if (!res.ok) throw new Error(`GET /api/cart → ${res.status}`);
 
           const data = await res.json();
           const server: CartItem[] = data.items ?? [];
 
           if (server.length > 0) {
-            set({ items: server, syncStatus: 'idle' });
+            set({ items: server, synced: true, syncStatus: 'idle' });
           } else if (local.length > 0) {
-            set({ syncStatus: 'idle' });
-            schedulePush(get().pushToServer);
+            set({ synced: true, syncStatus: 'idle' });
+            // Push local items up immediately (no debounce — this is first sync)
+            get().pushToServer();
           } else {
-            set({ syncStatus: 'idle' });
+            set({ synced: true, syncStatus: 'idle' });
           }
         } catch (err) {
           console.error('[cartStore] syncWithServer:', err);
           set({ syncStatus: 'error' });
-          // Don't toast — silent background sync; items still show from localStorage
         }
       },
 
-      // ── pushToServer ─────────────────────────────────────────────────────────
+      // ── pushToServer ───────────────────────────────────────────────────────
       pushToServer: async () => {
         const { userId, items } = get();
         if (!userId) return;
@@ -210,16 +201,15 @@ export const useCartStore = create<CartState>()(
         } catch (err) {
           console.error('[cartStore] pushToServer:', err);
           set({ syncStatus: 'error' });
-          // Items are still safe in localStorage — no data loss
         }
       },
 
-      // ── clearFromServer ──────────────────────────────────────────────────────
+      // ── clearFromServer ────────────────────────────────────────────────────
       clearFromServer: async () => {
         try {
           await fetch('/api/cart', { method: 'DELETE', credentials: 'include' });
         } catch {
-          // Best-effort on sign-out — ignore failure
+          // Best-effort on sign-out
         }
       },
     }),

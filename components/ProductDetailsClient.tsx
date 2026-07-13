@@ -6,86 +6,121 @@ import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  HeartIcon, HeartAddIcon, ShoppingCart01Icon, CheckIcon,
+  HeartIcon, HeartAddIcon, CheckIcon,
   StarIcon, ShoppingBag01Icon, Message01Icon,
-  Share01Icon, ArrowLeft01Icon, ChevronRightIcon,
+  Share01Icon, ChevronRightIcon,
 } from '@hugeicons/core-free-icons';
-import { useModalStore } from '@/store/modalStore';
-import { useCartStore } from '@/store/cartStore';
+import { useModalStore }    from '@/store/modalStore';
+import { useCartStore }     from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
-import { useSession } from '@/lib/auth-client';
-import ReviewSection from './ReviewSection';
+import { useSession }       from '@/lib/auth-client';
+import ReviewSection        from './ReviewSection';
+import { getEffectivePrice } from '@/lib/discount';
 
 const STROKE = 1.5;
 
-const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'] as const;
-type SizeValue = typeof SIZES[number];
-
 interface ProductProps {
   product: {
-    id: string;
-    title: string;
-    price: number;
-    description: string;
-    category: string;
-    image: string;
-    stock?: number;
-    rating?: number;
-    reviewCount?: number;
+    id:             string;
+    title:          string;
+    price:          number;
+    description:    string;
+    category:       string;
+    image:          string;
+    stock?:         number;
+    rating?:        number;
+    reviewCount?:   number;
+    colors?:        string[];
+    sizes?:         string[];
+    discountPct?:   number | null;
+    discountEndsAt?: string | null;
   };
 }
 
 export default function ProductDetailsClient({ product }: ProductProps) {
   const { data: session } = useSession();
   const { openLogin }     = useModalStore();
-  const addToCart = useCartStore(s => s.addToCart);
+  const addToCart         = useCartStore(s => s.addToCart);
   const { isInWishlist, toggleWishlist, fetchWishlist } = useWishlistStore();
 
-  const [mounted,      setMounted]      = useState(false);
-  const [addedAnim,    setAddedAnim]    = useState(false);
-  const [selectedSize, setSelectedSize] = useState<SizeValue | null>(null);
-  const [activeImg,    setActiveImg]    = useState(0);
+  const colors = product.colors ?? [];
+  const sizes  = product.sizes  ?? [];
+
+  const [mounted,       setMounted]       = useState(false);
+  const [addedAnim,     setAddedAnim]     = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(colors[0] ?? null);
+  const [selectedSize,  setSelectedSize]  = useState<string | null>(sizes[0]  ?? null);
+  const [activeImg,     setActiveImg]     = useState(0);
 
   useEffect(() => {
     setMounted(true);
     if (session) fetchWishlist();
   }, [session, fetchWishlist]);
 
-  // Derived values
-  const discountPct     = 10;
-  const discountedPrice = parseFloat((product.price * (1 - discountPct / 100)).toFixed(2));
-  const savedAmount     = parseFloat((product.price - discountedPrice).toFixed(2));
+  // Reset selections if product changes
+  useEffect(() => {
+    setSelectedColor(colors[0] ?? null);
+    setSelectedSize(sizes[0]   ?? null);
+  }, [product.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { salePrice, originalPrice, discountPct, isSale, savedAmount } = getEffectivePrice({
+    price:          product.price,
+    discountPct:    product.discountPct,
+    discountEndsAt: product.discountEndsAt,
+  });
+  const discountedPrice = salePrice;
   const wishlisted      = mounted && isInWishlist(product.id);
   const inStock         = product.stock === undefined || product.stock > 0;
-  const rating          = product.rating ?? 4.5;
+  const rating          = product.rating    ?? 4.5;
   const reviewCount     = product.reviewCount ?? 0;
-  const soldCount       = Math.max(reviewCount * 3, 42); // estimate from reviews
+  const soldCount       = Math.max(reviewCount * 3, 42);
 
-  // Thumbnail images — in production these would come from the DB
-  const images = [product.image, product.image, product.image, product.image];
+  const images = [product.image];
 
-  const handleBuyNow = () => {
-    if (!session) { toast.error('Please sign in to purchase'); openLogin(); return; }
-    if (!inStock)  { toast.error('This product is out of stock'); return; }
-    handleAddToCart();
-    // In production: router.push('/cart') after adding
+  // Validate variant selection before adding
+  const validateVariants = (): boolean => {
+    if (colors.length > 0 && !selectedColor) {
+      toast.error('Please select a color'); return false;
+    }
+    if (sizes.length > 0 && !selectedSize) {
+      toast.error('Please select a size'); return false;
+    }
+    return true;
   };
 
   const handleAddToCart = () => {
     if (!session) { toast.error('Please sign in to add items to cart'); openLogin(); return; }
     if (!inStock)  { toast.error('This product is out of stock'); return; }
+    if (!validateVariants()) return;
+
     addToCart({
-      id: product.id, name: product.title, image: product.image,
-      price: discountedPrice, quantity: 1, stock: product.stock,
+      id:       product.id,
+      name:     product.title,
+      image:    product.image,
+      price:    discountedPrice,
+      quantity: 1,
+      stock:    product.stock,
+      color:    selectedColor,
+      size:     selectedSize,
     });
     setAddedAnim(true);
     setTimeout(() => setAddedAnim(false), 1800);
     toast.success('Added to cart');
   };
 
+  const handleBuyNow = () => {
+    if (!session) { toast.error('Please sign in to purchase'); openLogin(); return; }
+    if (!inStock)  { toast.error('This product is out of stock'); return; }
+    if (!validateVariants()) return;
+    handleAddToCart();
+  };
+
   const handleWishlist = () => {
     if (!session) { toast.error('Please sign in to save items'); openLogin(); return; }
-    toggleWishlist({ productId: product.id, name: product.title, image: product.image, price: discountedPrice, category: product.category });
+    toggleWishlist({
+      productId: product.id, name: product.title,
+      image: product.image, price: discountedPrice, category: product.category,
+    });
   };
 
   const handleShare = async () => {
@@ -96,6 +131,9 @@ export default function ProductDetailsClient({ product }: ProductProps) {
       toast.success('Link copied!');
     }
   };
+
+  // Color swatch helper — if it looks like a CSS color render it as a swatch
+  const isHexOrCss = (c: string) => /^#|^rgb|^hsl/.test(c);
 
   return (
     <>
@@ -118,12 +156,9 @@ export default function ProductDetailsClient({ product }: ProductProps) {
             {/* ── LEFT: Image gallery ── */}
             <div className="lg:w-[420px] flex-shrink-0">
               <div className="flex gap-3">
-                {/* Thumbnails */}
                 <div className="flex flex-col gap-2 w-14 flex-shrink-0">
                   {images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImg(i)}
+                    <button key={i} onClick={() => setActiveImg(i)}
                       className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
                         activeImg === i ? 'border-red-500' : 'border-gray-200 hover:border-gray-400'
                       }`}
@@ -134,12 +169,9 @@ export default function ProductDetailsClient({ product }: ProductProps) {
                   ))}
                 </div>
 
-                {/* Main image */}
                 <div className="flex-1 relative aspect-square bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                   <Image src={images[activeImg]} alt={product.title} fill priority
                     className="object-contain p-6" sizes="(max-width:1024px) 90vw, 420px" />
-
-                  {/* Stock badge */}
                   {inStock && product.stock !== undefined && product.stock < 5 && (
                     <span className="absolute top-3 left-3 bg-amber-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
                       Only {product.stock} left
@@ -147,9 +179,7 @@ export default function ProductDetailsClient({ product }: ProductProps) {
                   )}
                   {!inStock && (
                     <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-2xl">
-                      <span className="bg-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-full">
-                        Out of Stock
-                      </span>
+                      <span className="bg-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-full">Out of Stock</span>
                     </div>
                   )}
                 </div>
@@ -159,17 +189,11 @@ export default function ProductDetailsClient({ product }: ProductProps) {
             {/* ── RIGHT: Product info ── */}
             <div className="flex-1 min-w-0 flex flex-col gap-5">
 
-              {/* Title */}
+              {/* Title + rating */}
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug">
-                  {product.title}
-                </h1>
-
-                {/* Sold count + stars */}
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug">{product.title}</h1>
                 <div className="flex items-center gap-3 mt-2 flex-wrap">
-                  <span className="text-sm text-gray-500">
-                    {soldCount.toLocaleString()}+ Sold
-                  </span>
+                  <span className="text-sm text-gray-500">{soldCount.toLocaleString()}+ Sold</span>
                   <span className="text-gray-300">•</span>
                   <div className="flex items-center gap-1">
                     {[1,2,3,4,5].map(s => (
@@ -183,89 +207,108 @@ export default function ProductDetailsClient({ product }: ProductProps) {
                 </div>
               </div>
 
-              {/* Price block */}
+              {/* Price */}
               <div className="px-1 py-4">
                 <div className="flex items-baseline gap-3 flex-wrap">
-                  <span className="text-3xl font-bold text-gray-900">
-                    ${discountedPrice.toFixed(2)}
-                  </span>
-                  <span className="text-base text-gray-400 line-through">
-                    ${product.price.toFixed(2)}
-                  </span>
-                  <span className="text-sm font-bold text-green-600">
-                    {discountPct}% off
-                  </span>
+                  <span className="text-3xl font-bold text-gray-900">${salePrice.toFixed(2)}</span>
+                  {isSale && (
+                    <>
+                      <span className="text-base text-gray-400 line-through">${originalPrice.toFixed(2)}</span>
+                      <span className="text-sm font-bold text-green-600">{discountPct}% off</span>
+                    </>
+                  )}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Save ${savedAmount.toFixed(2)} on this item
-                </p>
+                {isSale && (
+                  <p className="text-xs text-gray-500 mt-1">Save ${savedAmount.toFixed(2)} on this item</p>
+                )}
+                {product.discountEndsAt && isSale && (
+                  <p className="text-xs text-red-500 font-medium mt-1">
+                    Sale ends {new Date(product.discountEndsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                )}
               </div>
 
-              {/* Color / variant selector */}
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2.5">Color</p>
-                <div className="flex gap-2">
-                  {[
-                    { label: 'Black', bg: 'bg-gray-900', ring: 'ring-gray-900' },
-                    { label: 'White', bg: 'bg-gray-100', ring: 'ring-gray-300' },
-                  ].map((color, i) => (
-                    <button key={color.label}
-                      aria-label={`Select ${color.label}`}
-                      className={`w-9 h-9 rounded-xl ${color.bg} border-2 border-transparent ring-offset-2 transition-all ${
-                        i === 0 ? `ring-2 ${color.ring}` : 'hover:ring-2 hover:ring-gray-300'
-                      }`}
-                    />
-                  ))}
+              {/* ── Color selector (only if admin defined colors) ── */}
+              {colors.length > 0 && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 mb-2.5">
+                    Color
+                    {selectedColor && <span className="font-normal text-gray-500 ml-1.5">— {selectedColor}</span>}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {colors.map(color => {
+                      const isCss    = isHexOrCss(color);
+                      const isActive = selectedColor === color;
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          aria-label={`Select color ${color}`}
+                          aria-pressed={isActive}
+                          className={`transition-all ring-offset-2 rounded-xl border-2 ${
+                            isCss
+                              ? `w-9 h-9 ${isActive ? 'ring-2 ring-gray-700 border-white' : 'border-transparent hover:ring-2 hover:ring-gray-300'}`
+                              : `px-3 py-1.5 text-sm font-medium ${
+                                  isActive
+                                    ? 'border-gray-900 bg-gray-900 text-white'
+                                    : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                                }`
+                          }`}
+                          style={isCss ? { backgroundColor: color } : undefined}
+                        >
+                          {!isCss && color}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Size selector */}
-              <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <p className="text-sm font-semibold text-gray-700">Select Size</p>
-                  <button className="text-xs text-red-500 font-medium hover:underline">
-                    Size Guide
-                  </button>
+              {/* ── Size selector (only if admin defined sizes) ── */}
+              {sizes.length > 0 && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 mb-2.5">Size</p>
+                  <div className="flex flex-wrap gap-2">
+                    {sizes.map(size => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        aria-pressed={selectedSize === size}
+                        className={`px-4 py-2 text-sm font-medium rounded-xl border-2 transition-all ${
+                          selectedSize === size
+                            ? 'border-gray-900 bg-gray-900 text-white'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {SIZES.map(size => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 text-sm font-medium rounded-xl border-2 transition-all ${
-                        selectedSize === size
-                          ? 'border-gray-900 bg-gray-900 text-white'
-                          : 'border-gray-200 text-gray-600 hover:border-gray-400'
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* Description */}
-              <p className="text-sm text-gray-500 leading-relaxed line-clamp-3">
-                {product.description}
-              </p>
+              <p className="text-sm text-gray-500 leading-relaxed line-clamp-3">{product.description}</p>
+
+              {/* Selected variant summary */}
+              {(selectedColor || selectedSize) && (
+                <p className="text-xs text-gray-400">
+                  Selected:{' '}
+                  {[selectedColor, selectedSize].filter(Boolean).join(' / ')}
+                </p>
+              )}
 
               {/* ── CTA Buttons ── */}
               <div className="flex flex-col gap-3 pt-1">
-                <button
-                  onClick={handleBuyNow}
-                  disabled={!inStock}
+                <button onClick={handleBuyNow} disabled={!inStock}
                   className={`w-full py-3.5 text-sm font-bold rounded-xl transition-all active:scale-[0.98] ${
-                    inStock
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-sm shadow-red-200'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    inStock ? 'bg-red-500 hover:bg-red-600 text-white shadow-sm shadow-red-200' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   Buy this Item
                 </button>
 
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!inStock}
+                <button onClick={handleAddToCart} disabled={!inStock}
                   className={`w-full py-3.5 text-sm font-bold rounded-xl border-2 transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
                     inStock
                       ? addedAnim
@@ -274,35 +317,42 @@ export default function ProductDetailsClient({ product }: ProductProps) {
                       : 'border-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  {addedAnim ? (
-                    <><HugeiconsIcon icon={CheckIcon} size={16} color="currentColor" strokeWidth={STROKE} /> Added!</>
-                  ) : (
-                    <><HugeiconsIcon icon={ShoppingBag01Icon} size={16} color="currentColor" strokeWidth={STROKE} /> Add to Bag</>
-                  )}
+                  {addedAnim
+                    ? <><HugeiconsIcon icon={CheckIcon} size={16} color="currentColor" strokeWidth={STROKE} /> Added!</>
+                    : <><HugeiconsIcon icon={ShoppingBag01Icon} size={16} color="currentColor" strokeWidth={STROKE} /> Add to Bag</>
+                  }
                 </button>
               </div>
 
-              {/* ── Action row: Chat / Wishlist / Share ── */}
+              {/* ── Action row ── */}
               <div className="flex items-center gap-1 pt-1 border-t border-gray-100">
-                <ActionBtn icon={<HugeiconsIcon icon={Message01Icon} size={18} color="currentColor" strokeWidth={STROKE} />} label="Chat" onClick={() => toast('Chat coming soon')} />
+                <ActionBtn
+                  icon={<HugeiconsIcon icon={Message01Icon} size={18} color="currentColor" strokeWidth={STROKE} />}
+                  label="Chat" onClick={() => toast('Chat coming soon')}
+                />
                 <div className="w-px h-8 bg-gray-100" />
-                <ActionBtn icon={<HugeiconsIcon icon={wishlisted ? HeartIcon : HeartAddIcon} size={18} color={wishlisted ? '#ef4444' : 'currentColor'} strokeWidth={STROKE} />} label="Wishlist" onClick={handleWishlist} />
+                <ActionBtn
+                  icon={<HugeiconsIcon icon={wishlisted ? HeartIcon : HeartAddIcon} size={18}
+                    color={wishlisted ? '#ef4444' : 'currentColor'} strokeWidth={STROKE} />}
+                  label="Wishlist" onClick={handleWishlist}
+                />
                 <div className="w-px h-8 bg-gray-100" />
-                <ActionBtn icon={<HugeiconsIcon icon={Share01Icon} size={18} color="currentColor" strokeWidth={STROKE} />} label="Share" onClick={handleShare} />
+                <ActionBtn
+                  icon={<HugeiconsIcon icon={Share01Icon} size={18} color="currentColor" strokeWidth={STROKE} />}
+                  label="Share" onClick={handleShare}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Reviews section */}
       <ReviewSection productId={product.id} />
       <Toaster position="top-right" />
     </>
   );
 }
 
-// Small helper component
 function ActionBtn({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <button onClick={onClick}

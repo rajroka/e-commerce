@@ -149,6 +149,11 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-gray-800 line-clamp-1">{item.name}</p>
                         <p className="text-[11px] text-muted-foreground">×{item.quantity}</p>
+                        {(item.color || item.size) && (
+                          <p className="text-[11px] text-muted-foreground">
+                            {[item.color, item.size].filter(Boolean).join(' · ')}
+                          </p>
+                        )}
                       </div>
                       <p className="text-sm font-bold text-gray-900 flex-shrink-0">
                         ${(item.price * item.quantity).toFixed(2)}

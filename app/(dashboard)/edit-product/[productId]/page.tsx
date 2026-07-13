@@ -6,32 +6,38 @@ import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Edit01Icon, LoaderPinwheelIcon, ArrowLeft01Icon } from '@hugeicons/core-free-icons';
+import TagInput from '@/components/ui/TagInput';
 
 const STROKE = 1.5;
 
 type ProductFormData = {
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  category: string;
-  stock: number;
-  rating: number;
-  reviews: number;
+  name:           string;
+  description:    string;
+  price:          number;
+  image:          string;
+  category:       string;
+  stock:          number;
+  rating:         number;
+  reviews:        number;
+  discountPct:    number;
+  discountEndsAt: string;
 };
 
 const inputCls = (err = false) =>
   `w-full border ${err ? 'border-red-400' : 'border-gray-200'} rounded-xl px-3 py-2.5 text-sm outline-none focus:border-red-400 focus:ring-1 focus:ring-red-200 transition-colors`;
 
-const Label = ({ children }: { children: React.ReactNode }) => (
+const Lbl = ({ children }: { children: React.ReactNode }) => (
   <label className="block text-xs font-medium text-gray-600 mb-1.5">{children}</label>
 );
 
 export default function EditProductPage() {
   const { productId } = useParams() as { productId: string };
   const router        = useRouter();
+
   const [fetching,   setFetching]   = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [colors,     setColors]     = useState<string[]>([]);
+  const [sizes,      setSizes]      = useState<string[]>([]);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProductFormData>();
 
@@ -40,17 +46,22 @@ export default function EditProductPage() {
     fetch(`/api/products/${productId}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(product => {
-        // API returns the Mongoose document — map fields to form shape
         reset({
-          name:        product.name        ?? '',
-          description: product.description ?? '',
-          price:       product.price       ?? 0,
-          image:       product.image       ?? '',
-          category:    product.category    ?? '',
-          stock:       product.stock       ?? 0,
-          rating:      product.rating      ?? 0,
-          reviews:     product.reviewCount ?? product.reviews ?? 0,
+          name:           product.name        ?? '',
+          description:    product.description ?? '',
+          price:          product.price       ?? 0,
+          image:          product.image       ?? '',
+          category:       product.category    ?? '',
+          stock:          product.stock       ?? 0,
+          rating:         product.rating      ?? 0,
+          reviews:        product.reviewCount ?? product.reviews ?? 0,
+          discountPct:    product.discountPct    ?? 0,
+          discountEndsAt: product.discountEndsAt
+            ? new Date(product.discountEndsAt).toISOString().slice(0, 16)
+            : '',
         });
+        setColors(product.colors ?? []);
+        setSizes(product.sizes   ?? []);
       })
       .catch(() => toast.error('Failed to load product'))
       .finally(() => setFetching(false));
@@ -63,14 +74,18 @@ export default function EditProductPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:        data.name,
-          description: data.description,
-          price:       data.price,
-          image:       data.image,
-          category:    data.category,
-          stock:       data.stock,
-          rating:      data.rating,
-          reviewCount: data.reviews,
+          name:           data.name,
+          description:    data.description,
+          price:          data.price,
+          image:          data.image,
+          category:       data.category,
+          stock:          data.stock,
+          rating:         data.rating,
+          reviewCount:    data.reviews,
+          colors,
+          sizes,
+          discountPct:    data.discountPct    || 0,
+          discountEndsAt: data.discountEndsAt || null,
         }),
       });
       if (!res.ok) throw new Error();
@@ -104,13 +119,13 @@ export default function EditProductPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
           <div>
-            <Label>Product Name <span className="text-red-400">*</span></Label>
+            <Lbl>Product Name <span className="text-red-400">*</span></Lbl>
             <input {...register('name', { required: 'Required' })} className={inputCls(!!errors.name)} />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
           </div>
 
           <div>
-            <Label>Description <span className="text-red-400">*</span></Label>
+            <Lbl>Description <span className="text-red-400">*</span></Lbl>
             <textarea {...register('description', { required: 'Required' })} rows={3}
               className={`${inputCls(!!errors.description)} resize-none`} />
             {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
@@ -118,14 +133,14 @@ export default function EditProductPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Price ($) <span className="text-red-400">*</span></Label>
+              <Lbl>Price ($) <span className="text-red-400">*</span></Lbl>
               <input type="number" step="0.01"
                 {...register('price', { required: 'Required', valueAsNumber: true, min: 0 })}
                 className={inputCls(!!errors.price)} />
               {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
             </div>
             <div>
-              <Label>Stock <span className="text-red-400">*</span></Label>
+              <Lbl>Stock <span className="text-red-400">*</span></Lbl>
               <input type="number"
                 {...register('stock', { required: 'Required', valueAsNumber: true, min: 0 })}
                 className={inputCls(!!errors.stock)} />
@@ -134,14 +149,14 @@ export default function EditProductPage() {
           </div>
 
           <div>
-            <Label>Image URL <span className="text-red-400">*</span></Label>
-            <input {...register('image', { required: 'Required' })} placeholder="https://..."
+            <Lbl>Image URL <span className="text-red-400">*</span></Lbl>
+            <input {...register('image', { required: 'Required' })} placeholder="https://…"
               className={inputCls(!!errors.image)} />
             {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image.message}</p>}
           </div>
 
           <div>
-            <Label>Category <span className="text-red-400">*</span></Label>
+            <Lbl>Category <span className="text-red-400">*</span></Lbl>
             <input {...register('category', { required: 'Required' })}
               className={inputCls(!!errors.category)} />
             {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category.message}</p>}
@@ -149,16 +164,60 @@ export default function EditProductPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Rating (0–5)</Label>
+              <Lbl>Rating (0–5)</Lbl>
               <input type="number" step="0.1" min="0" max="5"
                 {...register('rating', { valueAsNumber: true, min: 0, max: 5 })}
                 className={inputCls(!!errors.rating)} />
             </div>
             <div>
-              <Label>Review Count</Label>
+              <Lbl>Review Count</Lbl>
               <input type="number" min="0"
                 {...register('reviews', { valueAsNumber: true, min: 0 })}
                 className={inputCls(!!errors.reviews)} />
+            </div>
+          </div>
+
+          {/* ── Variants ── */}
+          <div className="space-y-4 pt-1 border-t border-gray-100">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide pt-3">
+              Variants <span className="font-normal normal-case text-gray-400">(optional)</span>
+            </p>
+            <TagInput
+              label="Available Colors"
+              placeholder="e.g. Red, Blue, Black…"
+              tags={colors}
+              onChange={setColors}
+              hint="Press Enter or comma to add. Leave empty if not applicable."
+            />
+            <TagInput
+              label="Available Sizes"
+              placeholder="e.g. S, M, L, XL or 38, 40, 42…"
+              tags={sizes}
+              onChange={setSizes}
+              hint="Press Enter or comma to add. Leave empty if not applicable."
+            />
+          </div>
+
+          {/* ── Discount ── */}
+          <div className="space-y-4 pt-1 border-t border-gray-100">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide pt-3">
+              Discount <span className="font-normal normal-case text-gray-400">(optional)</span>
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Lbl>Discount %</Lbl>
+                <input type="number" min="0" max="100" step="1" placeholder="0"
+                  {...register('discountPct', { valueAsNumber: true, min: 0, max: 100 })}
+                  className={inputCls()} />
+                <p className="text-xs text-gray-400 mt-1">0 = no discount</p>
+              </div>
+              <div>
+                <Lbl>Ends At</Lbl>
+                <input type="datetime-local"
+                  {...register('discountEndsAt')}
+                  className={inputCls()} />
+                <p className="text-xs text-gray-400 mt-1">Leave empty for permanent</p>
+              </div>
             </div>
           </div>
 

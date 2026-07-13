@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { useSession } from '@/lib/auth-client';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { LoaderPinwheelIcon } from '@hugeicons/core-free-icons';
+import { getEffectivePrice } from '@/lib/discount';
 
 const STROKE = 1.5;
 
@@ -22,6 +23,7 @@ export default function FeaturedProducts() {
   const { openLogin }       = useModalStore();
   const addToCart           = useCartStore((s) => s.addToCart);
   const { buyNow, buying }  = useBuyNow();
+  const isAdmin = (session?.user as any)?.role === 'admin';
 
   useEffect(() => {
     axios
@@ -42,11 +44,12 @@ export default function FeaturedProducts() {
 
   const handleAddToCart = (product: any) => {
     if (!requireAuth()) return;
+    const { salePrice } = getEffectivePrice(product);
     addToCart({
       id:       product._id || product.id,
       name:     product.name,
       image:    product.image,
-      price:    product.price,
+      price:    salePrice,
       quantity: 1,
       stock:    product.stock,
     });
@@ -55,11 +58,12 @@ export default function FeaturedProducts() {
 
   const handleBuyNow = (product: any) => {
     if (!requireAuth()) return;
+    const { salePrice } = getEffectivePrice(product);
     buyNow({
       id:    product._id || product.id,
       name:  product.name,
       image: product.image,
-      price: product.price,
+      price: salePrice,
     });
   };
 
@@ -118,32 +122,54 @@ export default function FeaturedProducts() {
                       <h3 className="text-sm font-semibold text-gray-900 line-clamp-1">
                         {product.name}
                       </h3>
-                      <span className="text-sm font-bold text-gray-900 flex-shrink-0">
-                        ${product.price}
-                      </span>
+                      <div className="flex flex-col items-end flex-shrink-0">
+                        {(() => {
+                          const { salePrice, originalPrice, isSale, discountPct } = getEffectivePrice(product);
+                          return isSale ? (
+                            <>
+                              <span className="text-sm font-bold text-red-500">${salePrice.toFixed(2)}</span>
+                              <span className="text-xs text-gray-400 line-through">${originalPrice.toFixed(2)}</span>
+                            </>
+                          ) : (
+                            <span className="text-sm font-bold text-gray-900">${originalPrice.toFixed(2)}</span>
+                          );
+                        })()}
+                      </div>
                     </div>
+                    {(() => {
+                      const { isSale, discountPct } = getEffectivePrice(product);
+                      return isSale ? (
+                        <span className="inline-block mb-1 text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded w-fit">
+                          {discountPct}% off
+                        </span>
+                      ) : null;
+                    })()}
 
                     <p className="text-xs text-gray-500 mb-4 line-clamp-2">
                       {product.description}
                     </p>
 
                     <div className="mt-auto flex gap-2">
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        disabled={buying}
-                        className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 py-2.5 text-xs rounded-full font-semibold transition-colors disabled:opacity-50"
-                      >
-                        Add to Cart
-                      </button>
-                      <button
-                        onClick={() => handleBuyNow(product)}
-                        disabled={buying}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 text-xs rounded-full font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-1"
-                      >
-                        {buying
-                          ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={11} color="white" strokeWidth={STROKE} className="animate-spin" />
-                          : 'Buy Now'}
-                      </button>
+                      {!isAdmin && (
+                        <>
+                          <button
+                            onClick={() => handleAddToCart(product)}
+                            disabled={buying}
+                            className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 py-2.5 text-xs rounded-full font-semibold transition-colors disabled:opacity-50"
+                          >
+                            Add to Cart
+                          </button>
+                          <button
+                            onClick={() => handleBuyNow(product)}
+                            disabled={buying}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 text-xs rounded-full font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-1"
+                          >
+                            {buying
+                              ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={11} color="white" strokeWidth={STROKE} className="animate-spin" />
+                              : 'Buy Now'}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -15,6 +15,7 @@ import {
   Cancel01Icon,
   Settings01Icon,
   Logout01Icon,
+  Tag01Icon,
 } from "@hugeicons/core-free-icons";
 import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ const links = [
   { name: "Analytics",   href: "/analytics",    icon: Analytics01Icon },
   { name: "Products",    href: "/all-products", icon: Package01Icon },
   { name: "Add Product", href: "/add-product",  icon: AddCircleIcon },
+  { name: "Discounts",   href: "/discounts",    icon: Tag01Icon },
   { name: "Orders",      href: "/all-orders",   icon: ShoppingCart01Icon },
   { name: "Customers",   href: "/all-users",    icon: UserIcon },
 ];

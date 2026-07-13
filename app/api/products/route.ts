@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     delete body.id; // MongoDB uses _id
 
-    const { name, description, price, image, category, stock = 0, rating = 0, reviews = [] } = body;
+    const { name, description, price, image, category, stock = 0, rating = 0, reviews = [], colors = [], sizes = [] } = body;
 
     if (!name || !description || !price || !image || !category) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const newProduct = new Product({ name, description, price, image, category, stock, rating, reviews });
+    const newProduct = new Product({ name, description, price, image, category, stock, rating, reviews, colors, sizes });
     await newProduct.save();
 
     console.info(`[products] Created by admin ${session.user.email}`);

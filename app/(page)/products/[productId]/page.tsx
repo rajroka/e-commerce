@@ -14,6 +14,10 @@ type FetchedProduct = {
   stock: number;
   rating: number;
   reviewCount: number;
+  colors?: string[];
+  sizes?: string[];
+  discountPct?: number;
+  discountEndsAt?: string | null;
 };
 
 export async function generateMetadata({
@@ -50,15 +54,19 @@ const Page = async ({ params }: { params: Promise<{ productId: string }> }) => {
   }
 
   const product = {
-    id:          fetchedProduct._id,
-    title:       fetchedProduct.name,
-    price:       fetchedProduct.price,
-    description: fetchedProduct.description || 'No description available',
-    category:    fetchedProduct.category,
-    image:       fetchedProduct.image,
-    stock:       fetchedProduct.stock,
-    rating:      fetchedProduct.rating,
-    reviewCount: fetchedProduct.reviewCount,
+    id:             fetchedProduct._id,
+    title:          fetchedProduct.name,
+    price:          fetchedProduct.price,
+    description:    fetchedProduct.description || 'No description available',
+    category:       fetchedProduct.category,
+    image:          fetchedProduct.image,
+    stock:          fetchedProduct.stock,
+    rating:         fetchedProduct.rating,
+    reviewCount:    fetchedProduct.reviewCount,
+    colors:         fetchedProduct.colors        ?? [],
+    sizes:          fetchedProduct.sizes         ?? [],
+    discountPct:    fetchedProduct.discountPct    ?? 0,
+    discountEndsAt: fetchedProduct.discountEndsAt ?? null,
   };
 
   return (

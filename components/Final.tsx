@@ -11,6 +11,7 @@ import { useSession } from '@/lib/auth-client';
 import { toast } from 'react-hot-toast';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { LoaderPinwheelIcon } from '@hugeicons/core-free-icons';
+import { getEffectivePrice } from '@/lib/discount';
 
 const STROKE = 1.5;
 
@@ -23,6 +24,8 @@ interface Product {
   category?: string;
   name?: string;
   stock?: number;
+  discountPct?: number | null;
+  discountEndsAt?: string | null;
 }
 
 const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts }) => {
@@ -30,6 +33,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
   const { openLogin }     = useModalStore();
   const addToCart         = useCartStore((s) => s.addToCart);
   const { buyNow, buying } = useBuyNow();
+  const isAdmin = (session?.user as any)?.role === 'admin';
 
   const requireAuth = (): boolean => {
     if (!session) {
@@ -42,11 +46,12 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
   const handleAddToCart = (product: Product) => {
     if (!requireAuth()) return;
+    const { salePrice } = getEffectivePrice(product);
     addToCart({
       id:       product.id,
       name:     product.title || product.name || '',
       image:    product.image,
-      price:    product.price,
+      price:    salePrice,
       quantity: 1,
       stock:    product.stock,
     });
@@ -55,11 +60,12 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
   const handleBuyNow = (product: Product) => {
     if (!requireAuth()) return;
+    const { salePrice } = getEffectivePrice(product);
     buyNow({
       id:    product.id,
       name:  product.title || product.name || '',
       image: product.image,
-      price: product.price,
+      price: salePrice,
     });
   };
 
@@ -84,7 +90,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
                 loading="lazy"
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
-                className="object-contain p-6 mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
+                className="object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
               />
             </Link>
           </div>
@@ -95,30 +101,54 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
               <h2 className="text-sm font-semibold text-gray-900 line-clamp-1">
                 {product.title || product.name}
               </h2>
-              <span className="text-sm font-semibold text-gray-900 flex-shrink-0">
-                ${product.price.toFixed(2)}
-              </span>
+              <div className="flex flex-col items-end flex-shrink-0">
+                {(() => {
+                  const { salePrice, originalPrice, isSale, discountPct } = getEffectivePrice(product);
+                  return isSale ? (
+                    <>
+                      <span className="text-sm font-semibold text-red-500">${salePrice.toFixed(2)}</span>
+                      <span className="text-xs text-gray-400 line-through">${originalPrice.toFixed(2)}</span>
+                    </>
+                  ) : (
+                    <span className="text-sm font-semibold text-gray-900">${originalPrice.toFixed(2)}</span>
+                  );
+                })()}
+              </div>
             </div>
+
+            {/* Sale badge */}
+            {(() => {
+              const { isSale, discountPct } = getEffectivePrice(product);
+              return isSale ? (
+                <span className="inline-block mb-1 text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded w-fit">
+                  {discountPct}% off
+                </span>
+              ) : null;
+            })()}
 
             <p className="text-xs text-gray-500 mb-4 line-clamp-1">{product.description}</p>
 
             <div className="mt-auto flex gap-2">
-              <button
-                onClick={() => handleAddToCart(product)}
-                disabled={buying}
-                className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 rounded text-xs py-2.5 font-semibold transition-colors active:scale-[0.98] disabled:opacity-50"
-              >
-                Add to Cart
-              </button>
-              <button
-                onClick={() => handleBuyNow(product)}
-                disabled={buying}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs py-2.5 font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-1"
-              >
-                {buying
-                  ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={11} color="white" strokeWidth={STROKE} className="animate-spin" />
-                  : 'Buy Now'}
-              </button>
+              {!isAdmin && (
+                <>
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    disabled={buying}
+                    className="flex-1 border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 rounded text-xs py-2.5 font-semibold transition-colors active:scale-[0.98] disabled:opacity-50"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={() => handleBuyNow(product)}
+                    disabled={buying}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs py-2.5 font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-1"
+                  >
+                    {buying
+                      ? <HugeiconsIcon icon={LoaderPinwheelIcon} size={11} color="white" strokeWidth={STROKE} className="animate-spin" />
+                      : 'Buy Now'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

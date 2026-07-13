@@ -15,11 +15,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import TagInput from '@/components/ui/TagInput';
 import { Loader2 } from 'lucide-react';
 
 const STROKE = 1.5;
 
-// ── Sports product categories ───────────────────────────────────────────────
 const SPORT_CATEGORIES = [
   { value: 'football',       label: '⚽ Football / Soccer' },
   { value: 'basketball',     label: '🏀 Basketball' },
@@ -44,12 +44,14 @@ const SPORT_CATEGORIES = [
 ];
 
 type ProductFormData = {
-  name:        string;
-  description: string;
-  price:       number;
-  image:       string;
-  category:    string;
-  stock:       number;
+  name:            string;
+  description:     string;
+  price:           number;
+  image:           string;
+  category:        string;
+  stock:           number;
+  discountPct:     number;
+  discountEndsAt:  string;
 };
 
 export default function AddProductPage() {
@@ -60,15 +62,19 @@ export default function AddProductPage() {
 
   const [imageId,    setImageId]    = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [colors,     setColors]     = useState<string[]>([]);
+  const [sizes,      setSizes]      = useState<string[]>([]);
 
   const onSubmit = async (data: ProductFormData) => {
     if (!data.image) { toast.error('Please upload a product image'); return; }
     setSubmitting(true);
     try {
-      await postProduct(data);
+      await postProduct({ ...data, colors, sizes, discountPct: data.discountPct || 0, discountEndsAt: data.discountEndsAt || null });
       toast.success('Product added successfully!');
       reset();
       setImageId('');
+      setColors([]);
+      setSizes([]);
     } catch {
       toast.error('Failed to add product. Please try again.');
     } finally {
@@ -202,6 +208,52 @@ export default function AddProductPage() {
                   aria-invalid={!!errors.stock}
                 />
                 {errors.stock && <p className="text-xs text-red-500">{errors.stock.message}</p>}
+              </div>
+            </div>
+
+            {/* ── Variants ── */}
+            <div className="space-y-4 pt-1">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Variants <span className="font-normal normal-case text-gray-400">(optional)</span>
+              </p>
+              <TagInput
+                label="Available Colors"
+                placeholder="e.g. Red, Blue, Black…"
+                tags={colors}
+                onChange={setColors}
+                hint="Type a color and press Enter or comma to add. Leave empty if not applicable."
+              />
+              <TagInput
+                label="Available Sizes"
+                placeholder="e.g. S, M, L, XL or 38, 40, 42…"
+                tags={sizes}
+                onChange={setSizes}
+                hint="Type a size and press Enter or comma to add. Leave empty if not applicable."
+              />
+            </div>
+
+            {/* ── Discount ── */}
+            <div className="space-y-4 pt-1 border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide pt-3">
+                Discount <span className="font-normal normal-case text-gray-400">(optional)</span>
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="p-discount">Discount %</Label>
+                  <Input
+                    id="p-discount" type="number" min="0" max="100" step="1" placeholder="0"
+                    {...register('discountPct', { valueAsNumber: true, min: 0, max: 100 })}
+                  />
+                  <p className="text-xs text-gray-400">0 = no discount</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="p-discount-ends">Ends At</Label>
+                  <Input
+                    id="p-discount-ends" type="datetime-local"
+                    {...register('discountEndsAt')}
+                  />
+                  <p className="text-xs text-gray-400">Leave empty for permanent</p>
+                </div>
               </div>
             </div>
 

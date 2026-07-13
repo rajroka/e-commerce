@@ -22,7 +22,6 @@ export default function CartPage() {
   const updateQuantity = useCartStore(s => s.updateQuantity);
   const removeFromCart = useCartStore(s => s.removeFromCart);
   const clearCart      = useCartStore(s => s.clearCart);
-  const setUserId      = useCartStore(s => s.setUserId);
   const syncStatus     = useCartStore(s => s.syncStatus);
   const getTotalPrice  = useCartStore(s => s.getTotalPrice);
   const getTotalQty    = useCartStore(s => s.getTotalQuantity);
@@ -35,7 +34,6 @@ export default function CartPage() {
   const checkoutRef = useRef(false);
 
   useEffect(() => { setReady(true); }, []);
-  useEffect(() => { if (!session) return; setUserId(session.user.id, 'authenticated'); }, [session, setUserId]);
   useEffect(() => { setCoupon(null); }, [items]);
 
   const subtotal     = getTotalPrice();
@@ -163,6 +161,11 @@ export default function CartPage() {
                       </button>
                     </div>
                     <p className="text-xs text-gray-400 mt-1">${item.price.toFixed(2)} each</p>
+                    {(item.color || item.size) && (
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {[item.color, item.size].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
                     {item.stock !== undefined && item.stock < 5 && <p className="text-xs text-amber-500 font-medium mt-1">Only {item.stock} left in stock</p>}
                     <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
                       <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
