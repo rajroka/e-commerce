@@ -68,6 +68,8 @@ export default function Nav() {
     } else {
       setDisplaySession(null);
       writeCache(null);
+      // Clear wishlist when not logged in
+      useWishlistStore.setState({ items: [], synced: false });
     }
   }, [session, isPending]);
 
@@ -98,6 +100,8 @@ export default function Nav() {
   const handleSignOut = async () => {
     writeCache(null);
     setDisplaySession(null);
+    useWishlistStore.setState({ items: [], synced: false });
+    localStorage.removeItem("gg-shop-wishlist-v1");
     await signOut({ fetchOptions: { onSuccess: () => router.push("/sign-in") } });
   };
 
