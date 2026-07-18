@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function postProduct(data: { name: string; description: string; price: number; image: string; category: string; stock: number; }) {
+export async function postProduct(data: { name: string; description: string; price: number; image: string; category: string; stock: number; colors?: string[]; sizes?: string[]; discountPct?: number; discountEndsAt?: string | null; [key: string]: any }) {
   const response = await axios.post('/api/products', data, {
     headers: {
       'Content-Type': 'application/json',

@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useModalStore } from '@/store/modalStore';
 import { useCartStore } from '@/store/cartStore';
 import { useBuyNow } from '@/lib/buyNow';
-import FirstSignupmodal from './FirstSignupmodal';
 import { useSession } from '@/lib/auth-client';
 import { toast } from 'react-hot-toast';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -153,7 +152,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
           </div>
         </div>
       ))}
-      <FirstSignupmodal />
+      {/* First signup promotional modal removed to prevent automatic opening */}
     </div>
   );
 };
