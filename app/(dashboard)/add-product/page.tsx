@@ -52,6 +52,8 @@ type ProductFormData = {
   stock:           number;
   discountPct:     number;
   discountEndsAt:  string;
+  colors?:         string[];
+  sizes?:          string[];
 };
 
 export default function AddProductPage() {
