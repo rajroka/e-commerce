@@ -45,8 +45,8 @@ export default function TodaysForYou() {
     : [];
 
   return (
-    <section className="w-full bg-gray-50 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <span className="text-red-500 text-2xl">▶</span>
@@ -102,3 +102,5 @@ export default function TodaysForYou() {
     </section>
   );
 }
+
+

@@ -8,8 +8,8 @@ import { InstagramIcon, YoutubeIcon, Facebook01Icon } from '@hugeicons/core-free
 const STROKE = 1.5;
 
 const Footer = () => (
-  <footer className="bg-gray-900 text-white px-6 py-16 md:px-16 lg:px-24">
-    <div className="max-w-7xl mx-auto grid gap-12 grid-cols-2 md:grid-cols-4">
+  <footer className="bg-gray-900 text-white py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 grid gap-12 grid-cols-2 md:grid-cols-4">
 
       {/* Brand */}
       <div className="col-span-2 md:col-span-1">
@@ -94,7 +94,8 @@ const Footer = () => (
     </div>
 
     {/* Bottom bar */}
-    <div className="mt-16 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="mt-16 border-t border-gray-800 pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 flex flex-col md:flex-row justify-between items-center gap-4">
       <p className="text-xs text-gray-500" suppressHydrationWarning>
         © {new Date().getFullYear()} SportShop. All rights reserved.
       </p>
@@ -102,8 +103,11 @@ const Footer = () => (
         <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
         <Link href="/terms"   className="hover:text-white transition-colors">Terms of Service</Link>
       </div>
+      </div>
     </div>
   </footer>
 );
 
 export default Footer;
+
+

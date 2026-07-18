@@ -22,3 +22,5 @@ function Badge({ className, variant, ...props }: React.ComponentProps<"div"> & V
 }
 
 export { Badge, badgeVariants }
+
+

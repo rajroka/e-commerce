@@ -17,8 +17,8 @@ const STROKE = 1.5;
 
 export default function Customerservice() {
   return (
-    <section aria-label="Service features" className="w-full bg-white border-t border-gray-100 py-10 px-4 sm:px-8">
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+    <section aria-label="Service features" className="w-full bg-white border-t border-gray-100 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 grid grid-cols-2 md:grid-cols-4 gap-6">
         {features.map(({ icon, title, desc }) => (
           <div key={title} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
@@ -34,3 +34,5 @@ export default function Customerservice() {
     </section>
   );
 }
+
+

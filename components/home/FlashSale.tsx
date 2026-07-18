@@ -46,8 +46,8 @@ export default function FlashSale() {
   };
 
   return (
-    <section className="w-full bg-white py-10 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full bg-white py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <span className="text-red-500 text-2xl">▶</span>
@@ -116,3 +116,5 @@ export default function FlashSale() {
     </section>
   );
 }
+
+

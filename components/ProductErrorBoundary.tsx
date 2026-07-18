@@ -46,3 +46,5 @@ class ProductErrorBoundary extends React.Component<Props, State> {
 }
 
 export default ProductErrorBoundary;
+
+

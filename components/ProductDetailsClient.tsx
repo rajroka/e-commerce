@@ -138,7 +138,7 @@ export default function ProductDetailsClient({ product }: ProductProps) {
   return (
     <>
       <div className="min-h-[calc(100vh-64px)] bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 py-6">
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-5 flex-wrap">
@@ -362,3 +362,5 @@ function ActionBtn({ icon, label, onClick }: { icon: React.ReactNode; label: str
     </button>
   );
 }
+
+

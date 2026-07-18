@@ -23,8 +23,8 @@ const categories = [
 
 export default function CategoryIcons() {
   return (
-    <section className="w-full bg-white border-b border-gray-100 py-6 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full bg-white border-b border-gray-100 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex gap-3 overflow-x-auto scrollbar-hide md:grid md:grid-cols-9 md:gap-4">
           {categories.map(({ label, icon, href }) => (
             <Link key={label} href={href}
@@ -43,3 +43,5 @@ export default function CategoryIcons() {
     </section>
   );
 }
+
+

@@ -4,16 +4,12 @@ import dynamic from "next/dynamic";
 import DiscountPopup from "@/components/DiscountPopup";
 import Footer from "@/components/Footer";
 import Customerservice from "@/components/Customerservice";
-
-// Homepage sections
 import HeroBanner from "@/components/home/HeroBanner";
-import CategoryIcons from "@/components/home/CategoryIcons";
-import FlashSale from "@/components/home/FlashSale";
-import TodaysForYou from "@/components/home/TodaysForYou";
-import QuoteBanner from "@/components/home/QuoteBanner";
+import FeaturedItems from "@/components/home/FeaturedItems";
+import ProductRow from "@/components/home/ProductRow";
+import PromoBanner from "@/components/home/PromoBanner";
 import Newslater from "@/components/Newslater";
 
-// Loaded client-only to avoid SSR style injection mismatch
 const NextNProgress = dynamic(() => import("nextjs-progressbar"), { ssr: false });
 
 export default function Home() {
@@ -22,28 +18,28 @@ export default function Home() {
       <NextNProgress color="#ef4444" />
       <DiscountPopup>Special Offer!</DiscountPopup>
 
-      {/* 1. Hero with countdown + slides */}
+      {/* 1. Hero */}
       <HeroBanner />
 
-      {/* 2. Category icon row */}
-      <CategoryIcons />
+      {/* 2. Featured 4-grid */}
+      <FeaturedItems />
 
-      {/* 3. Flash sale strip */}
-      <FlashSale />
+      {/* 3. Promo banner */}
+      <PromoBanner />
 
-      {/* 4. Tabbed "Todays For You" product grid */}
-      <TodaysForYou />
+      {/* 4. Best sellers row */}
+      <ProductRow title="Best Sellers" subtitle="Top Picks" bg="white" />
 
-      {/* 6. Quote / CTA banner */}
-      <QuoteBanner />
+      {/* 5. New arrivals row */}
+      <ProductRow title="New Arrivals" subtitle="Just Dropped" category="running" bg="gray" />
 
-      {/* 7. Trust badges */}
+      {/* 6. Trust badges */}
       <Customerservice />
 
-      {/* 8. Newsletter */}
+      {/* 7. Newsletter */}
       <Newslater />
 
-      {/* 9. Footer */}
+      {/* 8. Footer */}
       <Footer />
     </>
   );

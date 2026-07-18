@@ -44,7 +44,7 @@ const SplitHero = () => {
       {/* Right Image Section */}
       <div className="w-full md:w-1/2 relative h-[50vh] md:h-auto">
         <Image
-          src="/66.png"
+          src="/ball.png"
           alt="Stylish models wearing summer collection"
           fill
           priority
@@ -62,3 +62,5 @@ const SplitHero = () => {
 };
 
 export default SplitHero;
+
+

@@ -37,3 +37,5 @@ const Relatedcatcard = ({ products }: { products: any[] }) => {
 };
 
 export default Relatedcatcard;
+
+

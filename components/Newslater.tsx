@@ -25,8 +25,9 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="w-full bg-white border-t border-gray-100 py-16 px-4 sm:px-8">
-      <div className="max-w-lg mx-auto text-center">
+    <section className="w-full bg-white border-t border-gray-100 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <div className="max-w-lg mx-auto text-center">
 
         <div className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center mx-auto mb-5">
           <HugeiconsIcon icon={Mail01Icon} size={20} color="#ef4444" strokeWidth={STROKE} />
@@ -70,6 +71,9 @@ export default function Newsletter() {
           </form>
         )}
       </div>
+      </div>
     </section>
   );
 }
+
+

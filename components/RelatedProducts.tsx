@@ -18,3 +18,5 @@ async function RelatedProducts({ category }: { category: string }) {
 }
 
 export default RelatedProducts;
+
+

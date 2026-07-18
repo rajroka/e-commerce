@@ -158,3 +158,5 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 };
 
 export default FinalProduct;
+
+
