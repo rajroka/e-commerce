@@ -82,7 +82,7 @@ const FinalProduct: React.FC<{ sortedProducts: Product[] }> = ({ sortedProducts 
 
           {/* Image */}
           <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100 rounded-t">
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.id}`} className="absolute inset-0">
               <Image
                 src={product.image}
                 alt={product.title || 'Product'}

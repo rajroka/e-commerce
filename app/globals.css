@@ -38,18 +38,10 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FOCUS / OUTLINE
-   Remove ALL browser-default outlines on click.
-   Only keyboard navigation (focus-visible) gets the red ring.
+   FOCUS / OUTLINE — removed completely
 ───────────────────────────────────────────────────────────────────────────── */
-:focus                    { outline: none; }
-:focus-visible            { outline: 2px solid #ef4444; outline-offset: 2px; }
-
-/* Shadcn components use Tailwind ring utilities — strip them on mouse click */
-[data-slot]:focus:not(:focus-visible) {
-  outline: none;
-  box-shadow: none;
-}
+*:focus,
+*:focus-visible { outline: none !important; box-shadow: none !important; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DROPDOWN / POPOVER — smooth enter & exit

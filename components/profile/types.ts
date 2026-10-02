@@ -51,15 +51,19 @@ export interface Order {
   subtotal?: number;
   discount?: number;
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  paymentMethod?: 'stripe' | 'cod';
   createdAt: string;
   couponCode?: string;
   stripeSessionId?: string;
   shippingAddress?: {
-    name: string;
-    line1: string;
-    city: string;
-    country: string;
+    name:        string;
+    line1:       string;
+    line2?:      string;
+    city:        string;
+    state?:      string;
+    postalCode?: string;
+    country:     string;
   };
 }
 

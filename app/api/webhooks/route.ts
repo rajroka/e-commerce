@@ -67,6 +67,17 @@ export async function POST(req: NextRequest) {
   const total       = parseFloat(meta.total   ?? '0');
   const couponCode  = meta.couponCode || null;
 
+  // ── Reconstruct shipping address from metadata ───────────────────────────
+  const shippingAddress = meta.addr_name ? {
+    name:       meta.addr_name,
+    line1:      meta.addr_line1      || undefined,
+    line2:      meta.addr_line2      || undefined,
+    city:       meta.addr_city       || undefined,
+    state:      meta.addr_state      || undefined,
+    postalCode: meta.addr_postalCode || undefined,
+    country:    meta.addr_country    || undefined,
+  } : undefined;
+
   // ── Create order ─────────────────────────────────────────────────────────
   const order = await Order.create({
     userId,
@@ -77,7 +88,8 @@ export async function POST(req: NextRequest) {
     total,
     couponCode,
     stripeSessionId: stripeSession.id,
-    status: 'processing', // payment confirmed → move past pending immediately
+    status: 'processing',
+    ...(shippingAddress && { shippingAddress }),
   });
 
   // ── Clear the user's server cart ─────────────────────────────────────────

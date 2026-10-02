@@ -71,7 +71,7 @@ export default function TodaysForYou() {
             return (
               <div key={p._id || p.id} className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col overflow-hidden">
                 <div className="relative aspect-square bg-gray-50 overflow-hidden">
-                  <Link href={`/products/${p._id || p.id}`}>
+                  <Link href={`/products/${p._id || p.id}`} className="absolute inset-0">
                     <Image src={p.image} alt={p.name} fill sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105" />
                   </Link>

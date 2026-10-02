@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { cartItems, couponCode, discount = 0 } = body;
+    const { cartItems, couponCode, discount = 0, shippingAddress } = body;
 
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
@@ -79,14 +79,20 @@ export async function POST(req: NextRequest) {
     const metadata: Record<string, string> = {
       userId:    session.user.id,
       userEmail: session.user.email,
-      // Stripe metadata values must be strings ≤500 chars each
-      // We chunk items as JSON; if > 500 chars we trim (webhook falls back to items param)
       couponCode: couponCode ?? '',
       discount:   String(discount),
       subtotal:   String(cartItems.reduce((s: number, i: any) => s + i.price * i.quantity, 0)),
       total:      String(
         Math.max(0, cartItems.reduce((s: number, i: any) => s + i.price * i.quantity, 0) - discount)
       ),
+      // Shipping address fields — stored flat to avoid nested objects
+      addr_name:       shippingAddress?.fullName   ?? '',
+      addr_line1:      shippingAddress?.line1       ?? '',
+      addr_line2:      shippingAddress?.line2       ?? '',
+      addr_city:       shippingAddress?.city        ?? '',
+      addr_state:      shippingAddress?.state       ?? '',
+      addr_postalCode: shippingAddress?.postalCode  ?? '',
+      addr_country:    shippingAddress?.country     ?? '',
     };
 
     // Encode items — Stripe metadata value limit is 500 chars, key limit 40 chars.

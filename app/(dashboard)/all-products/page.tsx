@@ -94,7 +94,7 @@ export default function AllProductsPage() {
               <Card key={product._id} className="overflow-hidden group hover:shadow-md transition-shadow flex flex-col">
                 <div className="relative aspect-[4/3] bg-muted overflow-hidden">
                   <Image src={product.image} alt={product.name} fill
-                    className="object-contain p-4 transition-transform duration-500 group-hover:scale-105" sizes="300px" />
+                    className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="300px" />
                   <Badge className="absolute top-2 left-2 text-[10px] capitalize bg-black/60 text-white border-0">
                     {product.category}
                   </Badge>

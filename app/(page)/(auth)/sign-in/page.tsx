@@ -30,15 +30,22 @@ function SignInForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const fd  = new FormData(e.currentTarget);
-    const res = await signIn.email({
-      email:       fd.get("email")    as string,
-      password:    fd.get("password") as string,
-      callbackURL: redirectTo,
-    });
-    setLoading(false);
-    if (res.error) setError(res.error.message || "Invalid email or password.");
-    else { router.push(redirectTo); router.refresh(); }
+    try {
+      const fd  = new FormData(e.currentTarget);
+      const res = await signIn.email({
+        email:       fd.get("email")    as string,
+        password:    fd.get("password") as string,
+        callbackURL: redirectTo,
+      });
+      if (res.error) { setError(res.error.message || "Invalid email or password."); return; }
+      // Redirect admins to dashboard, everyone else to callbackUrl
+      const session = res.data?.user as any;
+      if (session?.role === 'admin') { router.push('/dashboard'); }
+      else { router.push(redirectTo); }
+      router.refresh();
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleGoogle() {

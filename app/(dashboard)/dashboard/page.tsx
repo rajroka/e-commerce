@@ -228,7 +228,7 @@ export default function DashboardPage() {
                     </p>
                     {revDelta && (
                       <span className="text-[10px] font-semibold text-red-500 border border-red-200 px-1.5 py-0.5 rounded-full">
-                        +{revDelta}%
+                        {Number(revDelta) >= 0 ? '+' : ''}{revDelta}%
                       </span>
                     )}
                   </div>

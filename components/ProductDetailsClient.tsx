@@ -51,6 +51,7 @@ export default function ProductDetailsClient({ product }: ProductProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(colors[0] ?? null);
   const [selectedSize,  setSelectedSize]  = useState<string | null>(sizes[0]  ?? null);
   const [activeImg,     setActiveImg]     = useState(0);
+  const [quantity,      setQuantity]      = useState(1);
 
   useEffect(() => {
     setMounted(true);
@@ -98,14 +99,14 @@ export default function ProductDetailsClient({ product }: ProductProps) {
       name:     product.title,
       image:    product.image,
       price:    discountedPrice,
-      quantity: 1,
+      quantity,
       stock:    product.stock,
       color:    selectedColor,
       size:     selectedSize,
     });
     setAddedAnim(true);
     setTimeout(() => setAddedAnim(false), 1800);
-    toast.success('Added to cart');
+    toast.success(`${quantity > 1 ? quantity + '× ' : ''}Added to cart`);
   };
 
   const handleBuyNow = () => {
@@ -300,6 +301,36 @@ export default function ProductDetailsClient({ product }: ProductProps) {
 
               {/* ── CTA Buttons ── */}
               <div className="flex flex-col gap-3 pt-1">
+
+                {/* Quantity selector */}
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 mb-2">Quantity</p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                      <button
+                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                        disabled={quantity <= 1}
+                        aria-label="Decrease quantity"
+                        className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-red-500 transition-colors disabled:opacity-30"
+                      >−</button>
+                      <span className="w-10 text-center text-sm font-bold text-gray-900 select-none tabular-nums">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() => setQuantity(q => Math.min(product.stock ?? 99, q + 1))}
+                        disabled={product.stock !== undefined && quantity >= product.stock}
+                        aria-label="Increase quantity"
+                        className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-red-500 transition-colors disabled:opacity-30"
+                      >+</button>
+                    </div>
+                    {product.stock !== undefined && product.stock < 10 && (
+                      <span className="text-xs text-amber-500 font-medium">
+                        {product.stock} in stock
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 <button onClick={handleBuyNow} disabled={!inStock}
                   className={`w-full py-3.5 text-sm font-bold rounded-xl transition-all active:scale-[0.98] ${
                     inStock ? 'bg-red-500 hover:bg-red-600 text-white shadow-sm shadow-red-200' : 'bg-gray-200 text-gray-400 cursor-not-allowed'

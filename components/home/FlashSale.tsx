@@ -84,7 +84,7 @@ export default function FlashSale() {
               <div key={p._id || p.id} className="flex-shrink-0 w-52 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col overflow-hidden">
                 <div className="relative aspect-square bg-gray-50 overflow-hidden">
                   <span className="absolute top-2 left-2 z-10 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">-{pct}%</span>
-                  <Link href={`/products/${p._id || p.id}`}>
+                  <Link href={`/products/${p._id || p.id}`} className="absolute inset-0">
                     <Image src={p.image} alt={p.name} fill sizes="208px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                   </Link>
                 </div>

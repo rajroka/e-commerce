@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Edit01Icon, LoaderPinwheelIcon, ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import TagInput from '@/components/ui/TagInput';
+import { CldUploadWidget } from 'next-cloudinary';
 
 const STROKE = 1.5;
 
@@ -14,7 +16,6 @@ type ProductFormData = {
   name:           string;
   description:    string;
   price:          number;
-  image:          string;
   category:       string;
   stock:          number;
   rating:         number;
@@ -24,7 +25,7 @@ type ProductFormData = {
 };
 
 const inputCls = (err = false) =>
-  `w-full border ${err ? 'border-red-400' : 'border-gray-200'} rounded-xl px-3 py-2.5 text-sm outline-none focus:border-red-400 focus:ring-1 focus:ring-red-200 transition-colors`;
+  `w-full border ${err ? 'border-red-400' : 'border-gray-200'} rounded-xl px-3 py-2.5 text-sm outline-none transition-colors`;
 
 const Lbl = ({ children }: { children: React.ReactNode }) => (
   <label className="block text-xs font-medium text-gray-600 mb-1.5">{children}</label>
@@ -36,6 +37,7 @@ export default function EditProductPage() {
 
   const [fetching,   setFetching]   = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [imageUrl,   setImageUrl]   = useState('');
   const [colors,     setColors]     = useState<string[]>([]);
   const [sizes,      setSizes]      = useState<string[]>([]);
 
@@ -50,7 +52,6 @@ export default function EditProductPage() {
           name:           product.name        ?? '',
           description:    product.description ?? '',
           price:          product.price       ?? 0,
-          image:          product.image       ?? '',
           category:       product.category    ?? '',
           stock:          product.stock       ?? 0,
           rating:         product.rating      ?? 0,
@@ -60,6 +61,7 @@ export default function EditProductPage() {
             ? new Date(product.discountEndsAt).toISOString().slice(0, 16)
             : '',
         });
+        setImageUrl(product.image ?? '');
         setColors(product.colors ?? []);
         setSizes(product.sizes   ?? []);
       })
@@ -68,6 +70,7 @@ export default function EditProductPage() {
   }, [productId, reset]);
 
   const onSubmit = async (data: ProductFormData) => {
+    if (!imageUrl) { toast.error('Please upload a product image'); return; }
     setSubmitting(true);
     try {
       const res = await fetch(`/api/products/${productId}`, {
@@ -77,7 +80,7 @@ export default function EditProductPage() {
           name:           data.name,
           description:    data.description,
           price:          data.price,
-          image:          data.image,
+          image:          imageUrl,
           category:       data.category,
           stock:          data.stock,
           rating:         data.rating,
@@ -148,11 +151,30 @@ export default function EditProductPage() {
             </div>
           </div>
 
+          {/* ── Image upload ── */}
           <div>
-            <Lbl>Image URL <span className="text-red-400">*</span></Lbl>
-            <input {...register('image', { required: 'Required' })} placeholder="https://…"
-              className={inputCls(!!errors.image)} />
-            {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image.message}</p>}
+            <Lbl>Product Image <span className="text-red-400">*</span></Lbl>
+            <div className="flex flex-col gap-3">
+              {imageUrl && (
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                  <Image src={imageUrl} alt="Product" fill className="object-cover" sizes="480px" />
+                </div>
+              )}
+              <CldUploadWidget
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'unsigned'}
+                onSuccess={(result: any) => {
+                  const url = result?.info?.secure_url;
+                  if (url) { setImageUrl(url); toast.success('Image uploaded!'); }
+                }}
+              >
+                {({ open }) => (
+                  <button type="button" onClick={() => open()}
+                    className="w-full py-2.5 border-2 border-dashed border-gray-200 rounded-xl text-sm font-medium text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors">
+                    {imageUrl ? '🔄 Replace Image' : '📷 Upload Image'}
+                  </button>
+                )}
+              </CldUploadWidget>
+            </div>
           </div>
 
           <div>

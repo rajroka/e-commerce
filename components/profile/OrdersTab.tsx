@@ -13,15 +13,16 @@ import type { Order } from './types';
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   pending:    'outline',
+  confirmed:  'secondary',
   processing: 'secondary',
   shipped:    'secondary',
   delivered:  'default',
   cancelled:  'destructive',
 };
 
-const STEPS = ['Order placed', 'Processing', 'Shipped', 'Delivered'];
+const STEPS = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 const STATUS_STEP: Record<string, number> = {
-  pending: 1, processing: 2, shipped: 3, delivered: 4, cancelled: 0,
+  pending: 1, confirmed: 2, processing: 3, shipped: 4, delivered: 5, cancelled: 0,
 };
 
 interface Props {
@@ -82,12 +83,12 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
 
         return (
           <Card key={order._id} className="overflow-hidden">
-            {/* Header row — clickable to expand */}
-            <button
-              onClick={() => setExpanded(open ? null : order._id)}
-              className="w-full flex items-center gap-4 px-5 py-4 hover:bg-muted/50 transition-colors text-left"
-            >
-              <div className="flex-1 min-w-0">
+            {/* Header row — clickable to expand or view detail */}
+            <div className="w-full flex items-center gap-4 px-5 py-4 hover:bg-muted/50 transition-colors">
+              <button
+                onClick={() => setExpanded(open ? null : order._id)}
+                className="flex-1 min-w-0 text-left"
+              >
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-mono text-muted-foreground">
                     #{order._id.slice(-8).toUpperCase()}
@@ -99,18 +100,30 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
                 <p className="text-[11px] text-muted-foreground mt-1">
                   {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </p>
-              </div>
+              </button>
 
               <div className="text-right flex-shrink-0">
                 <p className="text-sm font-bold text-gray-900">${total.toFixed(2)}</p>
                 <p className="text-xs text-muted-foreground">
                   {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                 </p>
+                {order.paymentMethod === 'cod' && (
+                  <span className="inline-block mt-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
+                    COD · Unpaid
+                  </span>
+                )}
               </div>
 
-              {open ? <ChevronUp size={16} className="text-muted-foreground flex-shrink-0" />
-                     : <ChevronDown size={16} className="text-muted-foreground flex-shrink-0" />}
-            </button>
+              <Link href={`/orders/${order._id}`}
+                className="flex-shrink-0 text-xs font-semibold text-red-500 hover:underline hidden sm:block">
+                Details
+              </Link>
+
+              <button onClick={() => setExpanded(open ? null : order._id)} className="flex-shrink-0">
+                {open ? <ChevronUp size={16} className="text-muted-foreground" />
+                       : <ChevronDown size={16} className="text-muted-foreground" />}
+              </button>
+            </div>
 
             {open && (
               <div className="border-t border-border px-5 py-4 space-y-5">
@@ -179,11 +192,13 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
                 </div>
 
                 {order.shippingAddress && (
-                  <p className="text-xs text-muted-foreground">
-                    <span className="font-medium text-gray-700">Ship to: </span>
-                    {order.shippingAddress.name}, {order.shippingAddress.line1},{' '}
-                    {order.shippingAddress.city}, {order.shippingAddress.country}
-                  </p>
+                  <div className="text-xs text-muted-foreground space-y-0.5">
+                    <p className="font-medium text-gray-700">Ship to:</p>
+                    <p>{order.shippingAddress.name}</p>
+                    <p>{order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ''}</p>
+                    <p>{[order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.postalCode].filter(Boolean).join(', ')}</p>
+                    <p>{order.shippingAddress.country}</p>
+                  </div>
                 )}
               </div>
             )}

@@ -115,17 +115,19 @@ export const useCartStore = create<CartState>()(
       },
 
       // ── updateQuantity ─────────────────────────────────────────────────────
-      // id here is the cart line key — for variant products we use a composite key
+      // Matches by id + color + size to correctly handle variant products
       updateQuantity: (id, quantity) => {
+        const item = get().items.find((i) => i.id === id);
+        if (!item) return;
         if (quantity <= 0) {
-          set({ items: get().items.filter((i) => i.id !== id) });
+          set({ items: get().items.filter((i) => !(i.id === id && i.color === item.color && i.size === item.size)) });
         } else {
-          const item = get().items.find((i) => i.id === id);
-          if (!item) return;
           const maxQty = item.stock ?? Infinity;
           set({
             items: get().items.map((i) =>
-              i.id === id ? { ...i, quantity: Math.min(quantity, maxQty) } : i
+              i.id === id && i.color === item.color && i.size === item.size
+                ? { ...i, quantity: Math.min(quantity, maxQty) }
+                : i
             ),
           });
         }
@@ -134,14 +136,16 @@ export const useCartStore = create<CartState>()(
 
       // ── removeFromCart ─────────────────────────────────────────────────────
       removeFromCart: (id) => {
-        set({ items: get().items.filter((i) => i.id !== id) });
+        const item = get().items.find((i) => i.id === id);
+        if (!item) return;
+        set({ items: get().items.filter((i) => !(i.id === id && i.color === item.color && i.size === item.size)) });
         schedulePush(get().pushToServer);
       },
 
       // ── clearCart ──────────────────────────────────────────────────────────
       clearCart: () => {
         set({ items: [] });
-        schedulePush(get().pushToServer);
+        get().clearFromServer();
       },
 
       // ── computed ───────────────────────────────────────────────────────────

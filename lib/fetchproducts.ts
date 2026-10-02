@@ -61,29 +61,42 @@ export const getProductsByCategory = async (category: string) => {
   }));
 };
 
-// Fetch products with pagination
-export const fetchProductsPaginated = async (page: number = 1, limit: number = 12) => {
+// Fetch products with pagination and optional search
+export const fetchProductsPaginated = async (page: number = 1, limit: number = 12, search?: string) => {
   await connect();
 
-  const validPage = isNaN(page) || page < 1 ? 1 : page;
+  const validPage  = isNaN(page)  || page  < 1 ? 1  : page;
   const validLimit = isNaN(limit) || limit < 1 ? 12 : Math.min(limit, 100);
 
+  const query: Record<string, any> = {};
+  if (search?.trim()) {
+    query.$or = [
+      { name:        { $regex: search.trim(), $options: 'i' } },
+      { description: { $regex: search.trim(), $options: 'i' } },
+      { category:    { $regex: search.trim(), $options: 'i' } },
+    ];
+  }
+
   const [rawProducts, totalCount] = await Promise.all([
-    Product.find()
+    Product.find(query)
       .skip((validPage - 1) * validLimit)
       .limit(validLimit),
-    Product.countDocuments(),
+    Product.countDocuments(query),
   ]);
 
   const products = rawProducts.map((product) => ({
-    _id: product._id.toString(),
-    name: product.name,
-    description: product.description || '',
-    image: product.image,
-    price: product.price,
-    category: product.category,
-    createdAt: product.createdAt?.toISOString() || '',
-    updatedAt: product.updatedAt?.toISOString() || '',
+    _id:          product._id.toString(),
+    name:         product.name,
+    description:  product.description  || '',
+    image:        product.image,
+    price:        product.price,
+    category:     product.category,
+    stock:        product.stock        ?? 0,
+    rating:       product.rating       ?? 0,
+    discountPct:  product.discountPct  ?? null,
+    discountEndsAt: product.discountEndsAt?.toISOString() ?? null,
+    createdAt:    product.createdAt?.toISOString() || '',
+    updatedAt:    product.updatedAt?.toISOString() || '',
   }));
 
   return {

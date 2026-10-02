@@ -12,14 +12,15 @@ export const metadata: Metadata = {
 const Page = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 }) => {
   const resolvedParams = await searchParams;
-  const page = parseInt(resolvedParams.page || '1', 10);
-  const limit = 12;
+  const page   = parseInt(resolvedParams.page || '1', 10);
+  const search = resolvedParams.search?.trim() || undefined;
+  const limit  = 12;
 
   const { products, totalCount, totalPages, page: currentPage } =
-    await fetchProductsPaginated(page, limit);
+    await fetchProductsPaginated(page, limit, search);
 
   return (
     <ProductErrorBoundary>

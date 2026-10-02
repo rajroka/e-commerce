@@ -3,6 +3,7 @@ import ProductDetailsClient from '@/components/ProductDetailsClient';
 import { fetchProductById } from '@/lib/fetchproducts';
 import RelatedProducts from '@/components/RelatedProducts';
 import ProductErrorBoundary from '@/components/ProductErrorBoundary';
+import { notFound } from 'next/navigation';
 
 type FetchedProduct = {
   _id: string;
@@ -49,8 +50,8 @@ const Page = async ({ params }: { params: Promise<{ productId: string }> }) => {
   let fetchedProduct: FetchedProduct | null = null;
   try {
     fetchedProduct = await fetchProductById(productId);
-  } catch (err) {
-    return <p className="text-center py-20">Product not found or failed to load.</p>;
+  } catch {
+    notFound();
   }
 
   const product = {

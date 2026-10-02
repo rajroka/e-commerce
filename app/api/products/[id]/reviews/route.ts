@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import connect from '@/lib/db';
 import Review from '@/lib/modals/Review';
 import Product from '@/lib/modals/Product';
+import Order from '@/lib/modals/Order';
 
 // GET — fetch reviews for a product
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
   return NextResponse.json({ reviews }, { status: 200 });
 }
 
-// POST — submit a review (authenticated, one per user per product)
+// POST — submit a review (authenticated, only if user has purchased the product)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -25,6 +26,22 @@ export async function POST(
 
   await connect();
   const { id } = await params;
+
+  // ── Purchase verification ────────────────────────────────────────────────
+  // User must have at least one completed order containing this product
+  const hasPurchased = await Order.exists({
+    userId: session.user.id,
+    status: { $in: ['confirmed', 'processing', 'shipped', 'delivered'] },
+    'items.productId': id,
+  });
+
+  if (!hasPurchased) {
+    return NextResponse.json(
+      { error: 'You can only review products you have purchased.' },
+      { status: 403 }
+    );
+  }
+
   const { rating, comment } = await request.json();
 
   if (!rating || rating < 1 || rating > 5) {

@@ -41,7 +41,7 @@ export async function PATCH(request: NextRequest) {
 
   const { orderId, status } = await request.json();
 
-  const VALID_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
+  const VALID_STATUSES = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"];
   if (!orderId || !VALID_STATUSES.includes(status)) {
     return NextResponse.json(
       { error: `status must be one of: ${VALID_STATUSES.join(", ")}` },

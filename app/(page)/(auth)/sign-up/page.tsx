@@ -28,11 +28,14 @@ export default function SignUpPage() {
     setError(null);
     if (!isStrongPassword(password)) { setError("Please choose a stronger password."); return; }
     setLoading(true);
-    const fd  = new FormData(e.currentTarget);
-    const res = await signUp.email({ name: fd.get("name") as string, email: fd.get("email") as string, password });
-    setLoading(false);
-    if (res.error) setError(res.error.message || "Something went wrong. Please try again.");
-    else { router.push("/"); router.refresh(); }
+    try {
+      const fd  = new FormData(e.currentTarget);
+      const res = await signUp.email({ name: fd.get("name") as string, email: fd.get("email") as string, password });
+      if (res.error) { setError(res.error.message || "Something went wrong. Please try again."); return; }
+      router.push("/"); router.refresh();
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleGoogle() {

@@ -1,11 +1,13 @@
-import React from 'react'
+import React from 'react';
+import LoginModal from '@/components/LoginModal';
 
-const layout = ({children} : { children : React.ReactNode}) => {
+const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-   <>
-    {children}
-   </>
-  )
-}
+    <>
+      {children}
+      <LoginModal />
+    </>
+  );
+};
 
-export default layout
+export default layout;

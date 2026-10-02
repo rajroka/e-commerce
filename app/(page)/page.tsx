@@ -30,9 +30,6 @@ export default function Home() {
       {/* 4. Best sellers row */}
       <ProductRow title="Best Sellers" subtitle="Top Picks" bg="white" />
 
-      {/* 5. New arrivals row */}
-      <ProductRow title="New Arrivals" subtitle="Just Dropped" category="running" bg="gray" />
-
       {/* 6. Trust badges */}
       <Customerservice />
 
