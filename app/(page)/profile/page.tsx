@@ -8,7 +8,7 @@ import { useSession, signOut } from '@/lib/auth-client';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   UserIcon, Package01Icon, MapPinIcon, Shield01Icon,
-  AlertDiamondIcon, Logout01Icon, ChevronRightIcon,
+  Logout01Icon, ChevronRightIcon,
   Home01Icon, Menu01Icon, StarIcon,
 } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,6 @@ import PersonalInfoTab from '@/components/profile/PersonalInfoTab';
 import AddressesTab    from '@/components/profile/AddressesTab';
 import OrdersTab       from '@/components/profile/OrdersTab';
 import SecurityTab     from '@/components/profile/SecurityTab';
-import DangerZoneTab   from '@/components/profile/DangerZoneTab';
 
 const STROKE = 1.5;
 
@@ -34,7 +33,6 @@ const NAV_ITEMS: { id: ProfileTab; label: string; icon: React.ReactNode }[] = [
   { id: 'addresses', label: 'Addresses',     icon: <HugeiconsIcon icon={MapPinIcon}       size={16} color="currentColor" strokeWidth={STROKE} /> },
   { id: 'orders',    label: 'Orders',        icon: <HugeiconsIcon icon={Package01Icon}    size={16} color="currentColor" strokeWidth={STROKE} /> },
   { id: 'security',  label: 'Security',      icon: <HugeiconsIcon icon={Shield01Icon}     size={16} color="currentColor" strokeWidth={STROKE} /> },
-  { id: 'danger',    label: 'Danger Zone',   icon: <HugeiconsIcon icon={AlertDiamondIcon} size={16} color="currentColor" strokeWidth={STROKE} /> },
 ];
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -259,7 +257,6 @@ function ProfilePageInner() {
             <OrdersTab orders={orders} loading={ordersLoading} onRefresh={() => { setOrdersLoading(true); fetchOrders(); }} />
           )}
           {tab === 'security'  && <SecurityTab />}
-          {tab === 'danger'    && <DangerZoneTab />}
         </main>
       </div>
     </div>

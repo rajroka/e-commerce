@@ -6,7 +6,9 @@ import { randomUUID } from 'crypto';
 
 async function getSession(req: NextRequest) {
   await connect();
-  return auth.api.getSession({ headers: req.headers });
+  const session = await auth.api.getSession({ headers: req.headers });
+  if (!session) return null;
+  return session;
 }
 
 // ─── GET /api/user/addresses ───────────────────────────────────────────────────

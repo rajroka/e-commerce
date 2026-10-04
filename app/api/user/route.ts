@@ -10,12 +10,13 @@ export async function GET(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db();
 
-  const user = await db
-    .collection("user")
-    .findOne(
+  const [user, userProfile] = await Promise.all([
+    db.collection("user").findOne(
       { _id: new ObjectId(session.user.id) },
       { projection: { passwordHash: 0 } }
-    );
+    ),
+    db.collection("userprofiles").findOne({ userId: session.user.id }),
+  ]);
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -27,8 +28,8 @@ export async function GET(req: NextRequest) {
     email:     user.email     ?? null,
     image:     user.image     ?? null,
     role:      user.role      ?? "customer",
-    phone:     user.phone     ?? null,
-    addresses: user.addresses ?? [],
+    phone:     userProfile?.phone     ?? null,
+    addresses: userProfile?.addresses ?? [],
     createdAt: user.createdAt ?? null,
   });
 }

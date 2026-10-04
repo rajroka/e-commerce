@@ -30,6 +30,7 @@ type Order = {
   subtotal:        number;
   discount:        number;
   status:          string;
+  paymentMethod?:  'stripe' | 'cod';
   createdAt:       string;
   couponCode?:     string;
   shippingAddress?: {
@@ -175,6 +176,10 @@ export default function AllOrdersPage() {
                     <Badge variant={STATUS_VARIANT[order.status] ?? 'outline'} className="capitalize text-[11px]">
                       {order.status}
                     </Badge>
+                    {order.paymentMethod === 'cod'
+                      ? <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">💵 COD</span>
+                      : <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-2 py-0.5">💳 Online</span>
+                    }
                   </div>
                   <p className="text-sm font-medium text-gray-800 mt-0.5 truncate">{order.userEmail}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -315,6 +320,13 @@ export default function AllOrdersPage() {
                     </div>
                     <div className="flex justify-between text-sm font-bold text-gray-900 pt-2 border-t border-gray-100">
                       <span>Total</span><span>${total.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-100">
+                      <span className="text-gray-500">Payment</span>
+                      {order.paymentMethod === 'cod'
+                        ? <span className="font-semibold text-amber-600">💵 Cash on Delivery</span>
+                        : <span className="font-semibold text-blue-600">💳 Online (Paid)</span>
+                      }
                     </div>
                   </div>
 
