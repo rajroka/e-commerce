@@ -46,7 +46,9 @@ function writeCache(s: CachedSession | null) {
 export default function Nav() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  const [displaySession, setDisplaySession] = useState<CachedSession | null>(readCache);
+  // Always start null to match server render — cache is read after mount
+  const [displaySession, setDisplaySession] = useState<CachedSession | null>(null);
+  const [mounted,        setMounted]        = useState(false);
   const [searchQuery,    setSearchQuery]    = useState("");
 
   const setUserId        = useCartStore(s => s.setUserId);
@@ -54,6 +56,14 @@ export default function Nav() {
   const { items: wishlistItems, fetchWishlist, synced } = useWishlistStore();
 
   useEffect(() => {
+    // Read cache on client after mount to avoid SSR mismatch
+    setMounted(true);
+    const cached = readCache();
+    if (cached) setDisplaySession(cached);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (isPending) return;
     if (session?.user) {
       const next: CachedSession = {
@@ -74,11 +84,12 @@ export default function Nav() {
   }, [session, isPending]);
 
   useEffect(() => {
+    if (!mounted) return;
     setUserId(
       session?.user?.id ?? null,
       isPending ? "loading" : session ? "authenticated" : "unauthenticated"
     );
-  }, [session, isPending, setUserId]);
+  }, [session, isPending, setUserId, mounted]);
 
   useEffect(() => {
     if (session?.user && !synced) fetchWishlist();
@@ -87,9 +98,9 @@ export default function Nav() {
   const userEmail    = displaySession?.email ?? undefined;
   const userName     = displaySession?.name  ?? undefined;
   const userImage    = displaySession?.image ?? undefined;
-  const isAdmin      = displaySession?.role === "admin";
+  const isAdmin      = mounted && displaySession?.role === "admin";
   const cartCount    = getTotalQuantity();
-  const showSpinner  = isPending && displaySession === null;
+  const showSpinner  = mounted && isPending && displaySession === null;
   const initials     = userName ? userName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() : "?";
 
   const handleSearch = (e: React.FormEvent) => {
@@ -129,8 +140,8 @@ export default function Nav() {
             />
           </form>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-1 ml-auto">
+          {/* Right actions — suppressed until mounted to prevent hydration mismatch */}
+          <div className="flex items-center gap-1 ml-auto" suppressHydrationWarning>
 
             {/* Cart — hidden for admins */}
             {!isAdmin && (
