@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { RefreshCw, Package, ChevronDown, ChevronUp } from 'lucide-react';
+import { RefreshCw, Package, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import toast from 'react-hot-toast';
 import type { Order } from './types';
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -32,7 +33,25 @@ interface Props {
 }
 
 export default function OrdersTab({ orders, loading, onRefresh }: Props) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded,   setExpanded]   = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [localOrders, setLocalOrders] = useState<Order[]>(orders);
+
+  // Keep local state in sync when parent refreshes
+  if (orders !== localOrders && !cancelling) setLocalOrders(orders);
+
+  const handleCancel = async (orderId: string) => {
+    if (!confirm('Cancel this order? This cannot be undone.')) return;
+    setCancelling(orderId);
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error ?? 'Failed to cancel order'); return; }
+      setLocalOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: 'cancelled' } : o));
+      toast.success('Order cancelled');
+    } catch { toast.error('Network error'); }
+    finally { setCancelling(null); }
+  };
 
   if (loading) return (
     <div className="space-y-3">
@@ -65,7 +84,7 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-gray-900">
-          {orders.length} order{orders.length !== 1 ? 's' : ''}
+          {localOrders.length} order{localOrders.length !== 1 ? 's' : ''}
         </p>
         {onRefresh && (
           <Button variant="ghost" size="sm" onClick={onRefresh} className="gap-1.5 text-muted-foreground h-7">
@@ -74,12 +93,13 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
         )}
       </div>
 
-      {orders.map(order => {
+      {localOrders.map(order => {
         const step     = STATUS_STEP[order.status] ?? 1;
         const open     = expanded === order._id;
         const total    = order.total    ?? 0;
         const subtotal = order.subtotal ?? total;
         const discount = order.discount ?? 0;
+        const canCancel = ['pending', 'confirmed'].includes(order.status);
 
         return (
           <Card key={order._id} className="overflow-hidden">
@@ -118,6 +138,20 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
                 className="flex-shrink-0 text-xs font-semibold text-red-500 hover:underline hidden sm:block">
                 Details
               </Link>
+
+              {canCancel && (
+                <button
+                  onClick={() => handleCancel(order._id)}
+                  disabled={cancelling === order._id}
+                  className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                  aria-label="Cancel order"
+                >
+                  {cancelling === order._id
+                    ? <span className="text-[10px]">Cancelling…</span>
+                    : <><X size={13} /> Cancel</>
+                  }
+                </button>
+              )}
 
               <button onClick={() => setExpanded(open ? null : order._id)} className="flex-shrink-0">
                 {open ? <ChevronUp size={16} className="text-muted-foreground" />
@@ -198,6 +232,20 @@ export default function OrdersTab({ orders, loading, onRefresh }: Props) {
                     <p>{order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ''}</p>
                     <p>{[order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.postalCode].filter(Boolean).join(', ')}</p>
                     <p>{order.shippingAddress.country}</p>
+                  </div>
+                )}
+
+                {canCancel && (
+                  <div className="pt-2 border-t border-border">
+                    <button
+                      onClick={() => handleCancel(order._id)}
+                      disabled={cancelling === order._id}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
+                    >
+                      <X size={13} />
+                      {cancelling === order._id ? 'Cancelling…' : 'Cancel this order'}
+                    </button>
+                    <p className="text-[11px] text-gray-400 mt-1">Orders can only be cancelled before processing begins.</p>
                   </div>
                 )}
               </div>

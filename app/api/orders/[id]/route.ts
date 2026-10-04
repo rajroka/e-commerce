@@ -60,3 +60,32 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   return NextResponse.json({ order }, { status: 200 });
 }
+
+// DELETE — user cancels their own order (only if pending or confirmed)
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  await connect();
+  const { id } = await params;
+  const order = await Order.findById(id);
+
+  if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+
+  // Only the order owner can cancel
+  if (order.userId?.toString() !== session.user.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  // Can only cancel if order hasn't been processed yet
+  const cancellableStatuses = ['pending', 'confirmed'];
+  if (!cancellableStatuses.includes(order.status)) {
+    return NextResponse.json(
+      { error: `Order cannot be cancelled — it is already ${order.status}` },
+      { status: 400 }
+    );
+  }
+
+  await Order.findByIdAndUpdate(id, { status: 'cancelled' });
+  return NextResponse.json({ ok: true });
+}

@@ -83,8 +83,6 @@ function SidebarNav({
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors border-l-2 ${
                   tab === item.id
                     ? 'border-red-500 bg-red-50 text-red-600'
-                    : item.id === 'danger'
-                    ? 'border-transparent text-red-400 hover:bg-red-50'
                     : 'border-transparent text-gray-600 hover:bg-muted hover:text-gray-900'
                 }`}
               >

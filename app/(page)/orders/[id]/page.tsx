@@ -40,9 +40,10 @@ export default function OrderDetailPage() {
   const router            = useRouter();
   const { data: session, isPending } = useSession();
 
-  const [order,   setOrder]   = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState<string | null>(null);
+  const [order,      setOrder]      = useState<any>(null);
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     if (isPending) return;
@@ -57,6 +58,18 @@ export default function OrderDetailPage() {
       .catch(() => setError('Failed to load order.'))
       .finally(() => setLoading(false));
   }, [id, session, isPending, router]);
+
+  const handleCancel = async () => {
+    if (!confirm('Cancel this order? This cannot be undone.')) return;
+    setCancelling(true);
+    try {
+      const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error ?? 'Failed to cancel order'); return; }
+      setOrder((prev: any) => ({ ...prev, status: 'cancelled' }));
+    } catch { alert('Network error'); }
+    finally { setCancelling(false); }
+  };
 
   if (isPending || loading) return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -225,7 +238,7 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 pt-2">
             <Link href="/profile?tab=orders"
               className="flex items-center gap-2 px-5 py-2.5 border border-gray-200 text-gray-700 text-sm font-semibold rounded-full hover:border-gray-400 transition-colors">
               <HugeiconsIcon icon={ArrowLeft01Icon} size={14} color="currentColor" strokeWidth={STROKE} />
@@ -235,6 +248,15 @@ export default function OrderDetailPage() {
               className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-full transition-colors">
               Keep Shopping
             </Link>
+            {['pending', 'confirmed'].includes(order.status) && (
+              <button
+                onClick={handleCancel}
+                disabled={cancelling}
+                className="px-5 py-2.5 border border-red-300 text-red-500 hover:bg-red-50 text-sm font-semibold rounded-full transition-colors disabled:opacity-50 ml-auto"
+              >
+                {cancelling ? 'Cancelling…' : 'Cancel Order'}
+              </button>
+            )}
           </div>
 
         </div>
